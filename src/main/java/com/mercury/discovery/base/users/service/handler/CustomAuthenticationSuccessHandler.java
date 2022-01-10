@@ -3,7 +3,7 @@ package com.mercury.discovery.base.users.service.handler;
 
 import com.mercury.discovery.base.users.model.AppUser;
 import com.mercury.discovery.base.users.service.UserRepository;
-import com.mercury.discovery.util.HttpUtils;
+import com.mercury.discovery.utils.HttpUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;

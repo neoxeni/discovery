@@ -1,4 +1,4 @@
-package com.mercury.discovery.util;
+package com.mercury.discovery.utils;
 
 import com.mercury.discovery.common.error.exception.BadParameterException;
 

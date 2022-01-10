@@ -1,7 +1,7 @@
 package com.mercury.discovery.common.error.handler;
 
 import com.mercury.discovery.common.error.exception.NotAllowedFileExtensionException;
-import com.mercury.discovery.util.MessagesUtils;
+import com.mercury.discovery.utils.MessagesUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.ConversionNotSupportedException;
 import org.springframework.beans.TypeMismatchException;
@@ -141,7 +141,7 @@ public class ClientExceptionHandler extends AbstractExceptionHandler {
 
     @ExceptionHandler(MultipartException.class)
     public Object handleMultipartException(final HttpServletRequest req, final HttpServletResponse resp,
-                                                   final HandlerMethod handlerMethod, final MultipartException e) {
+                                           final HandlerMethod handlerMethod, final MultipartException e) {
         Map<String, Object> body = getStringObjectMap(req);
 
 

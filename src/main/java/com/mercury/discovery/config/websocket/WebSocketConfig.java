@@ -3,7 +3,7 @@ package com.mercury.discovery.config.websocket;
 
 import com.mercury.discovery.base.users.model.AppUser;
 import com.mercury.discovery.config.websocket.handler.StompHandler;
-import com.mercury.discovery.util.JwtTokenProvider;
+import com.mercury.discovery.utils.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

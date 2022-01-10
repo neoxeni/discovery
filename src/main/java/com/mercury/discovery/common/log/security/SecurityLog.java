@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 public class SecurityLog {
     private Integer seqNo;
     private Integer cmpnyNo;
-    private Integer empNo;
+    private Integer userNo;
     private String ip;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -28,4 +28,6 @@ public class SecurityLog {
     private String etc4;
     private String etc5;
     private String divCd;
+
+
 }

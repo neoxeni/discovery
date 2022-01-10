@@ -1,15 +1,15 @@
 package com.mercury.discovery.common.file.service;
 
-import com.github.vfss3.operations.Acl;
-import com.github.vfss3.operations.IAclGetter;
-import com.github.vfss3.operations.IAclSetter;
 import com.mercury.discovery.common.error.exception.FileOperationException;
 import com.mercury.discovery.common.file.model.AttachDivCd;
 import com.mercury.discovery.common.file.model.AttachFile;
 import com.mercury.discovery.common.file.model.FileSystemScheme;
-import com.mercury.discovery.util.DateTimeUtils;
-import com.mercury.discovery.util.FileSystemUtils;
-import com.mercury.discovery.util.IDGenerator;
+import com.mercury.discovery.utils.DateTimeUtils;
+import com.mercury.discovery.utils.FileSystemUtils;
+import com.mercury.discovery.utils.IDGenerator;
+import com.github.vfss3.operations.Acl;
+import com.github.vfss3.operations.IAclGetter;
+import com.github.vfss3.operations.IAclSetter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -25,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -103,9 +105,9 @@ public class FileService {
         }
     }
 
-    public String getFilePath(int cmpnyNo) {
+    public String getFilePath() {
         String yyyyMM = DateTimeUtils.getFormatted(LocalDateTime.now(), "yyyyMM");
-        return this.getPublicUrl() + "/" + cmpnyNo + "/" + yyyyMM;
+        return this.getPublicUrl() + "/" + yyyyMM;
     }
 
     public String getExtension(final String filename) {
@@ -147,8 +149,8 @@ public class FileService {
     }
 
     @Transactional(readOnly = true)
-    public AttachFile findOne(Integer fileNo) {
-        return fileRepository.findOne(fileNo);
+    public AttachFile findOne(String fileKey) {
+        return fileRepository.findOne(fileKey);
     }
 
     public File getFile(AttachFile attachFile) {
@@ -207,16 +209,22 @@ public class FileService {
             return 0;
         }
 
-        int affected = fileRepository.delete(attachFileList.stream().map(AttachFile::getFileNo).collect(Collectors.toList()));
+        int affected = fileRepository.delete(attachFileList.stream().map(AttachFile::getFileKey).collect(Collectors.toList()));
         this.doDeleteFile(attachFileList);
 
         return affected;
     }
 
-    private int save(List<AttachFile> attachFileList, boolean isInTempDirectory) {
+    public int update(List<AttachFile> attachFiles) {
+        return fileRepository.update(attachFiles);
+    }
+
+    public int save(List<AttachFile> attachFileList, boolean isInTempDirectory) {
         int affected = 0;
         List<AttachFile> insertFileList = new ArrayList<>();
         List<AttachFile> deleteFileList = new ArrayList<>();
+        List<AttachFile> updateFileList = new ArrayList<>();
+
         attachFileList.forEach(attachFile -> {
             if ("INSERT".equals(attachFile.getWorkType())) {
                 String fileName;
@@ -227,8 +235,9 @@ public class FileService {
                 }
 
                 String filePath = attachFile.getFilePath();
+                Path source = null;
                 if (isInTempDirectory) {
-                    Path source = Paths.get(tempDir, attachFile.getFileNm());
+                    source = Paths.get(tempDir, attachFile.getFileNm());
                     try {
                         this.doAttachFile(attachFile, fileName, source);
                     } catch (IOException e) {
@@ -255,6 +264,8 @@ public class FileService {
                 deleteFileList.add(attachFile);
             } else if ("COPY".equals(attachFile.getWorkType())) {
                 insertFileList.add(attachFile);
+            } else if ("UPDATE".equals(attachFile.getWorkType())) {
+                updateFileList.add(attachFile);
             }
         });
 
@@ -263,10 +274,16 @@ public class FileService {
         }
 
         if (deleteFileList.size() > 0) {
-            affected += fileRepository.delete(deleteFileList.stream().map(AttachFile::getFileNo).collect(Collectors.toList()));
+            affected += fileRepository.delete(deleteFileList.stream().map(AttachFile::getFileKey).collect(Collectors.toList()));
             List<String> notDeletableFileFullPathList = fileRepository.findNotDeletableFileFullPathList(deleteFileList.stream().map(attachFile -> attachFile.getFilePath() + "/" + attachFile.getFileNm()).collect(Collectors.toList()));
             this.doDeleteFile(deleteFileList.stream().filter(attachFile
                     -> !notDeletableFileFullPathList.contains(attachFile.getFilePath() + "/" + attachFile.getFileNm())).collect(Collectors.toList()));
+        }
+
+
+        if (updateFileList.size() > 0) {
+            updateFileList.forEach(e -> e.setUpdDt(LocalDateTime.now()));
+            fileRepository.update(updateFileList);
         }
 
         return affected;
@@ -328,7 +345,7 @@ public class FileService {
 
     }
 
-    private void doAttachFile(AttachFile attachFile, String newName, Path path) throws IOException {
+    public void doAttachFile(AttachFile attachFile, String newName, Path path) throws IOException {
         StandardFileSystemManager fileSystemManager = new StandardFileSystemManager();
         FileObject targetFileObject = null;
         FileObject uploadFileObject = null;
@@ -350,6 +367,20 @@ public class FileService {
 
             if (!uploadFileObject.exists()) {
                 uploadFileObject.createFolder();
+            }
+
+            String lowerCaseName = newName.toLowerCase();
+
+            if (lowerCaseName.endsWith(".jpg") || lowerCaseName.endsWith(".png") || lowerCaseName.endsWith(".jpeg")
+                    || lowerCaseName.endsWith(".png") || lowerCaseName.endsWith(".gif")) {
+
+                try {
+                    BufferedImage bimg = ImageIO.read(targetFile);
+                    int width = bimg.getWidth();
+                    int height = bimg.getHeight();
+                    attachFile.setMeta("{\"width\": " + width + ", \"height\":" + height + "}");
+                } catch (IOException ignore) {}
+
             }
 
 
@@ -393,4 +424,9 @@ public class FileService {
         }
 
     }
+
+    public int insert(List<AttachFile> attachFileList) {
+        return fileRepository.insert(attachFileList);
+    }
+
 }

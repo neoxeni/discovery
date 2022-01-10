@@ -1,7 +1,7 @@
 package com.mercury.discovery.config.websocket.handler;
 
 import com.mercury.discovery.base.users.model.TokenUser;
-import com.mercury.discovery.util.JwtTokenProvider;
+import com.mercury.discovery.utils.JwtTokenProvider;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;

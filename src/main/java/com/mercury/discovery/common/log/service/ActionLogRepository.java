@@ -1,9 +1,9 @@
-package com.mercury.discovery.base.log.service;
+package com.mercury.discovery.common.log.service;
 
+import com.mercury.discovery.common.log.security.model.ActionLog;
+import com.mercury.discovery.common.log.security.model.ActionLogRequestDto;
+import com.mercury.discovery.common.log.security.model.ActionLogResponseDto;
 import com.github.pagehelper.Page;
-import com.mercury.discovery.base.log.model.ActionLog;
-import com.mercury.discovery.base.log.model.ActionLogRequestDto;
-import com.mercury.discovery.base.log.model.ActionLogResponseDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.session.ResultHandler;
 import org.springframework.data.domain.Pageable;

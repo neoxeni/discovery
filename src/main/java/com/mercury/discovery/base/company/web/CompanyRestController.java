@@ -5,7 +5,7 @@ import com.mercury.discovery.base.company.service.CompanyService;
 import com.mercury.discovery.base.users.model.AppUser;
 import com.mercury.discovery.common.SimpleResponseModel;
 import com.mercury.discovery.common.error.exception.BadParameterException;
-import com.mercury.discovery.util.MessagesUtils;
+import com.mercury.discovery.utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;

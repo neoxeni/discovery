@@ -1,9 +1,10 @@
 package com.mercury.discovery.common.file.model;
 
+import com.mercury.discovery.utils.ContextUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import com.mercury.discovery.util.ContextUtils;
 import lombok.Data;
 import org.apache.ibatis.type.Alias;
 
@@ -12,9 +13,11 @@ import java.time.LocalDateTime;
 
 @Alias("AttachFile")
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AttachFile implements Serializable {
     private static final long serialVersionUID = 4614761186868238353L;
     private Integer fileNo;
+    private String fileKey;
     private String fileNm;
     private String filePath;
     private long fileSize;
@@ -32,11 +35,12 @@ public class AttachFile implements Serializable {
     private AttachDivCd attachDivCd;
     private String dataNo;
 
-    private int noteNo;
-    private int cmpnyNo;
-
     private String meta;
     private String workType;//INSERT, DELETE
+
+    private Integer regMngrNo;
+
+    private String fileDsc;
 
     // file view url
     // 추후 cloud 환경 등으로 변경될 소지 있음.
@@ -54,6 +58,6 @@ public class AttachFile implements Serializable {
 
         String host = ContextUtils.getEnvironmentProperty("apps.host");
         String requestMapping = ContextUtils.getEnvironmentProperty("apps.request-mapping");
-        return host + requestMapping + "/base/files/view/" + this.fileNo;
+        return host + requestMapping + "/base/files/view/" + this.fileKey;
     }
 }

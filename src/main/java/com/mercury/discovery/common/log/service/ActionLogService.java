@@ -1,11 +1,11 @@
-package com.mercury.discovery.base.log.service;
+package com.mercury.discovery.common.log.service;
 
-import com.github.pagehelper.Page;
-import com.mercury.discovery.base.log.model.ActionLog;
-import com.mercury.discovery.base.log.model.ActionLogRequestDto;
-import com.mercury.discovery.base.log.model.ActionLogResponseDto;
 import com.mercury.discovery.common.log.security.SecurityLog;
-import com.mercury.discovery.util.PagesUtils;
+import com.mercury.discovery.common.log.security.model.ActionLog;
+import com.mercury.discovery.common.log.security.model.ActionLogRequestDto;
+import com.mercury.discovery.common.log.security.model.ActionLogResponseDto;
+import com.mercury.discovery.utils.PagesUtils;
+import com.github.pagehelper.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.ResultHandler;
@@ -55,7 +55,7 @@ public class ActionLogService {
 
         actionLog.setSeqNo(securityLog.getSeqNo());
 
-        actionLog.setEmpNo(securityLog.getEmpNo());
+        actionLog.setUserNo(securityLog.getUserNo());
         actionLog.setIp(securityLog.getIp());
         actionLog.setRegDt(securityLog.getRegDt());
 

@@ -1,7 +1,7 @@
 package com.mercury.discovery.common.excel.model.mapper;
 
 import com.mercury.discovery.common.excel.model.mapper.validator.CellValueValidator;
-import com.mercury.discovery.util.StringFormatUtils;
+import com.mercury.discovery.utils.StringFormatUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.springframework.util.StringUtils;

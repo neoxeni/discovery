@@ -4,7 +4,7 @@ import com.mercury.discovery.base.BaseTopic;
 import com.mercury.discovery.base.organization.service.OrganizationRepository;
 import com.mercury.discovery.base.users.model.*;
 import com.mercury.discovery.config.websocket.message.MessagePublisher;
-import com.mercury.discovery.util.JwtTokenProvider;
+import com.mercury.discovery.utils.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

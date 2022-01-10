@@ -13,12 +13,14 @@ import java.util.List;
 public interface FileRepository {
     List<AttachFile> findFiles(AttachDivCd attachDivCd, String dataNo);
 
-    AttachFile findOne(Integer fileNo);
+    AttachFile findOne(String fileKey);
 
 
     int insert(List<AttachFile> attachFileList);
 
-    int delete(List<Integer> deleteFileList);
+    int delete(List<String> deleteFileList);
 
     List<String> findNotDeletableFileFullPathList(List<String> fileFullPathList);
+
+    int update(List<AttachFile> attachFiles);
 }

@@ -2,7 +2,7 @@ package com.mercury.discovery.common.excel.model.mapper;
 
 import com.mercury.discovery.common.error.exception.InvalidValueException;
 import com.mercury.discovery.common.excel.model.mapper.validator.CellValueValidator;
-import com.mercury.discovery.util.StringFormatUtils;
+import com.mercury.discovery.utils.StringFormatUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;

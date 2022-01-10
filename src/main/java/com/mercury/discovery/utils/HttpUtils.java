@@ -1,4 +1,4 @@
-package com.mercury.discovery.util;
+package com.mercury.discovery.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

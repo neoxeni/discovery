@@ -1,7 +1,7 @@
 package com.mercury.discovery.config;
 
 
-import com.mercury.discovery.util.MessagesUtils;
+import com.mercury.discovery.utils.MessagesUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

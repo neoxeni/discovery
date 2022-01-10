@@ -1,6 +1,6 @@
 package com.mercury.discovery.common.log.security.model;
 
-import com.mercury.discovery.util.ContextUtils;
+import com.mercury.discovery.utils.ContextUtils;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

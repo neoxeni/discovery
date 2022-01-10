@@ -1,14 +1,15 @@
 package com.mercury.discovery.common.log.security;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mercury.discovery.base.log.service.ActionLogService;
 import com.mercury.discovery.base.users.model.AppUser;
 import com.mercury.discovery.common.log.security.model.Action;
 import com.mercury.discovery.common.log.security.model.Configuration;
 import com.mercury.discovery.common.log.security.model.Meta;
 import com.mercury.discovery.common.log.security.model.RequestParam;
+import com.mercury.discovery.common.log.service.ActionLogService;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -16,11 +17,13 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.ui.Model;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartRequest;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
@@ -39,6 +42,7 @@ public class SecurityLogService {
     @PostConstruct
     public void init(){
         mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
     }
 
     public void setInputValueSerializationInclusion(String include) {
@@ -127,10 +131,6 @@ public class SecurityLogService {
                 }
             }
 
-            if(securityLog.getCmpnyNo() == null) {
-                log.warn("securityLog cmpnyNo null => {}", securityLog);
-                return;
-            }
 
             actionLogService.save(securityLog);
 
@@ -167,6 +167,10 @@ public class SecurityLogService {
                 if (arg instanceof MultipartRequest) {
                     //inputMap.put(parameterNames[i], "MultipartRequest");
                 } else if (arg instanceof AppUser) {
+                    //inputMap.put(parameterNames[i], "AppUser");
+                } else if (arg instanceof Model) {
+                    //inputMap.put(parameterNames[i], "AppUser");
+                } else if (arg instanceof HttpServletRequest) {
                     //inputMap.put(parameterNames[i], "AppUser");
                 } else {
                     inputMap.put(parameterNames[i], args[i]);

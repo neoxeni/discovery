@@ -1,4 +1,4 @@
-package com.mercury.discovery.base.log.model;
+package com.mercury.discovery.common.log.security.model;
 
 import com.mercury.discovery.common.log.security.SecurityLog;
 import lombok.Data;

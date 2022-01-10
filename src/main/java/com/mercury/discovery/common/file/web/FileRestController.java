@@ -4,7 +4,7 @@ import com.mercury.discovery.base.users.model.AppUser;
 import com.mercury.discovery.common.file.model.AttachDivCd;
 import com.mercury.discovery.common.file.model.AttachFile;
 import com.mercury.discovery.common.file.service.FileService;
-import com.mercury.discovery.util.FileSystemUtils;
+import com.mercury.discovery.utils.FileSystemUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
@@ -42,16 +42,16 @@ public class FileRestController {
         return ResponseEntity.ok(attachFile);
     }
 
-    @GetMapping("/base/files/{fileNo}")
-    public ResponseEntity<?> getFile(@PathVariable int fileNo) {
-        AttachFile attachFile = fileService.findOne(fileNo);
+    @GetMapping("/base/files/{fileKey}")
+    public ResponseEntity<?> getFile(@PathVariable String fileKey) {
+        AttachFile attachFile = fileService.findOne(fileKey);
         return ResponseEntity.ok(attachFile);
     }
 
-    @GetMapping("/base/files/{fileNo}/download")
-    public ResponseEntity<StreamingResponseBody> download(HttpServletRequest req, @PathVariable int fileNo) {
+    @GetMapping("/base/files/{fileKey}/download")
+    public ResponseEntity<StreamingResponseBody> download(HttpServletRequest req, @PathVariable String fileKey) {
 
-        AttachFile attachFile = fileService.findOne(fileNo);
+        AttachFile attachFile = fileService.findOne(fileKey);
         StreamingResponseBody responseBody = outputStream -> FileSystemUtils.write(attachFile, outputStream);
 
         return ResponseEntity.ok()
@@ -64,7 +64,6 @@ public class FileRestController {
     public ResponseEntity<?> postFiles(AppUser appUser, MultipartHttpServletRequest request) throws IOException {
 
         LocalDateTime now = LocalDateTime.now();
-        int cmpnyNo = appUser.getCmpnyNo();
 
         List<AttachFile> fileList = new ArrayList<>();
 
@@ -90,12 +89,12 @@ public class FileRestController {
 
             AttachFile attachFile = new AttachFile();
             attachFile.setFileNm(tempFileName);
-            attachFile.setFilePath(fileService.getFilePath(cmpnyNo));
+            attachFile.setFilePath(fileService.getFilePath());
             attachFile.setFileSize(size);
             attachFile.setExtNm(ext);
             attachFile.setUserFileNm(oriFileName);
-            attachFile.setCmpnyNo(appUser.getCmpnyNo());
             attachFile.setWorkType("INSERT");
+            attachFile.setRegMngrNo(appUser.getUserNo());
 
             if (meta != null && meta.length >= index) {
                 attachFile.setMeta(meta[index]);
@@ -105,7 +104,7 @@ public class FileRestController {
 
             AttachDivCd attachDivCd = AttachDivCd.fromString(request.getParameter("attachDivCd"));
 
-            if (attachDivCd == AttachDivCd.ISMAAT34) {
+            if (attachDivCd == AttachDivCd.EDITOR) {
                 // 에디터 이미지 첨부일때만 save 처리
                 fileService.save(attachDivCd, request.getParameter("dataNo"), fileList, true);
             }
@@ -117,17 +116,17 @@ public class FileRestController {
     }
 
     @GetMapping("/base/files/delete")
-    public ResponseEntity<?> deleteFiles(@RequestParam(required = false) Integer fileNo,
+    public ResponseEntity<?> deleteFiles(@RequestParam(required = false) String fileKey,
                                          @RequestParam(required = false) AttachDivCd attachDivCd,
                                          @RequestParam(required = false) String dataNo
     ) {
 
-        log.debug("delete request for fileNo={}, attachDivCd={}, dataNo={}", fileNo, attachDivCd, dataNo);
+        log.debug("delete request for fileKey={}, attachDivCd={}, dataNo={}", fileKey, attachDivCd, dataNo);
 
         List<AttachFile> attachFiles;
-        if (fileNo != null) {
+        if (fileKey != null) {
             attachFiles = new ArrayList<>();
-            AttachFile attachFile = fileService.findOne(fileNo);
+            AttachFile attachFile = fileService.findOne(fileKey);
             if (attachFile != null) {
                 attachFiles.add(attachFile);
             }
@@ -142,10 +141,10 @@ public class FileRestController {
         return ResponseEntity.accepted().build();
     }
 
-    @GetMapping(value = "/base/files/view/{fileNo}")
-    public ResponseEntity<StreamingResponseBody> view(@PathVariable int fileNo) throws IOException, URISyntaxException {
+    @GetMapping(value = "/base/files/view/{fileKey}")
+    public ResponseEntity<StreamingResponseBody> view(@PathVariable String fileKey) throws IOException, URISyntaxException {
 
-        AttachFile attachFile = fileService.findOne(fileNo);
+        AttachFile attachFile = fileService.findOne(fileKey);
 
         if (fileService.getFileSystemScheme().isSupportExternalUrl()) {
             URI redirectUri = new URI(attachFile.getUrl());

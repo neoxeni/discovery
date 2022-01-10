@@ -1,4 +1,4 @@
-package com.mercury.discovery.base.log.model;
+package com.mercury.discovery.common.log.security.model;
 
 import lombok.Data;
 
@@ -6,12 +6,12 @@ import java.time.LocalDateTime;
 
 @Data
 public class ActionLogRequestDto {
-    private Integer cmpnyNo;
     private LocalDateTime startedAt;
     private LocalDateTime endedAt;
 
+    private Integer cmpnyNo;
     private String divCd;
-    private String empNm;
+    private String userNm;
     private String userId;
     private String ip;
 }

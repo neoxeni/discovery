@@ -1,6 +1,6 @@
 package com.mercury.discovery.base.company.model;
 
-import com.mercury.discovery.util.MessagesUtils;
+import com.mercury.discovery.utils.MessagesUtils;
 
 public enum CompanyStatus {
 

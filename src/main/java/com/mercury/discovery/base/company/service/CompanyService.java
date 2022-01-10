@@ -2,8 +2,8 @@ package com.mercury.discovery.base.company.service;
 
 import com.mercury.discovery.base.company.model.Company;
 import com.mercury.discovery.base.company.model.CompanyRequestDto;
-import com.mercury.discovery.util.AESUtils;
-import com.mercury.discovery.util.ContextUtils;
+import com.mercury.discovery.utils.AESUtils;
+import com.mercury.discovery.utils.ContextUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;

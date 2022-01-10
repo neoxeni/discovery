@@ -1,28 +1,22 @@
 package com.mercury.discovery.common;
 
 public class SimpleResponseModel {
-    private int affected;
-    private String message;
-    private Object object;
+    private final int affected;
+    private final String message;
+    private final Object object;
 
     public SimpleResponseModel(int affected) {
-        this.affected = affected;
-        if (affected > 0) {
-            this.message = "처리되었습니다.";
-        } else {
-            this.message = "처리되었습니다...";
-        }
+        this(affected, "처리되었습니다.");
     }
 
     public SimpleResponseModel(int affected, String message) {
-        this.affected = affected;
-        this.message = message;
+        this(affected, message, null);
     }
 
-    public SimpleResponseModel(int affected, Object object, String message) {
+    public SimpleResponseModel(int affected, String message, Object object) {
         this.affected = affected;
-        this.object = object;
         this.message = message;
+        this.object = object;
     }
 
     public int getAffected() {
@@ -42,6 +36,7 @@ public class SimpleResponseModel {
         return "SimpleResponseModel{" +
                 "affected=" + affected +
                 ", message='" + message + '\'' +
+                ", object=" + object +
                 '}';
     }
 }

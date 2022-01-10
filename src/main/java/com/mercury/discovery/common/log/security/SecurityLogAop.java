@@ -11,10 +11,12 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
+import org.springframework.core.io.Resource;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -31,9 +33,11 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.Locale;
@@ -49,11 +53,15 @@ public class SecurityLogAop {
 
     private final Environment environment;
     private final SecurityLogService securityLogService;
+    private final ApplicationContext applicationContext;
+
+
 
     @Value("${apps.actionLogInfoFile:classpath:action-log.xml}")
     private String actionLogInfoFile;
     private Configuration configuration;
     private AntPathMatcher antPathMatcher;
+
 
     @PostConstruct
     public void init() {
@@ -68,17 +76,22 @@ public class SecurityLogAop {
                 physicalFile = ResourceUtils.getFile(actionLogInfoFile);
             }
 
-            log.info("actionLogInfoFile = {}, isFile = {}", physicalFile, physicalFile != null ? physicalFile.isFile() : false);
-
-            if (physicalFile != null && physicalFile.exists() && physicalFile.isFile()) {
-                configuration = (Configuration) unmarshaller.unmarshal(physicalFile);
+            if(physicalFile == null) {
+                Resource stateResource = applicationContext.getResource(actionLogInfoFile);
+                try(InputStream is = stateResource.getInputStream()) {
+                    configuration = (Configuration) unmarshaller.unmarshal(is);
+                }
+            }else {
+                log.info("actionLogInfoFile = {}, isFile = {}", physicalFile, physicalFile.isFile());
+                if (physicalFile != null && physicalFile.exists() && physicalFile.isFile()) {
+                    configuration = (Configuration) unmarshaller.unmarshal(physicalFile);
+                }
             }
-
-            if (configuration != null && configuration.getRequestParam() != null) {
+            if(configuration != null && configuration.getRequestParam() != null) {
                 securityLogService.setInputValueSerializationInclusion(configuration.getRequestParam().getIncludeValue());
             }
 
-            log.info("[SecurityLogAop] Configuration\n{}", configuration);
+            log.info("[SecurityLogAop] Configuration\n{}",configuration);
 
         } catch (IOException | JAXBException ioe) {
             log.warn("actionLogInfoFile is invalid. file={}\nerror={}", actionLogInfoFile, ioe);
@@ -94,7 +107,7 @@ public class SecurityLogAop {
             "|| execution(@org.springframework.web.bind.annotation.PutMapping public * *(..))")
     public Object logPerf(ProceedingJoinPoint joinPoint) throws Throwable {
 
-        if (configuration == null) {
+        if(configuration == null) {
             return joinPoint.proceed();
         }
 
@@ -112,7 +125,7 @@ public class SecurityLogAop {
         }
 
         Action requestAction = getRequestAction(joinPoint, joinPoint.getTarget().getClass());
-        if (configuration.isExclude(antPathMatcher, requestAction)) {
+        if(configuration.isExclude(antPathMatcher, requestAction)) {
             return joinPoint.proceed();
         }
 
@@ -167,8 +180,7 @@ public class SecurityLogAop {
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if ((principal instanceof UserDetails)) {
                 AppUser appUser = (AppUser) principal;
-                securityLog.setEmpNo(appUser.getEmpNo());
-                securityLog.setCmpnyNo(appUser.getCmpnyNo());
+                securityLog.setUserNo(appUser.getUserNo());
             }
         }
     }

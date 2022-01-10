@@ -10,8 +10,8 @@ import com.mercury.discovery.base.users.model.AppUser;
 import com.mercury.discovery.base.users.model.UserRole;
 import com.mercury.discovery.common.SimpleResponseModel;
 import com.mercury.discovery.common.model.CamelMap;
-import com.mercury.discovery.util.IDGenerator;
-import com.mercury.discovery.util.MessagesUtils;
+import com.mercury.discovery.utils.IDGenerator;
+import com.mercury.discovery.utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -134,7 +134,7 @@ public class OrganizationRestController {
         codeService.setDefault("OR02", cmpnyNo, appUser.getEmpNo(), posts);
         codeService.deleteCodesByDivCd(cmpnyNo,"OR02");
         int affected = posts.stream().mapToInt(codeService::insert).sum();
-        return ResponseEntity.ok(new SimpleResponseModel(affected, posts, MessagesUtils.getMessage("sentence.update")));
+        return ResponseEntity.ok(new SimpleResponseModel(affected, MessagesUtils.getMessage("sentence.update"), posts));
     }
 
     //직책(OR01)
@@ -145,7 +145,7 @@ public class OrganizationRestController {
         codeService.setDefault("OR01", cmpnyNo, appUser.getEmpNo(), jobs);
         codeService.deleteCodesByDivCd(cmpnyNo,"OR01");
         int affected = jobs.stream().mapToInt(codeService::insert).sum();
-        return ResponseEntity.ok(new SimpleResponseModel(affected, jobs, MessagesUtils.getMessage("sentence.update")));
+        return ResponseEntity.ok(new SimpleResponseModel(affected, MessagesUtils.getMessage("sentence.update"), jobs));
     }
 
     @PatchMapping("/base/organizations/departments/change")

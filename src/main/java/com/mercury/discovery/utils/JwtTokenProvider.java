@@ -1,4 +1,4 @@
-package com.mercury.discovery.util;
+package com.mercury.discovery.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercury.discovery.base.users.model.TokenUser;

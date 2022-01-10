@@ -1,4 +1,4 @@
-package com.mercury.discovery.util;
+package com.mercury.discovery.utils;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
