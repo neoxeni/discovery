@@ -1,0 +1,53 @@
+server:
+    port: 8081
+    servlet:
+        encoding:
+            charset: UTF-8
+            force: true
+            enabled: true
+spring:
+    profiles:
+        active: discovery, local         #discovery는 필수, 나머지는 상황에 따라..
+    main:
+        allow-circular-references: true
+
+ENV:
+    SPRING_MAIL_HOST: smtp.gmail.com
+    SPRING_MAIL_PORT: 587
+    SPRING_MAIL_USERNAME: skylab@mercuryproject.com
+    SPRING_MAIL_PASSWORD: MPDev123!
+
+    DATASOURCE_DIALECT: mysql       #mysql, oracle
+    DATASOURCE_DRIVER_CLASS_NAME: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+    DATASOURCE_JDBC_URL: jdbc:log4jdbc:mysql://34.64.204.168:3306/LittleJoe_Dev?allowMultiQueries=true
+    DATASOURCE_USER_NAME: mp_admin
+    DATASOURCE_USER_PASSWORD: 1q2w3e4r%T
+    DATASOURCE_POOL_SIZE: 5
+
+    REDIS_HOST: 34.64.204.168
+    REDIS_PORT: 6001
+    REDIS_PASSWORD:
+
+    APPS_REQUEST_MAPPING: /api/v2
+    APPS_HOST: http://localhost:${server.port}
+    APPS_MODE: on-premise
+
+    APPS_API_HOST: https://moca-nexus-dev.ubicus.co.kr
+    APPS_ENCRYPTION_KEY: ENC(Hkolyo7gXulS+kALO5yRUAdmjp+BaZG1KIHCldKDvy0=)
+
+    # 서버 응답 압축관련
+    SERVER_COMPRESSION_ENABLED: false
+    SERVER_COMPRESSION_MIMETYPES: application/json,application/javascript
+    SERVER_COMPRESSION_MINSIZE: 1024
+
+
+---
+spring:
+    config:
+        activate:
+            on-profile: local
+    devtools:
+        restart:
+            enabled: true
+        livereload:
+            enabled: true

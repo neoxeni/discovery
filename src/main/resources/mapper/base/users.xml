@@ -1,0 +1,500 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mercury.discovery.base.users.service.UserRepository">
+
+    <sql id="user_all">
+        'AGENT' AS user_type,
+        ${l}.user_id AS id,
+        ${e}.emp_no AS user_no,
+        <choose>
+            <when test="_databaseId == 'oracle'">
+                NVL(${e}.real_emp_nm,${e}.emp_nm) AS name,
+                (SELECT presence FROM (SELECT presence , (RANK() OVER(ORDER BY id DESC)) ROWNUMS FROM tb_ir_agent_presence_history WHERE created_by = ${e}.user_key AND ROWNUM = 1 )) AS presence,
+                (SELECT created_at FROM (SELECT created_at, (RANK() OVER(ORDER BY id DESC)) ROWNUMS  FROM tb_ir_agent_presence_history WHERE created_by = ${e}.user_key AND ROWNUM = 1 )) AS presence_at,
+            </when>
+            <otherwise>
+                IFNULL(${e}.real_emp_nm,${e}.emp_nm) AS name,
+                (SELECT presence FROM tb_ir_agent_presence_history WHERE created_by = ${e}.user_key ORDER BY id DESC limit 1) AS presence,
+                (SELECT created_at FROM tb_ir_agent_presence_history WHERE created_by = ${e}.user_key ORDER BY id DESC limit 1) AS presence_at,
+            </otherwise>
+        </choose>
+
+        ${l}.psswd_err_num,
+        ${l}.psswd_upd_dt,
+        ${l}.last_login_dt,
+        ${l}.last_logout_dt,
+        ${l}.last_ip_address,
+
+        ${e}.emp_no,
+        ${e}.cmpny_emp_cd,
+        ${e}.dept_no,
+        ${e}.emp_nm,
+        ${e}.ext_tel_no,
+        ${e}.hire_dd,
+        ${e}.rtrmnt_yn,
+        ${e}.rtrmnt_dd,
+        ${e}.reg_emp_no,
+        ${e}.reg_dt,
+        ${e}.upd_emp_no,
+        ${e}.upd_dt,
+        ${e}.phone_user_id,
+        ${e}.phone_user_tel,
+        ${e}.postn_cd,
+        ${e}.duty_cd,
+        ${e}.cmpny_no,
+        ${e}.emp_sort,
+        ${e}.phone_extension_no,
+        ${e}.email,
+
+        ${e}.emp_tp,
+        ${e}.real_emp_nm,
+        ${e}.user_key,
+
+        ${dept}.dept_nm,
+        ${postn}.cd_nm as postn_nm,
+        ${duty}.cd_nm as duty_nm,
+        ${dept}.dept_cd
+    </sql>
+
+    <!--로그인 전용-->
+    <select id="findByUserIdForLogin" resultType="AppUser">
+        SELECT
+        <include refid="user_all">
+            <property name="e" value="e"/>
+            <property name="l" value="l"/>
+            <property name="dept" value="dept"/>
+            <property name="postn" value="postn"/>
+            <property name="duty" value="duty"/>
+        </include>
+        ,psswd
+        ,c.status status
+        FROM tb_cmm_emp e
+            JOIN tb_cmm_login l ON e.emp_no = l.emp_no
+            JOIN tb_cmm_company c ON e.cmpny_no = c.cmpny_no
+            LEFT OUTER JOIN tb_cmm_dept dept ON e.dept_no = dept.dept_no
+            LEFT OUTER JOIN tb_cmm_code postn ON e.postn_cd = postn.cd AND postn.cmpny_no = e.cmpny_no AND postn.div_cd = 'OR02'
+            LEFT OUTER JOIN tb_cmm_code duty ON e.duty_cd = duty.cd  AND duty.cmpny_no = e.cmpny_no AND duty.div_cd = 'OR01'
+        WHERE l.user_id = #{userId}
+        AND c.cmpny_id = #{cmpnyId}
+    </select>
+
+    <select id="findByUserKey" resultType="AppUser">
+        SELECT
+        <include refid="user_all">
+            <property name="e" value="e"/>
+            <property name="l" value="l"/>
+            <property name="dept" value="dept"/>
+            <property name="postn" value="postn"/>
+            <property name="duty" value="duty"/>
+        </include>
+        FROM tb_cmm_emp e
+            JOIN tb_cmm_login l ON e.emp_no = l.emp_no
+            LEFT OUTER JOIN tb_cmm_dept dept ON e.dept_no = dept.dept_no
+            LEFT OUTER JOIN tb_cmm_code postn ON e.postn_cd = postn.cd AND postn.cmpny_no = e.cmpny_no  AND postn.div_cd = 'OR02'
+            LEFT OUTER JOIN tb_cmm_code duty ON e.duty_cd = duty.cd  AND duty.cmpny_no = e.cmpny_no AND duty.div_cd = 'OR01'
+        WHERE e.user_key = #{userKey}
+    </select>
+
+    <select id="findByUserId" resultType="AppUser">
+        SELECT
+        <include refid="user_all">
+            <property name="e" value="e"/>
+            <property name="l" value="l"/>
+            <property name="dept" value="dept"/>
+            <property name="postn" value="postn"/>
+            <property name="duty" value="duty"/>
+        </include>
+        FROM tb_cmm_emp e
+        JOIN tb_cmm_login l ON e.emp_no = l.emp_no
+        LEFT OUTER JOIN tb_cmm_dept dept ON e.dept_no = dept.dept_no
+        LEFT OUTER JOIN tb_cmm_code postn ON e.postn_cd = postn.cd AND postn.cmpny_no = e.cmpny_no  AND postn.div_cd = 'OR02'
+        LEFT OUTER JOIN tb_cmm_code duty ON e.duty_cd = duty.cd  AND duty.cmpny_no = e.cmpny_no AND duty.div_cd = 'OR01'
+        WHERE l.user_id = #{userId}
+    </select>
+
+    <select id="find" resultType="AppUser">
+        SELECT  <include refid="user_all">
+        <property name="e" value="e"/>
+        <property name="l" value="l"/>
+        <property name="dept" value="dept"/>
+        <property name="postn" value="postn"/>
+        <property name="duty" value="duty"/>
+        </include>
+        FROM tb_cmm_emp e
+            JOIN tb_cmm_login l ON e.emp_no = l.emp_no
+            LEFT OUTER JOIN tb_cmm_dept dept ON e.dept_no = dept.dept_no
+            LEFT OUTER JOIN tb_cmm_code postn ON e.postn_cd = postn.cd AND postn.cmpny_no = e.cmpny_no  AND postn.div_cd = 'OR02'
+            LEFT OUTER JOIN tb_cmm_code duty ON e.duty_cd = duty.cd AND duty.cmpny_no = e.cmpny_no AND duty.div_cd = 'OR01'
+        WHERE e.cmpny_no = #{cmpnyNo}
+        <choose>
+            <when test="empNo != null">
+                AND e.emp_no = #{empNo}
+            </when>
+            <when test="grpCd != null">
+                AND e.emp_no IN (
+                    SELECT
+                        b.data_no as emp_no
+                    FROM tb_cmm_group a
+                        JOIN tb_cmm_group_map b on a.grp_no  = b.grp_no
+                    WHERE a.cmpny_no = #{cmpnyNo}
+                    AND a.grp_cd = #{grpCd}
+                    AND b.data_gbn = 'E'
+
+                    UNION ALL
+
+                    SELECT
+                        emp_no
+                    FROM tb_cmm_emp
+                    WHERE dept_no IN (
+                        SELECT
+                            b.data_no
+                        FROM tb_cmm_group a
+                            JOIN tb_cmm_group_map b on a.grp_no  = b.grp_no
+                        WHERE a.cmpny_no = #{cmpnyNo}
+                        AND a.grp_cd = #{grpCd}
+                        AND b.data_gbn = 'D'
+                    )
+                )
+            </when>
+        </choose>
+
+        <if test="empNm != null">
+            AND e.emp_nm = #{empNm}
+        </if>
+    </select>
+
+    <select id="findUserKeysByCmpnyNo" resultType="String">
+        SELECT
+            user_key
+        FROM tb_cmm_emp
+        WHERE cmpny_no = #{cmpnyNo}
+    </select>
+
+    <select id="findAgentUserKeysByCmpnyNo" resultType="String">
+        SELECT
+            user_key
+        FROM tb_cmm_emp
+        WHERE emp_no IN (
+            SELECT b.data_no
+            FROM tb_cmm_group a JOIN tb_cmm_group_map b ON a.grp_no  = b.grp_no
+            WHERE a.cmpny_no = #{cmpnyNo}
+              AND a.grp_cd LIKE CONCAT('CNSLT_','%')
+              AND b.data_gbn = 'E'
+        )
+
+        UNION
+
+        SELECT
+            user_key
+        FROM tb_cmm_emp
+        WHERE dept_no IN (
+            SELECT b.data_no
+            FROM tb_cmm_group a JOIN tb_cmm_group_map b on a.grp_no  = b.grp_no
+            WHERE a.cmpny_no = #{cmpnyNo}
+              AND a.grp_cd LIKE CONCAT('CNSLT_','%')
+              AND b.data_gbn = 'D'
+        )
+    </select>
+
+    <select id="findRolesByEmpNo" resultType="UserRole">
+        SELECT cg.grp_no, cg.grp_cd, cg.grp_nm, cgm.map_no, cgm.data_gbn, cgm.data_no, cg.cmpny_no
+        FROM tb_cmm_group_map cgm JOIN tb_cmm_group cg ON cgm.grp_no = cg.grp_no
+        WHERE data_gbn = 'E'
+        AND data_no = #{empNo}
+    </select>
+
+    <select id="findAppRolesByEmpNo" resultType="UserAppRole">
+        SELECT ag.app_grp_no, ag.app_grp_cd, ag.app_grp_nm, agm.map_no, agm.data_gbn, agm.data_no, ag.cmpny_no
+        FROM tb_cmm_app_group_map agm JOIN tb_cmm_app_group ag ON agm.app_grp_no = ag.app_grp_no
+        WHERE data_gbn = 'E'
+        AND data_no = #{empNo}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="empNo">
+        <selectKey keyProperty="empNo" resultType="int" order="BEFORE" databaseId="oracle">
+            SELECT sq_cmm_emp.NEXTVAL FROM DUAL
+        </selectKey>
+
+        INSERT INTO tb_cmm_emp(emp_no,
+            dept_no, emp_nm, ext_tel_no, hire_dd
+            , rtrmnt_yn, rtrmnt_dd, reg_emp_no, reg_dt, phone_user_id, phone_user_tel, phone_extension_no
+            ,postn_cd, duty_cd, cmpny_no, emp_sort, email, emp_tp, real_emp_nm, user_key
+        ) VALUES ( #{empNo},
+            #{deptNo}, #{empNm}, #{extTelNo}, #{hireDd},
+            #{rtrmntYn}, #{rtrmntDd}, #{regEmpNo}, #{regDt}, #{phoneUserId}, #{phoneUserTel}, #{phoneExtensionNo}
+            , #{postnCd}, #{dutyCd}, #{cmpnyNo}, #{empSort}, #{email}, #{empTp}, #{realEmpNm}, #{userKey}
+        )
+    </insert>
+
+    <insert id="insertLogin">
+        INSERT INTO tb_cmm_login
+        ( user_id, psswd, psswd_err_num, emp_no )
+        VALUES
+        ( #{id},#{psswd},0 ,#{empNo})
+    </insert>
+
+    <insert id="insertLoginHistory">
+
+        INSERT INTO tb_cmm_login_hist ( hist_no,
+            user_id, login_dt, client_ip, cmpny_no
+        )VALUES(<include refid="common.sql.seq"><property name="t" value="sq_cmm_login_hist"/></include>,
+            #{id}, <include refid="common.sql.now"/> ,#{lastIpAddress}, #{cmpnyNo}
+        )
+    </insert>
+
+    <insert id="insertLogoutHistory">
+        INSERT INTO tb_cmm_logout_hist ( hist_no,
+            user_id, logout_dt, cmpny_no)
+        VALUES(<include refid="common.sql.seq"><property name="t" value="sq_cmm_logout_hist"/></include>,
+            #{id}, <include refid="common.sql.now"/>, #{cmpnyNo}
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE tb_cmm_emp SET
+        cmpny_emp_cd = #{cmpnyEmpCd}
+        , dept_no = #{deptNo}
+        , emp_nm = #{empNm}
+        , ext_tel_no = #{extTelNo}
+        , hire_dd = #{hireDd}
+        , rtrmnt_yn = #{rtrmntYn}
+        , rtrmnt_dd = #{rtrmntDd}
+        , upd_emp_no = #{updEmpNo}
+        , upd_dt  = #{updDt}
+        , phone_user_id = #{phoneUserId}
+        , phone_user_tel = #{phoneUserTel}
+        , phone_extension_no = #{phoneExtensionNo}
+        , postn_cd = #{postnCd}
+        , duty_cd = #{dutyCd}
+        , emp_sort = #{empSort}
+        , email = #{email}
+        , emp_tp = #{empTp}
+        , real_emp_nm = #{realEmpNm}
+        WHERE emp_no = #{empNo}
+        AND cmpny_no= #{cmpnyNo}
+    </update>
+
+    <update id="updateLoginInfo">
+        UPDATE tb_cmm_login SET
+            psswd_err_num = 0,
+            last_login_dt = #{lastLoginDt},
+            last_ip_address = #{lastIpAddress}
+        WHERE emp_no = #{empNo}
+    </update>
+
+    <update id="updateLoginId">
+        UPDATE tb_cmm_login SET
+            user_id = #{userId}
+        WHERE emp_no = #{empNo}
+    </update>
+
+    <update id="updateLogoutInfo">
+        UPDATE tb_cmm_login SET
+            last_logout_dt = #{lastLogoutDt}
+        WHERE emp_no = #{empNo}
+    </update>
+
+    <update id="plusPsswdErrNum">
+        <selectKey keyProperty="psswdErrNum" resultType="int" order="AFTER">
+            SELECT psswd_err_num FROM tb_cmm_login WHERE emp_no = #{empNo}
+        </selectKey>
+
+        UPDATE tb_cmm_login SET
+            psswd_err_num = psswd_err_num + 1
+        WHERE emp_no = #{empNo}
+    </update>
+
+    <update id="resetPassword">
+        UPDATE tb_cmm_login SET
+            psswd = #{psswd},
+            psswd_err_num = 0,
+            psswd_upd_dt = #{psswdUpdDt}
+        WHERE emp_no = #{empNo}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM tb_cmm_emp
+        WHERE emp_no = #{empNo}
+        AND cmpny_no = #{cmpnyNo}
+    </delete>
+
+    <update id="resetPasswordCnt">
+        UPDATE tb_cmm_login SET
+            psswd_err_num = 0,
+            psswd_upd_dt = <include refid="common.sql.now"/>
+        WHERE emp_no = #{empNo}
+    </update>
+
+    <!--로그인 전용-->
+    <select id="findByUserEmail" resultType="AppUser">
+        SELECT
+        <include refid="user_all">
+            <property name="e" value="e"/>
+            <property name="l" value="l"/>
+            <property name="dept" value="dept"/>
+            <property name="postn" value="postn"/>
+            <property name="duty" value="duty"/>
+        </include>
+        ,psswd
+        FROM tb_cmm_emp e
+        JOIN tb_cmm_login l ON e.emp_no = l.emp_no
+        LEFT OUTER JOIN tb_cmm_dept dept ON e.dept_no = dept.dept_no
+        LEFT OUTER JOIN tb_cmm_code postn ON e.postn_cd = postn.cd AND postn.cmpny_no = e.cmpny_no AND postn.div_cd = 'OR02'
+        LEFT OUTER JOIN tb_cmm_code duty ON e.duty_cd = duty.cd AND duty.cmpny_no = e.cmpny_no AND duty.div_cd = 'OR01'
+        WHERE e.email = #{email}
+        LIMIT 1
+    </select>
+
+
+    <!--로그인 전용-->
+    <select id="findByUserEmailWithCmpnyId" resultType="AppUser">
+
+        SELECT
+        <include refid="user_all">
+            <property name="e" value="e"/>
+            <property name="l" value="l"/>
+            <property name="dept" value="dept"/>
+            <property name="postn" value="postn"/>
+            <property name="duty" value="duty"/>
+        </include>
+        ,psswd
+        FROM tb_cmm_emp e
+        JOIN tb_cmm_login l ON e.emp_no = l.emp_no
+        JOIN tb_cmm_company c ON e.cmpny_no = c.cmpny_no
+        LEFT OUTER JOIN tb_cmm_dept dept ON e.dept_no = dept.dept_no
+        LEFT OUTER JOIN tb_cmm_code postn ON e.postn_cd = postn.cd AND postn.cmpny_no = e.cmpny_no AND postn.div_cd = 'OR02'
+        LEFT OUTER JOIN tb_cmm_code duty ON e.duty_cd = duty.cd  AND duty.cmpny_no = e.cmpny_no AND duty.div_cd = 'OR01'
+        WHERE e.email = #{email}
+        AND c.cmpny_id = #{cmpnyId}
+    </select>
+
+    <select id="getEmail" resultType="String">
+        SELECT a.email
+        FROM tb_cmm_emp a,
+            tb_cmm_company b
+        WHERE a.cmpny_no = b.cmpny_no
+        AND rtrmnt_yn = 'N'
+        AND a.email = #{email}
+        AND b.cmpny_id = #{cmpnyId}
+    </select>
+
+    <select id="getEmailForDomain" resultType="String">
+        SELECT a.email
+        FROM tb_cmm_emp a
+        WHERE 1=1
+        AND rtrmnt_yn = 'N'
+        AND a.email = #{email}
+        LIMIT 1
+    </select>
+
+    <select id="getUserId" resultType="String">
+        SELECT user_id
+        FROM tb_cmm_login a,
+            tb_cmm_emp b,
+            tb_cmm_company c
+        WHERE a.emp_no = b.emp_no
+        AND b.cmpny_no = c.cmpny_no
+        AND b.rtrmnt_yn = 'N'
+        AND a.user_id = #{userId}
+        AND c.cmpny_id = #{cmpnyId}
+    </select>
+
+    <select id="findDeptEmpList" resultType="AppUser">
+        SELECT
+        <include refid="user_all">
+            <property name="e" value="e"/>
+            <property name="l" value="l"/>
+            <property name="dept" value="dept"/>
+            <property name="postn" value="postn"/>
+            <property name="duty" value="duty"/>
+        </include>
+        FROM tb_cmm_emp e
+        JOIN tb_cmm_login l ON e.emp_no = l.emp_no
+        LEFT OUTER JOIN tb_cmm_dept dept ON e.dept_no = dept.dept_no
+        LEFT OUTER JOIN tb_cmm_code postn ON e.postn_cd = postn.cd AND postn.cmpny_no = e.cmpny_no  AND postn.div_cd = 'OR02'
+        LEFT OUTER JOIN tb_cmm_code duty ON e.duty_cd = duty.cd  AND duty.cmpny_no = e.cmpny_no AND duty.div_cd = 'OR01'
+        WHERE e.dept_no = #{deptCd}
+        AND e.cmpny_no = #{cmpnyNo}
+        AND e.rtrmnt_yn = #{rtrmntYn}
+        ORDER BY e.emp_nm
+
+    </select>
+
+    <insert id="insertUserPresenceHistory">
+        INSERT INTO tb_ir_agent_presence_history(id,
+            presence, created_by, created_at
+        ) VALUES( <include refid="common.sql.seq"><property name="t" value="sq_ir_agent_presence_history"/></include>,
+            #{presence}, #{userKey}, #{presenceAt}
+        )
+    </insert>
+
+    <insert id="insertUserSettings">
+        INSERT INTO tb_ir_agent
+            (user_key, emp_no, chat_accept_auto_yn, chat_accept_max_cnt)
+        VALUES
+            (#{userKey}, #{userNo}, #{chatAcceptAutoYn}, #{chatAcceptMaxCnt})
+    </insert>
+
+    <update id="updateUserSettings">
+        UPDATE tb_ir_agent SET
+        user_key = #{userKey}
+        <if test="chatAcceptMaxCnt != null">
+            ,chat_accept_max_cnt = #{chatAcceptMaxCnt}
+        </if>
+        <if test="chatAcceptAutoYn != null">
+            ,chat_accept_auto_yn = #{chatAcceptAutoYn}
+        </if>
+        WHERE user_key = #{userKey}
+    </update>
+
+    <update id="updateConversationUserInfo">
+        UPDATE tb_cmm_emp SET
+        upd_emp_no = #{updEmpNo}
+        , upd_dt  = <include refid="common.sql.now"/>
+        <if test="extTelNo != null">
+        , ext_tel_no = #{extTelNo}
+        </if>
+        <if test="phoneUserId != null">
+        , phone_user_id = #{phoneUserId}
+        </if>
+        <if test="phoneUserTel != null">
+        , phone_user_tel = #{phoneUserTel}
+        </if>
+        <if test="phoneExtensionNo != null">
+        , phone_extension_no = #{phoneExtensionNo}
+        </if>
+        <if test="email != null">
+        , email = #{email}
+        </if>
+        WHERE cmpny_no= #{cmpnyNo}
+        AND user_key = #{userKey}
+    </update>
+
+    <select id="findConversationUserList" resultType="AppUser">
+        SELECT emp_no, emp_nm, user_key, ext_tel_no, phone_user_id, phone_user_tel, phone_extension_no, email
+        FROM tb_cmm_emp
+        WHERE cmpny_no = #{cmpnyNo}
+        <choose>
+            <when test="phoneUserId != null">
+                AND phone_user_id = #{phoneUserId}
+            </when>
+            <when test="phoneUserTel != null">
+                AND phone_user_tel = #{phoneUserTel}
+            </when>
+            <when test="extTelNo != null">
+                AND ext_tel_no = #{extTelNo}
+            </when>
+            <when test="phoneExtensionNo != null">
+                AND phone_extension_no = #{phoneExtensionNo}
+            </when>
+            <when test="email != null">
+                AND email = #{email}
+            </when>
+            <otherwise>
+                AND user_key = #{userKey}
+            </otherwise>
+        </choose>
+    </select>
+
+
+</mapper>

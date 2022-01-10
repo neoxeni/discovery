@@ -1,0 +1,131 @@
+#https://docs.spring.io/spring-boot/docs/current/reference/html/appendix-application-properties.html
+server:
+    tomcat:
+        max-swallow-size: -1        #https://stackoverflow.com/questions/2689989/how-to-handle-maxuploadsizeexceededexception
+        remoteip:
+            remote-ip-header: "x-forwarded-for"
+            protocol-header: "x-forwarded-proto"
+    servlet:
+        encoding:
+            charset: UTF-8
+            enabled: true
+            force: true
+        session:
+            timeout: ${ENV.SERVER_SESSION_TIMEOUT:1440m}
+    compression:
+        enabled: ${ENV.SERVER_COMPRESSION_ENABLED:true}
+        mime-types: ${ENV.SERVER_COMPRESSION_MIMETYPES:application/json}
+        min-response-size: ${ENV.SERVER_COMPRESSION_MINSIZE:2048}
+
+spring:
+    devtools:
+        restart:
+            enabled: false
+        livereload:
+            enabled: false
+    h2:
+        console:
+            enabled: false
+    main:
+        allow-bean-definition-overriding: true  #for SessionLocaleResolver
+    mvc:
+        static-path-pattern: /static/**
+    thymeleaf:
+        prefix: classpath:/templates/
+        suffix: .html
+        cache: false
+        mode: HTML
+        encoding: UTF-8
+        view-names: thymeleaf/*
+    mail:
+        host: ${ENV.SPRING_MAIL_HOST:}
+        port: ${ENV.SPRING_MAIL_PORT:-1}
+        username: ${ENV.SPRING_MAIL_USERNAME:}
+        password: ${ENV.SPRING_MAIL_PASSWORD:}
+        properties:
+            mail:
+                debug: false
+                mime:
+                    charset: UTF-8
+                transport:
+                    protocol: smtp
+                smtp:
+                    connectiontimeout: 5000
+                    writetimeout: 5000
+                    auth: true
+                    starttls:
+                        enable: true
+    jpa-not-use:
+        open-in-view: false
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.MariaDBDialect
+                show_sql: true          #하이버네이트가 실행하는 모든 SQL문을 콘솔로 출력해 준다.
+                format_sql: true        #콘솔에 출력되는 JPA 실행 쿼리를 가독성있게 표현한다.
+                use_sql_comments: true  #디버깅이 용이하도록 SQL문 이외에 추가적인 정보를 출력해 준다.
+    datasource:
+        default:
+            mapper-base-packages: ${ENV.MYBATIS_MAPPER_PACKAGES:com.mercury.discovery.**}
+            #jndi 방식일때 사용하며 active profiles에 jndi가 포함되어 있어야함
+            jndi-name: ${ENV.DATASOURCE_JNDI:java:comp/env/jndi/sampleDatasource}
+            driver-class-name: ${ENV.DATASOURCE_DRIVER_CLASS_NAME}
+            jdbc-url: ${ENV.DATASOURCE_JDBC_URL}
+            username: ${ENV.DATASOURCE_USER_NAME}
+            password: ${ENV.DATASOURCE_USER_PASSWORD}
+            maximum-pool-size: ${ENV.DATASOURCE_POOL_SIZE:10}
+    redis:
+        host: ${ENV.REDIS_HOST}
+        port: ${ENV.REDIS_PORT}
+        password: ${ENV.REDIS_PASSWORD:}
+        lettuce:
+            pool:
+                max-active: ${ENV.REDIS_POOL_MAX_ACTIVE:50}
+                min-idle: ${ENV.REDIS_POOL_MIN_IDLE:5}
+                max-idle: ${ENV.REDIS_POOL_MAX_IDLE:10}
+                max-wait: ${ENV.REDIS_POOL_MAX_WAIT:1000}
+    cache:
+        type: redis
+    messages:
+        basename: messages/message
+        encoding: utf-8
+    servlet:
+        multipart:
+            max-file-size: ${ENV.MULTIPART_MAX_FILE_SIZE:150MB}
+            max-request-size: ${ENV.MULTIPART_MAX_REQUEST_SIZE:150MB}
+
+pagehelper:
+    helperDialect: ${ENV.DATASOURCE_DIALECT:mysql}
+    reasonable: true
+    supportMethodsArguments: true
+    params: count=countSql
+
+jasypt:
+    encryptor:
+        bean: encryptorBean
+
+apps:
+    index: ${ENV.APPS_INDEX:redirect:/intro}
+    request-mapping: ${ENV.APPS_REQUEST_MAPPING:/api/v2}
+    packages: ${ENV.APPS_PACKAGES:com.mercury.discovery}
+    host: ${ENV.APPS_HOST:http://localhost:${server.port}}
+    mode: ${ENV.APPS_MODE:on-premise}       # on-premise(cmpnyNo:1, cmpnyId:voc), service
+    error:
+        page: thymeleaf/error
+    upload:
+        # s3, ftp, sftp, file #https://commons.apache.org/proper/commons-vfs/filesystems.html
+        fileSystem: ${ENV.APPS_UPLOAD_FILE_SYSTEM:file}
+        root: ${ENV.APPS_UPLOAD_FILE_ROOT:file:///${user.dir}/data}
+        publicUrl: /data/files
+        allowedUploadExtensions: jpg,jpeg,png,gif,mp4,pdf
+        allowedAccessExtensions: jpg,jpeg,png,gif,mp4,pdf
+    api:
+        host: ${ENV.APPS_API_HOST}
+        jwt:
+            issuer: ${ENV.APPS_API_JWT_ISSURE:localhost}  #localhost 인경우 moca-nexus로 가지 않음    (localhost||external)
+            secret: ${ENV.APPS_API_JWT_SECRET:ubicu@@$&}  #issuer 가 localhost인 경우 secret이 moca-nexus와 동일해야 함
+            expire: ${ENV.APPS_API_JWT_EXPIRE:86400000}    #1시간(3600000), 1일(86400000)
+    encryption:
+        key: ${ENV.APPS_ENCRYPTION_KEY}
+    email:
+        templateDir: ${ENV.EMAIL_TEMPLATE_DIR:thymeleaf/mail/}
+    actionLogInfoFile: ${ENV.APPS_ACTION_LOGINFO_FILE:classpath:action-log.xml}

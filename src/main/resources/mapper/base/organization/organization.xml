@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mercury.discovery.base.organization.service.OrganizationRepository">
+
+    <select id="findDeptEmpListForTree" resultType="CamelMap">
+        WITH RECURSIVE cte_parent AS(
+            SELECT
+                1 as level, a.dept_no, a.p_dept_no, a.dept_nm, a.sort_no, a.dept_cd, a.use_yn,
+                CONVERT(a.dept_nm, CHAR(255)) depth_fullname
+            FROM tb_cmm_dept a
+            WHERE cmpny_no = #{cmpnyNo}
+              AND a.p_dept_no = #{pDeptNo}
+            UNION ALL
+            SELECT
+                level+1 AS level, a.dept_no, a.p_dept_no, a.dept_nm, a.sort_no, a.dept_cd, a.use_yn,
+                CAST( CONCAT(CONVERT(b.depth_fullname, CHAR(255)) , '>' ,  CONVERT(a.dept_nm, CHAR(255))) AS CHAR(255)) depth_fullname
+            FROM tb_cmm_dept a INNER JOIN cte_parent b ON a.p_dept_no = b.dept_no
+            WHERE a.cmpny_no = #{cmpnyNo}
+        )
+        SELECT
+            dept_no AS id,
+            dept_cd AS cd,
+            dept_nm AS text,
+            CONCAT(p_dept_no,'') as parent,
+            'D' as gubun,
+            lev,
+            rel,
+            is_exsit_sub,
+            tool_tip
+        FROM(
+            SELECT
+                dept_no, dept_cd, dept_nm, p_dept_no, #{level}+level as lev,
+                CASE p_dept_no
+                    WHEN '0' THEN 'drive'
+                    ELSE 'folder'
+                    END as rel,
+                CASE IFNULL((SELECT dept_cd FROM tb_cmm_dept y WHERE y.p_dept_no = x.dept_no LIMIT 1), 'NULL')
+                    WHEN 'NULL' THEN
+                        CASE IFNULL((SELECT 'Y' FROM tb_cmm_emp z WHERE z.dept_no = x.dept_no AND z.rtrmnt_yn='N' LIMIT 1), 'NULL')
+                            WHEN 'NULL' THEN 'N'
+                            ELSE 'Y'
+                            END
+                    ELSE 'Y'
+                    END AS is_exsit_sub,
+                dept_no AS id, dept_nm data, '' AS tool_tip
+            FROM cte_parent x
+            WHERE level = 1
+              AND use_yn = 'Y'
+            ORDER BY sort_no
+        )x
+        UNION ALL
+        SELECT
+            emp_no AS id, cmpny_emp_cd AS cd, emp_nm AS text, CONCAT(dept_no,'') as parent, 'E' as gubun, lev,
+            rel, is_exsit_sub, tool_tip
+        FROM(
+            SELECT
+                a.emp_no, a.cmpny_emp_cd,
+                CONCAT(a.emp_nm,' ',IFNULL(duty.cd_nm, ''), IFNULL((CASE WHEN a.rtrmnt_yn = 'Y' THEN CONCAT(' [퇴사. ',a.rtrmnt_dd,']') ELSE '' END), '')) emp_nm,
+                a.dept_no, 0 lev,
+                'default' rel, 'N' as is_exsit_sub, emp_no id, CONCAT(a.emp_nm,' ',IFNULL(duty.cd_nm, ''),' / ',IFNULL(a.email, '')) data,
+                CONCAT(a.emp_nm,' ',IFNULL(duty.cd_nm, ''),' / ',IFNULL(a.email, '')) tool_tip
+            FROM tb_cmm_emp a
+                     LEFT OUTER JOIN tb_cmm_code duty ON a.duty_cd = duty.cd AND duty.cmpny_no IN (#{cmpnyNo},-1)
+            WHERE a.dept_no = #{pDeptNo}
+              AND a.cmpny_no = #{cmpnyNo}
+              AND a.rtrmnt_yn = 'N'
+            ORDER BY a.emp_nm
+        )y
+    </select>
+
+    <select id="findDeptEmpListForTreeSearch" resultType="CamelMap">
+        WITH RECURSIVE cte_parent AS(
+            SELECT
+                1 AS LEVEL, a.dept_no, a.p_dept_no, a.dept_nm, a.sort_no, a.dept_cd, a.use_yn,
+                CONVERT(a.dept_nm, CHAR(255)) depth_fullname
+            FROM tb_cmm_dept a
+            WHERE cmpny_no = #{cmpnyNo}
+            AND a.p_dept_no = 0
+            UNION ALL
+            SELECT
+                level+1 AS level, a.dept_no, a.p_dept_no, a.dept_nm, a.sort_no, a.dept_cd, a.use_yn,
+                CAST( CONCAT(CONVERT(b.depth_fullname, CHAR(255)) , '>' ,  CONVERT(a.dept_nm, CHAR(255))) AS CHAR(255)) depth_fullname
+            FROM tb_cmm_dept a INNER JOIN cte_parent b ON a.p_dept_no = b.dept_no
+		),
+		cte_parent2 AS (
+            SELECT
+                1 AS level, a.dept_no, a.p_dept_no, a.dept_nm, a.sort_no, a.dept_cd, a.use_yn,
+                CONVERT( a.dept_nm, CHAR(255)) depth_fullname
+            FROM tb_cmm_dept a
+            WHERE cmpny_no = #{cmpnyNo}
+            AND a.p_dept_no = 0
+
+            UNION ALL
+
+            SELECT
+                level+1 as level, a.dept_no, a.p_dept_no, a.dept_nm, a.sort_no, a.dept_cd, a.use_yn,
+                cast( concat(convert(b.depth_fullname, CHAR(255)) , '>' ,  convert(a.dept_nm, CHAR(255))) as char(255)) depth_fullname
+            FROM tb_cmm_dept a INNER JOIN cte_parent2 b ON a.p_dept_no = b.dept_no
+        )
+
+        SELECT
+            a.dept_no AS id,
+            a.dept_cd AS cd,
+            a.dept_nm AS text,
+            (CASE WHEN a.p_dept_no = '0' THEN '#' ELSE a.p_dept_no END) AS parent,
+            'D' as gubun,
+            b.level as lev,
+            (CASE WHEN a.p_dept_no = '0' THEN 'drive' ELSE 'folder' END) AS rel,
+            (CASE IFNULL((SELECT dept_cd FROM tb_cmm_dept y WHERE y.p_dept_no =  a.dept_no LIMIT 1), 'NULL')
+            WHEN 'NULL' THEN
+                CASE IFNULL((SELECT 'Y' FROM tb_cmm_emp z WHERE z.dept_no =  a.dept_no AND z.rtrmnt_yn='N' LIMIT 1), 'NULL')
+                    WHEN 'NULL' THEN 'N'
+                    ELSE 'Y'
+                    END
+            ELSE 'Y'
+            END) AS is_exsit_sub,
+            '' tool_tip,
+            '' user_id,
+            '' emp_nm
+        FROM tb_cmm_dept a INNER JOIN cte_parent b on a.dept_no = b.dept_no
+        WHERE cmpny_no = #{cmpnyNo}
+        AND a.use_yn = 'Y'
+
+        UNION ALL
+
+        SELECT
+            emp.emp_no AS id,
+            emp.cmpny_emp_cd AS cd,
+            concat(emp.emp_nm,' ',IFNULL(duty.cd_nm,'')) AS text,
+            emp.dept_no AS parent,
+            'E' AS gubun,
+            1+b.level AS lev,
+            'default' AS rel,
+            'N' AS is_exsit_sub,
+            concat(emp.emp_nm,' ',IFNULL(duty.cd_nm,''),' / ',IFNULL(emp.email,'')) AS tool_tip,
+            login.user_id AS user_id,
+            emp.emp_nm AS emp_nm
+        FROM tb_cmm_emp emp
+        INNER JOIN cte_parent2 b on emp.dept_no = b.dept_no
+        LEFT OUTER JOIN tb_cmm_code duty ON emp.duty_cd = duty.cd AND emp.dept_no = b.dept_no AND duty.cmpny_no IN (#{cmpnyNo},-1)
+        INNER JOIN tb_cmm_login login ON emp.emp_no = login.emp_no
+        WHERE emp.emp_nm like CONCAT(CONCAT('%', #{str}), '%')
+    </select>
+
+
+
+    <select id="findDepartmentAll" resultType="CamelMap">
+        SELECT *
+        FROM tb_cmm_dept
+        WHERE cmpny_no = #{cmpnyNo}
+        -- AND use_yn = 'Y'
+        ORDER BY p_dept_no desc , sort_no
+    </select>
+
+    <select id="findEmployeeAll" resultType="CamelMap">
+        SELECT e.*
+        FROM tb_cmm_emp e, tb_cmm_dept d
+        WHERE e.dept_no = d.dept_no
+--         AND d.use_yn = 'Y'
+        AND e.cmpny_no = #{cmpnyNo}
+--         AND e.rtrmnt_yn = 'N'
+        ORDER BY e.emp_sort
+    </select>
+
+    <select id="findDepartment" resultType="Department">
+        SELECT *
+        FROM tb_cmm_dept
+        WHERE dept_no = #{deptNo}
+          AND cmpny_no = #{cmpnyNo}
+    </select>
+
+    <insert id="insertDepartment" useGeneratedKeys="true" keyProperty="deptNo">
+        <selectKey keyProperty="deptNo" resultType="int" order="BEFORE" databaseId="oracle">
+            select sq_cmm_dept.NEXTVAL FROM DUAL
+        </selectKey>
+
+        INSERT INTO tb_cmm_dept (dept_no,
+        cmpny_no, dept_cd, dept_nm, dpth, sort_no, use_yn, p_dept_no, reg_emp_no , reg_dt
+        ) VALUES (#{deptNo},
+        #{cmpnyNo}, #{deptCd}, #{deptNm}, #{dpth}, #{sortNo}, #{useYn}, #{pDeptNo}, #{regEmpNo}, #{regDt}
+        )
+    </insert>
+
+    <update id="updateDepartment">
+        UPDATE tb_cmm_dept SET
+            dept_cd = #{deptCd}
+            , dept_nm = #{deptNm}
+            , dpth = #{dpth}
+            , sort_no = #{sortNo}
+            , use_yn = #{useYn}
+            , p_dept_no = #{pDeptNo}
+            , upd_emp_no = #{updEmpNo}
+            , upd_dt = #{updDt}
+        WHERE dept_no = #{deptNo}
+          AND cmpny_no = #{cmpnyNo}
+    </update>
+
+    <update id="changeEmployeeDepartment">
+        UPDATE tb_cmm_emp SET
+            dept_no = #{deptNo}
+        WHERE emp_no = #{empNo}
+          AND cmpny_no = #{cmpnyNo}
+    </update>
+
+    <update id="changeDepartmentDepartment">
+        UPDATE tb_cmm_dept SET
+            p_dept_no = #{pDeptNo}
+        WHERE dept_no = #{deptNo}
+          AND cmpny_no = #{cmpnyNo}
+    </update>
+
+    <select id="findDepartmentsRoles" resultType="UserRole">
+        <include refid="common.sql.with" /> cte(dept_no, p_dept_no, dept_nm) AS (
+        SELECT
+        a.dept_no,
+        a.p_dept_no,
+        a.dept_nm
+        FROM tb_cmm_dept a
+        WHERE a.dept_no = #{deptNo}
+        AND a.cmpny_no = #{cmpnyNo}
+
+        UNION ALL
+
+        SELECT
+        a.dept_no,
+        a.p_dept_no,
+        a.dept_nm
+        FROM tb_cmm_dept a JOIN cte b ON b.p_dept_no = a.dept_no
+        AND a.cmpny_no = #{cmpnyNo}
+        )
+
+        SELECT
+        g.grp_no,
+        g.grp_cd,
+        g.grp_nm,
+        cgm.map_no,
+        'D' as data_gbn,
+        cgm.data_no,
+        g.cmpny_no
+        FROM tb_cmm_group_map cgm JOIN tb_cmm_group g ON cgm.grp_no = g.grp_no
+        WHERE data_gbn='D'
+        AND data_no IN (
+        SELECT dept_no
+        FROM cte
+        )
+
+    </select>
+
+
+    <select id="findDepartmentsAppRoles" resultType="UserAppRole">
+        <include refid="common.sql.with" /> cte(dept_no, p_dept_no, dept_nm) AS (
+        SELECT
+        a.dept_no,
+        a.p_dept_no,
+        a.dept_nm
+        FROM tb_cmm_dept a
+        WHERE a.dept_no = #{deptNo}
+        AND a.cmpny_no = #{cmpnyNo}
+
+        UNION ALL
+
+        SELECT
+        a.dept_no,
+        a.p_dept_no,
+        a.dept_nm
+        FROM tb_cmm_dept a JOIN cte b ON b.p_dept_no = a.dept_no
+        AND a.cmpny_no = #{cmpnyNo}
+        )
+
+        SELECT
+        g.app_grp_no,
+        g.app_grp_cd,
+        g.app_grp_nm,
+        cgm.map_no,
+        'D' as data_gbn,
+        cgm.data_no,
+        g.cmpny_no
+        FROM tb_cmm_app_group_map cgm JOIN tb_cmm_app_group g ON cgm.app_grp_no = g.app_grp_no
+        WHERE data_gbn='D'
+        AND data_no IN (
+        SELECT dept_no
+        FROM cte
+        )
+
+    </select>
+
+    <select id="findDepartmentsTree" resultType="CamelMap" databaseId="mysql">
+            WITH recursive cte AS
+                (
+                    SELECT
+                        1 AS LEVEL, a.dept_cd, a.dept_no, a.p_dept_no, a.dept_nm, a.use_yn,
+                        CONVERT( a.dept_nm, CHAR(255)) depth_fullname
+                    FROM tb_cmm_dept a
+                    WHERE a.p_dept_no = 0 AND a.cmpny_no = #{cmpnyNo}
+
+                    UNION ALL
+
+                    SELECT
+                        b.level+1 AS level, a.dept_cd, a.dept_no,a.p_dept_no, a.dept_nm, a.use_yn,
+                        CAST( CONCAT(CONVERT(b.depth_fullname, CHAR(255)) , ' > ' ,  CONVERT(a.dept_nm, CHAR(255))) AS CHAR(255)) depth_fullname
+                    FROM tb_cmm_dept a
+                    INNER JOIN cte b
+                    ON a.p_dept_no = b.dept_no
+                    WHERE  a.cmpny_no = #{cmpnyNo}
+                )
+                SELECT
+                    CONCAT('D', dept_no) id,
+                    depth_fullname,
+                    (
+		                SELECT COUNT(1) FROM tb_cmm_emp emp WHERE emp.dept_no = x.dept_no
+                    ) emp_count
+                FROM cte x
+                WHERE use_yn = 'Y' ORDER BY depth_fullname
+    </select>
+
+    <select id="findDepartmentsTree" resultType="CamelMap" databaseId="oracle">
+        WITH cte (dept_cd,dept_no, p_dept_no, dept_nm, use_yn, depth_fullname) AS
+                (
+                    SELECT
+                        a.dept_cd, a.dept_no, a.p_dept_no, a.dept_nm, a.use_yn, a.dept_nm depth_fullname
+                    FROM tb_cmm_dept a
+                    WHERE a.p_dept_no = 0 AND a.cmpny_no = #{cmpnyNo}
+
+                    UNION ALL
+
+                    SELECT
+                        a.dept_cd, a.dept_no,a.p_dept_no, a.dept_nm, a.use_yn,
+                        CONCAT(CONCAT(b.depth_fullname, ' > '), a.dept_nm) depth_fullname
+                    FROM tb_cmm_dept a
+                    INNER JOIN cte b
+                    ON a.p_dept_no = b.dept_no
+                    WHERE  a.cmpny_no = #{cmpnyNo}
+                )
+                SELECT
+                    CONCAT('D', dept_no) id, depth_fullname,
+                    (
+		                SELECT COUNT(1) FROM tb_cmm_emp emp WHERE emp.dept_no = x.dept_no
+                    ) emp_count
+                FROM cte x
+                WHERE use_yn = 'Y' ORDER BY depth_fullname
+    </select>
+
+    <select id="findDepartmentByParent" resultType="CamelMap">
+        SELECT *
+        FROM tb_cmm_dept
+        WHERE cmpny_no = #{cmpnyNo}
+        <if test="useYn != null and useYn != ''">
+            AND use_yn = #{useYn}
+        </if>
+        AND p_dept_no = #{pDeptNo}
+        ORDER BY sort_no
+    </select>
+
+    <select id="findEmployeeByDepartment" resultType="CamelMap">
+        <include refid="common.sql.withChildDeptList">
+            <property name="cmpnyNo" value="#{cmpnyNo}"/>
+            <property name="deptNo" value="#{deptNo}"/>
+        </include>
+        , cte_parent (lvl, dept_no, p_dept_no, dept_nm, sort_no, dept_cd, use_yn, org_path_nm) AS (
+            SELECT
+                1 as lvl, a.dept_no, a.p_dept_no, a.dept_nm, a.sort_no, a.dept_cd, a.use_yn,
+                a.dept_nm AS org_path_nm
+            FROM tb_cmm_dept a
+            WHERE cmpny_no = #{cmpnyNo}
+            <choose>
+                <when test='rootYn == "Y"'>
+                AND a.p_dept_no = 0
+                </when>
+                <otherwise>
+                AND a.p_dept_no = 1
+                </otherwise>
+            </choose>
+            UNION ALL
+            SELECT
+                lvl+1 AS lvl, a.dept_no, a.p_dept_no, a.dept_nm, a.sort_no, a.dept_cd, a.use_yn,
+                CONCAT(b.org_path_nm, CONCAT(' > ' ,  a.dept_nm)) AS org_path_nm
+            FROM tb_cmm_dept a INNER JOIN cte_parent b ON a.p_dept_no = b.dept_no
+            WHERE a.cmpny_no = #{cmpnyNo}
+        )
+        SELECT e.*, d.dept_cd, d.dept_nm, d.p_dept_no, d.use_yn, c.org_path_nm
+        FROM tb_cmm_emp e, tb_cmm_dept d, cte_parent c
+        WHERE e.dept_no = d.dept_no AND c.dept_no = e.dept_no
+        <if test='useYn == "Y"'>
+            AND d.use_yn = 'Y'
+        </if>
+        AND e.cmpny_no = #{cmpnyNo}
+        <if test='rtrmntYn == "N"'>
+            AND e.rtrmnt_yn = 'N'
+        </if>
+        AND d.dept_no IN ( select dept_no from CTE )
+    </select>
+
+</mapper>

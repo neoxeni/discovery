@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mercury.discovery.base.log.service.ActionLogRepository">
+    <select id="findAll" resultType="ActionLogResponseDto">
+        SELECT
+            a.seq_no,
+            a.emp_no,
+            a.ip,
+            a.reg_dt,
+            a.menu,
+            a.sub_menu,
+            a.action,
+            a.action_url,
+            a.input_val,
+            a.reg_nation,
+            a.etc1,
+            a.etc2,
+            a.etc3,
+            a.etc4,
+            a.etc5,
+            a.div_cd,
+            a.cmpny_no,
+            e.emp_nm,
+            l.user_id
+        FROM tb_cmm_admin_log a
+            LEFT OUTER JOIN tb_cmm_emp e ON a.emp_no = e.emp_no
+            LEFT OUTER JOIN tb_cmm_login l ON a.emp_no = l.emp_no
+
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="actionLogRequestDto.startedAt != null and actionLogRequestDto.endedAt != null">
+                AND a.reg_dt BETWEEN #{actionLogRequestDto.startedAt} and #{actionLogRequestDto.endedAt}
+            </if>
+            <if test="actionLogRequestDto.cmpnyNo != null">
+                AND a.cmpny_no = #{actionLogRequestDto.cmpnyNo}
+            </if>
+            <if test='actionLogRequestDto.divCd != null and actionLogRequestDto.divCd != ""'>
+                AND a.div_cd = #{actionLogRequestDto.divCd}
+            </if>
+            <if test='actionLogRequestDto.empNm != null and actionLogRequestDto.empNm != ""'>
+                AND e.emp_nm LIKE CONCAT(CONCAT('%',#{actionLogRequestDto.empNm}),'%')
+            </if>
+            <if test='actionLogRequestDto.userId != null and actionLogRequestDto.userId != ""'>
+                AND l.user_id LIKE CONCAT(CONCAT('%',#{actionLogRequestDto.userId}),'%')
+            </if>
+            <if test='actionLogRequestDto.ip != null and actionLogRequestDto.ip != ""'>
+                AND a.ip LIKE CONCAT(CONCAT('%',#{actionLogRequestDto.ip}),'%')
+            </if>
+        </trim>
+
+        <include refid="common.sql.fragmentOrderBy">
+            <property name="OrderBy" value="ORDER BY seq_no DESC"/>
+        </include>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO tb_cmm_admin_log(seq_no,
+            emp_no, ip, reg_dt, menu, sub_menu, action, action_url, input_val, reg_nation, etc1, etc2, etc3, etc4, etc5, div_cd, cmpny_no
+        )VALUES(<include refid="common.sql.seq"><property name="t" value="sq_cmm_admin_log"/></include>,
+            #{empNo}, #{ip}, #{regDt}, #{menu}, #{subMenu}, #{action}, #{actionUrl}, #{inputVal}, #{regNation}, #{etc1}, #{etc2}, #{etc3}, #{etc4}, #{etc5}, #{divCd}, #{cmpnyNo}
+        )
+    </insert>
+</mapper>

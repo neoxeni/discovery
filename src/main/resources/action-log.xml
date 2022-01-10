@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration active="true" activeProfiles="local,dev,stg,prod">
+
+    <request-param save="true" include-value="NON_NULL">
+        <ignore>
+            <key>password</key>
+            <key>pwd</key>
+        </ignore>
+    </request-param>
+
+    <meta-mapping>
+        <actions>
+            <action method="PATCH" path="${apps.request-mapping}/base/companies">
+                <meta menu="조직관리(수정)" submenu="" div="ADMIN" etc1="" etc2="" etc3="" etc4="" etc5=""/>
+            </action>
+            <action method="PATCH" path="${apps.request-mapping}/base/groups/mappings">
+                <meta menu="조직관리(수정)" submenu="그룹저장" div="ADMIN" etc1="" etc2="" etc3="" etc4="" etc5=""/>
+            </action>
+        </actions>
+    </meta-mapping>
+    <exclude>
+        <actions>
+            <!--<action method="GET" path="/**/scripts"/>-->
+            <action method="GET" path="/**/**"/>
+        </actions>
+    </exclude>
+</configuration>
+

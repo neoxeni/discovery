@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mercury.discovery.base.group.service.GroupRepository">
+
+    <select id="findGroup" resultType="Group">
+        SELECT *
+        FROM tb_cmm_group
+        WHERE cmpny_no = #{cmpnyNo} AND grp_no = #{grpNo}
+    </select>
+
+    <select id="findGroupAll" resultType="Group">
+        SELECT g.*, cate_nm
+        FROM tb_cmm_group g
+        LEFT OUTER JOIN tb_cmm_category c ON g.cate_id = c.cate_id
+        WHERE g.cmpny_no = #{cmpnyNo}
+        <if test='useYn != null and useYn != ""'>
+            AND g.use_yn = #{useYn}
+        </if>
+
+        <if test='cateId != null'>
+            AND g.cate_id = #{cateId}
+        </if>
+
+        ORDER BY c.cate_nm, g.grp_nm
+    </select>
+
+    <insert id="insertGroup" useGeneratedKeys="true" keyProperty="grpNo"  databaseId="oracle">
+        <selectKey keyProperty="grpNo" resultType="int" order="BEFORE" >
+            SELECT sq_cmm_group.NEXTVAL FROM DUAL
+        </selectKey>
+
+        INSERT INTO tb_cmm_group (grp_no, cate_id,
+        grp_nm ,use_yn ,reg_dt ,grp_cd ,reg_user_no ,cmpny_no ,upd_enable_yn ,callcenter_yn
+        ) VALUES (#{grpNo}, #{cateId},
+        #{grpNm} ,#{useYn} ,#{regDt} ,#{grpCd} ,#{regUserNo} ,#{cmpnyNo} ,#{updEnableYn} ,#{callcenterYn}
+        )
+    </insert>
+
+    <insert id="insertGroup" useGeneratedKeys="true" keyProperty="grpNo" databaseId="mysql">
+
+        INSERT INTO tb_cmm_group (cate_id,
+        grp_nm ,use_yn ,reg_dt ,grp_cd ,reg_user_no ,cmpny_no ,upd_enable_yn ,callcenter_yn
+        ) VALUES (#{cateId},
+        #{grpNm} ,#{useYn} ,#{regDt} ,#{grpCd} ,#{regUserNo} ,#{cmpnyNo} ,#{updEnableYn} ,#{callcenterYn}
+        )
+    </insert>
+
+    <update id="updateGroup">
+        UPDATE tb_cmm_group SET
+        grp_nm = #{grpNm}
+        <if test='grpCd != null and grpCd != ""'>
+            ,grp_cd = #{grpCd}
+        </if>
+        <if test='updEnableYn != null and updEnableYn != ""'>
+            ,upd_enable_yn = #{updEnableYn}
+        </if>
+        ,use_yn = #{useYn}
+        ,upd_dt = #{updDt}
+        ,upd_user_no = #{updUserNo}
+        WHERE grp_no = #{grpNo}
+        AND cmpny_no = #{cmpnyNo}
+    </update>
+
+    <delete id="deleteGroup">
+        DELETE
+        FROM tb_cmm_group
+        WHERE grp_no = #{grpNo}
+        AND cmpny_no = #{cmpnyNo}
+    </delete>
+
+    <select id="findGroupMappingsByGrpNo" resultType="GroupMappingResponseDto">
+        WITH wd AS(
+        SELECT map_no, grp_no, data_gbn, data_no, reg_emp_no, reg_dt, use_yn, sort_no
+        FROM tb_cmm_group_map
+        WHERE grp_no = #{groupMappingRequestDto.grpNo}
+        ORDER BY data_gbn
+        )
+
+        SELECT map_no, grp_no, data_gbn, data_no, reg_dt, reg_emp_no, use_yn, sort_no, data_nm, tooltip, data_cd
+        FROM (
+        SELECT wd.map_no, wd.grp_no, wd.data_gbn, wd.reg_dt, wd.reg_emp_no, wd.use_yn, wd.sort_no, e.emp_no AS data_no,
+        CONCAT(CONCAT(e.emp_nm,' '),(CASE WHEN postn.cd_nm IS NULL THEN '' ELSE postn.cd_nm END)) AS data_nm,
+        CONCAT(CONCAT((CASE WHEN dept.dept_nm IS NULL THEN '' ELSE dept.dept_nm END),' '), (CASE WHEN duty.cd_nm IS NULL THEN '' ELSE duty.cd_nm END)) as tooltip,
+        e.cmpny_emp_cd AS data_cd
+        FROM wd JOIN tb_cmm_emp e ON wd.data_no = e.emp_no AND wd.data_gbn = 'E'
+        LEFT OUTER JOIN tb_cmm_code postn ON e.postn_cd = postn.cd  AND postn.div_cd = 'OR02'
+        LEFT OUTER JOIN tb_cmm_code duty ON e.duty_cd = duty.cd  AND duty.div_cd = 'OR01'
+        LEFT OUTER JOIN tb_cmm_dept dept ON e.dept_no = dept.dept_no
+        WHERE e.cmpny_no =  #{groupMappingRequestDto.cmpnyNo}
+        UNION
+        SELECT wd.map_no, wd.grp_no, wd.data_gbn, wd.reg_dt, wd.reg_emp_no, wd.use_yn, wd.sort_no, d.dept_no AS data_no, d.dept_nm AS data_nm,
+        (CASE WHEN parent.dept_nm IS NULL THEN '' ELSE parent.dept_nm END) AS tooltip,
+        d.dept_cd AS data_cd
+        FROM wd JOIN tb_cmm_dept d on  wd.data_no = d.dept_no AND wd.data_gbn = 'D'
+        LEFT OUTER JOIN tb_cmm_dept parent ON parent.dept_no = d.p_dept_no
+        WHERE d.cmpny_no = #{groupMappingRequestDto.cmpnyNo}
+        )x
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test='groupMappingRequestDto.dataGbn != null and groupMappingRequestDto.dataGbn != ""'>
+                AND data_gbn = #{groupMappingRequestDto.dataGbn}
+            </if>
+            <if test='groupMappingRequestDto.dataNm != null and groupMappingRequestDto.dataNm != ""'>
+                AND data_nm LIKE  CONCAT(CONCAT('%',#{groupMappingRequestDto.dataNm}),'%')
+            </if>
+        </trim>
+
+        <include refid="common.sql.fragmentOrderBy">
+            <property name="OrderBy" value="ORDER BY sort_no"/>
+        </include>
+    </select>
+
+    <update id="insertGroupMappings" databaseId="oracle">
+        INSERT INTO tb_cmm_group_map (
+        map_no, grp_no, data_gbn, data_no, reg_emp_no, reg_dt, use_yn, sort_no
+        )
+        SELECT sq_cmm_group_map.NEXTVAL AS map_no , T.* FROM (
+        <foreach collection="collection" item="item" index="index" separator="union all">
+            SELECT
+            #{item.grpNo} as grp_no ,
+            #{item.dataGbn} as data_gbn ,
+            #{item.dataNo} as data_no ,
+            #{item.regEmpNo} as reg_emp_no ,
+            #{item.regDt} as reg_dt ,
+            #{item.useYn} as use_yn ,
+            #{item.sortNo} as sort_no
+            FROM SYS.DUAL
+        </foreach>
+        ) T
+    </update>
+
+    <insert id="insertGroupMappings" useGeneratedKeys="true" keyProperty="mapNo" databaseId="mysql">
+        INSERT INTO tb_cmm_group_map
+        (grp_no, data_gbn, data_no, reg_emp_no, reg_dt, use_yn, sort_no)
+        VALUES
+        <foreach collection="collection" item="item" index="index" separator=",">
+            (#{item.grpNo}, #{item.dataGbn}, #{item.dataNo}, #{item.regEmpNo}, #{item.regDt}, #{item.useYn}, #{item.sortNo})
+        </foreach>
+    </insert>
+
+    <delete id="deleteGroupMappings">
+        DELETE
+        FROM tb_cmm_group_map
+        WHERE map_no IN
+        <foreach collection="groupMappingNos" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        AND #{cmpnyNo} = (SELECT cmpny_no FROM tb_cmm_company WHERE cmpny_no = #{cmpnyNo})
+    </delete>
+
+    <delete id="deleteAppGroupMappings">
+        DELETE
+        FROM tb_cmm_app_group_map
+        WHERE map_no IN
+        <foreach collection="groupMappingNos" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        AND #{cmpnyNo} = (SELECT cmpny_no FROM tb_cmm_company WHERE cmpny_no = #{cmpnyNo})
+    </delete>
+
+    <delete id="deleteGroupMappingsByGrpNo">
+        DELETE
+        FROM tb_cmm_group_map
+        WHERE grp_no = #{grpNo}
+    </delete>
+
+    <select id="findGroupMappingsHistory" resultType="GroupMappingHistoryResponseDto">
+        SELECT
+        a.seq_no,
+        a.map_no,
+        a.grp_no,
+        a.data_gbn,
+        a.data_no,
+        a.action,
+        a.reg_emp_no,
+        a.reg_dt,
+        a.reg_ip,
+        a.cmpny_no,
+        CASE WHEN g.grp_nm IS NULL THEN ag.app_grp_nm ELSE g.grp_nm END as grp_nm,
+        CASE WHEN e.emp_nm IS NULL THEN d.dept_nm ELSE e.emp_nm END as data_nm,
+        e2.emp_nm as reg_emp_nm
+        FROM tb_cmm_group_map_hst a
+        LEFT OUTER JOIN tb_cmm_emp e ON a.data_gbn = 'E' AND a.data_no = e.emp_no
+
+        LEFT OUTER JOIN tb_cmm_dept d ON a.data_gbn = 'D' AND a.data_no = d.dept_no
+        LEFT OUTER JOIN tb_cmm_emp e2 ON a.reg_emp_no = e2.emp_no
+        LEFT OUTER JOIN tb_cmm_group g ON a.grp_no = g.grp_no
+        LEFT OUTER JOIN tb_cmm_app_group ag ON a.grp_no = ag.app_grp_no
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="groupMappingHistoryRequestDto.startedAt != null and groupMappingHistoryRequestDto.endedAt != null">
+                AND a.reg_dt BETWEEN #{groupMappingHistoryRequestDto.startedAt} and #{groupMappingHistoryRequestDto.endedAt}
+            </if>
+            <if test='groupMappingHistoryRequestDto.cmpnyNo != null'>
+                AND a.cmpny_no = #{groupMappingHistoryRequestDto.cmpnyNo}
+            </if>
+            <if test='groupMappingHistoryRequestDto.grpNo != null'>
+                AND a.grp_no = #{groupMappingHistoryRequestDto.grpNo}
+            </if>
+            <if test='groupMappingHistoryRequestDto.action != null and groupMappingHistoryRequestDto.action != ""'>
+                AND action = #{groupMappingHistoryRequestDto.action}
+            </if>
+            <if test='groupMappingHistoryRequestDto.dataGbn != null and groupMappingHistoryRequestDto.dataGbn != ""'>
+                AND data_gbn = #{groupMappingHistoryRequestDto.dataGbn}
+            </if>
+
+            <if test='groupMappingHistoryRequestDto.dataNm != null and groupMappingHistoryRequestDto.dataNm != ""'>
+                AND (
+                e.emp_nm LIKE  CONCAT(CONCAT('%',#{groupMappingHistoryRequestDto.dataNm}),'%')
+                OR
+                d.dept_nm LIKE CONCAT(CONCAT('%',#{groupMappingHistoryRequestDto.dataNm}),'%')
+                )
+            </if>
+
+            <if test='groupMappingHistoryRequestDto.regEmpNm != null and groupMappingHistoryRequestDto.regEmpNm != ""'>
+                AND e2.emp_nm LIKE  CONCAT(CONCAT('%',#{groupMappingHistoryRequestDto.regEmpNm}),'%')
+            </if>
+
+        </trim>
+
+        <include refid="common.sql.fragmentOrderBy">
+            <property name="OrderBy" value="ORDER BY a.seq_no DESC"/>
+        </include>
+    </select>
+
+    <insert id="insertGroupMappingsHistory" >
+        INSERT INTO tb_cmm_group_map_hst(seq_no,
+        map_no, grp_no, data_gbn, data_no, action, reg_emp_no, reg_dt, reg_ip, cmpny_no
+        ) VALUES (<include refid="common.sql.seq"><property name="t" value="sq_cmm_group_map_hst"/></include>,
+        #{mapNo}, #{grpNo}, #{dataGbn}, #{dataNo}, #{action}, #{regEmpNo}, #{regDt}, #{regIp}, #{cmpnyNo}
+        )
+    </insert>
+
+    <select id="selectAppGroup" resultType="AppGroup">
+        SELECT
+            app_grp_no
+            ,cate_id
+            ,app_grp_cd
+            ,app_grp_nm
+            ,reg_dt
+            ,upd_dt
+            ,reg_user_no
+            ,upd_user_no
+            ,cmpny_no
+            ,upd_enable_yn
+        FROM tb_cmm_app_group
+        WHERE cmpny_no = #{cmpnyNo}
+        AND cate_id = #{cateId}
+    </select>
+
+    <insert id="insertAppGroup" parameterType="AppGroup" useGeneratedKeys="true" keyProperty="appGrpNo">
+
+        <selectKey keyProperty="appGrpNo" resultType="int" order="BEFORE" databaseId="oracle">
+            SELECT sq_app_group.NEXTVAL FROM DUAL
+        </selectKey>
+
+        INSERT INTO tb_cmm_app_group
+        (
+        app_grp_no
+        ,cate_id
+        ,app_grp_cd
+        ,app_grp_nm
+        ,reg_dt
+        ,reg_user_no
+        ,cmpny_no
+        ,upd_enable_yn
+        )
+        VALUES
+        (
+        #{appGrpNo}
+        ,#{cateId}
+        ,#{appGrpCd}
+        ,#{appGrpNm}
+        ,#{regDt}
+        ,#{regUserNo}
+        ,#{cmpnyNo}
+        ,#{updEnableYn}
+        )
+    </insert>
+
+    <update id="updateAppGroup" parameterType="AppGroup">
+        UPDATE tb_cmm_app_group SET
+        app_grp_nm = #{appGrpNm}
+        ,app_grp_cd = #{appGrpCd}
+        ,upd_dt = #{updDt}
+        ,upd_user_no = #{updUserNo}
+
+        <if test='updEnableYn != null and updEnableYn != ""'>
+            ,upd_enable_yn = #{updEnableYn}
+        </if>
+
+        WHERE app_grp_no = #{appGrpNo} AND cmpny_no = #{cmpnyNo}
+    </update>
+
+    <delete id="deleteAppGroup">
+        DELETE FROM tb_cmm_app_group WHERE app_grp_no = #{appGrpNo} AND cmpny_no = #{cmpnyNo}
+    </delete>
+
+    <select id="selectAppGroupMapping" resultType="AppGroupMapping">
+        SELECT
+            map.map_no
+            ,map.app_grp_no
+            ,sg.app_grp_nm
+            ,sg.upd_enable_yn
+            ,map.data_gbn
+            ,map.data_no
+            ,map.reg_dt
+            ,map.reg_user_no
+            ,map.use_yn
+            ,map.sort_no
+        FROM tb_cmm_app_group_map map
+        INNER JOIN tb_cmm_app_group sg ON map.app_grp_no = sg.app_grp_no
+        WHERE sg.cmpny_no = #{cmpnyNo} AND map.app_grp_no = #{appGrpNo}
+    </select>
+
+    <select id="selectUsedAppGroupMapping" resultType="int">
+        SELECT COUNT(1) AS CNT FROM tb_cmm_app_group_map WHERE app_grp_no = #{appGrpNo}
+    </select>
+
+    <insert id="insertAppGroupMapping" parameterType="AppGroupMapping">
+
+        <selectKey keyProperty="mapNo" resultType="int" order="BEFORE" databaseId="oracle">
+            SELECT sq_app_group_map.NEXTVAL FROM DUAL
+        </selectKey>
+
+        INSERT INTO tb_cmm_app_group_map
+        (
+        map_no
+        ,app_grp_no
+        ,reg_dt
+        ,data_gbn
+        ,data_no
+        ,reg_user_no
+        ,sort_no
+        )
+        VALUES
+        (
+        #{mapNo}
+        ,#{appGrpNo}
+        ,#{regDt}
+        ,#{dataGbn}
+        ,#{dataNo}
+        ,#{regUserNo}
+        ,#{sortNo}
+        )
+    </insert>
+
+    <delete id="deleteAppGroupMapping" parameterType="AppGroupMapping">
+        DELETE FROM tb_cmm_app_group_map WHERE app_grp_no = #{appGrpNo}
+    </delete>
+
+</mapper>

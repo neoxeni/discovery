@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mercury.discovery.base.code.service.CodeRepository">
+
+    <select id="findByDiv" resultType="Code">
+        SELECT
+            cd,
+            div_cd,
+            prnt_cd,
+            cd_nm,
+            sort_no,
+            dtl,
+            use_yn,
+            reg_emp_no,
+            reg_dt,
+            upd_emp_no,
+            upd_dt,
+            cmpny_no,
+            lvl
+        FROM tb_cmm_code
+        WHERE div_cd = #{divCd} AND cmpny_no IN( -1, #{cmpnyNo})
+        ORDER BY prnt_cd, sort_no
+    </select>
+
+    <select id="findAll" resultType="Code">
+        SELECT
+            cd,
+            div_cd,
+            prnt_cd,
+            cd_nm,
+            sort_no,
+            dtl,
+            use_yn,
+            reg_emp_no,
+            reg_dt,
+            upd_emp_no,
+            upd_dt,
+            CASE WHEN etc1 IS NULL THEN '' ELSE etc1 END as etc1,
+            CASE WHEN etc2 IS NULL THEN '' ELSE etc2 END as etc2,
+            CASE WHEN etc3 IS NULL THEN '' ELSE etc3 END as etc3,
+            CASE WHEN etc4 IS NULL THEN '' ELSE etc4 END as etc4,
+            cmpny_no,
+            lvl
+        FROM tb_cmm_code
+        WHERE cmpny_no IN( -1, #{cmpnyNo})
+        ORDER BY div_cd, prnt_cd, sort_no
+    </select>
+
+    <insert id="insert">
+        INSERT INTO tb_cmm_code(
+            cd, div_cd, prnt_cd, cd_nm, sort_no, dtl, use_yn, reg_emp_no, reg_dt, etc1, etc2, etc3, etc4, cmpny_no, lvl
+        ) VALUES (
+            #{cd}, #{divCd}, #{prntCd}, #{cdNm}, #{sortNo}, #{dtl}, #{useYn}, #{regEmpNo}, #{regDt}, #{etc1}, #{etc2}, #{etc3}, #{etc4}, #{cmpnyNo}, #{lvl}
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE tb_cmm_code SET
+           cd = #{cd},
+           div_cd = #{divCd},
+           prnt_cd = #{prntCd},
+           cd_nm = #{cdNm},
+           sort_no = #{sortNo},
+           dtl = #{dtl},
+           use_yn = #{useYn},
+           upd_emp_no = #{updEmpNo},
+           upd_dt = #{updDt},
+           etc1 = #{etc1},
+           etc2 = #{etc2},
+           etc3 = #{etc3},
+           etc4 = #{etc4},
+           cmpny_no = #{cmpnyNo},
+           lvl = #{lvl}
+        WHERE cmpny_no = #{cmpnyNo}
+        AND cd = #{cd}
+        AND div_cd = #{divCd}
+    </update>
+
+    <delete id="delete">
+
+
+        DELETE FROM tb_cmm_code
+        WHERE cmpny_no IN( -1, #{cmpnyNo})
+          AND div_cd =  #{divCd}
+          AND cd IN (
+            <include refid="common.sql.with" /> cte(div_cd, cd, prnt_cd) AS (
+                SELECT
+                    a.div_cd,
+                    a.cd,
+                    a.prnt_cd
+                FROM tb_cmm_code a
+                WHERE a.cmpny_no IN( -1, #{cmpnyNo})
+                  AND a.div_cd =  #{divCd}
+                  AND a.cd = #{cd}
+
+                UNION ALL
+
+                SELECT
+                    a.div_cd,
+                    a.cd,
+                    a.prnt_cd
+                FROM tb_cmm_code a JOIN cte b ON a.prnt_cd = b.cd
+                    AND a.cmpny_no IN( -1, #{cmpnyNo})
+            )
+
+            SELECT cd from cte
+        )
+    </delete>
+
+    <delete id="deleteCodesByDivCd">
+        DELETE FROM tb_cmm_code
+        WHERE cmpny_no = #{cmpnyNo}
+          AND div_cd = #{divCd}
+    </delete>
+
+    <select id="findCodeDivAll" resultType="CodeDiv">
+        SELECT
+            div_cd,
+            div_nm,
+            div_service,
+            upd_enable_yn,
+            cmpny_no,
+            user_define_col
+        FROM tb_cmm_code_div
+        WHERE cmpny_no IN( -1, #{cmpnyNo})
+        <choose>
+            <when test=" divCd != null and divCd != '' ">
+                AND div_cd = #{divCd}
+            </when>
+            <otherwise>
+                AND div_cd != 'C99'
+            </otherwise>
+        </choose>
+        ORDER BY div_cd
+    </select>
+
+    <insert id="insertCodeDiv">
+        INSERT INTO tb_cmm_code_div (
+            div_cd, div_nm, div_service, upd_enable_yn, cmpny_no, user_define_col
+        ) VALUES (
+            #{divCd}, #{divNm}, #{divService}, #{updEnableYn}, #{cmpnyNo}, #{userDefineCol}
+        )
+    </insert>
+
+    <update id="updateCodeDiv">
+        UPDATE tb_cmm_code_div SET
+           div_cd = #{divCd},
+           div_nm = #{divNm},
+           div_service = #{divService},
+           upd_enable_yn = #{updEnableYn},
+           cmpny_no = #{cmpnyNo},
+           user_define_col = #{userDefineCol}
+        WHERE cmpny_no = #{cmpnyNo}
+          AND div_cd = #{divCd}
+    </update>
+
+    <delete id="deleteCodeDiv">
+        DELETE
+        FROM tb_cmm_code_div
+        WHERE cmpny_no = #{cmpnyNo}
+          AND div_cd = #{divCd}
+    </delete>
+
+</mapper>
