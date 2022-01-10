@@ -9,6 +9,7 @@ import com.mercury.discovery.config.web.resolver.UploadFileResourceResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -39,6 +40,9 @@ import java.util.Set;
 public class ServletContextConfig implements WebMvcConfigurer {
     @Autowired
     private WebMvcProperties webMvcProperties;
+
+    @Autowired
+    private WebProperties webProperties;
 
     @Value("${apps.upload.publicUrl}")
     private String publicUrl;
@@ -98,7 +102,7 @@ public class ServletContextConfig implements WebMvcConfigurer {
     //-Dspring.profiles.active=prod
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        Duration cachePeriodDuration = Duration.ofSeconds(2147483647);
+        Duration cachePeriodDuration = webProperties.getResources().getCache().getPeriod();
         Integer cachePeriod = cachePeriodDuration != null ? (int) cachePeriodDuration.getSeconds() : 0;//0이면 캐쉬 안함
         boolean resourceChain = false;
 
@@ -109,11 +113,12 @@ public class ServletContextConfig implements WebMvcConfigurer {
 
         String staticPathPattern = webMvcProperties.getStaticPathPattern();
 
+
         //static 폴더 cache관련 설정 제거
         VersionResourceResolver versionResourceResolver = new VersionResourceResolver().addContentVersionStrategy("/**");
 
         registry.addResourceHandler(staticPathPattern)
-                .addResourceLocations("/static")
+                .addResourceLocations(webProperties.getResources().getStaticLocations())
                 .setCachePeriod(cachePeriod)
                 .resourceChain(resourceChain)
                 .addResolver(versionResourceResolver);

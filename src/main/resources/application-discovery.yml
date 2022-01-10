@@ -28,6 +28,13 @@ spring:
             enabled: false
     main:
         allow-bean-definition-overriding: true  #for SessionLocaleResolver
+    web:
+        resources:
+            static-locations: classpath:/static/
+            add-mappings: true
+            cache:
+                period: 2147483647
+
     mvc:
         static-path-pattern: /static/**
     thymeleaf:

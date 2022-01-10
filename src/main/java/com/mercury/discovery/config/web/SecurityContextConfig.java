@@ -40,7 +40,7 @@ public class SecurityContextConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) throws Exception {
         super.configure(web);
-        web.ignoring().antMatchers("/assets/**", "/static/**", "/ws-stomp/**", "**/**.map");//spring-security filter bypass
+        web.ignoring().antMatchers("/static/**", "/ws-stomp/**");//spring-security filter bypass
         web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
 
@@ -64,8 +64,8 @@ public class SecurityContextConfig extends WebSecurityConfigurerAdapter {
                 .and()
 
                 .authorizeRequests()
-                .antMatchers("/assets/**", "/static/**").permitAll()
-                .mvcMatchers("/", "/changePassword", "/changePasswordOk", "/login", "/logout", "/health/*", "/jpa/*", "/service/account/**", "/icws/**", "**/public/campaign/**").permitAll()
+                .antMatchers("/static/**").permitAll()
+                .mvcMatchers("/", "/changePassword", "/changePasswordOk", "/login", "/logout", "/health/*").permitAll()
                 // .requestMatchers(CorsUtils::isPreFlightRequest, endpointsMatcher).permitAll()
                 .anyRequest().authenticated(); // 나머지 리소스에 대한 접근 설정
 

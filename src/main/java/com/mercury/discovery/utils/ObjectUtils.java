@@ -2,7 +2,6 @@ package com.mercury.discovery.utils;
 
 import lombok.extern.slf4j.Slf4j;
 
-
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.File;
@@ -88,6 +87,7 @@ public class ObjectUtils {
         Enumeration<URL> resources = classLoader.getResources(path);
         List<File> dirs = new ArrayList<>();
         List<File> jars = new ArrayList<>();
+        List<File> wars = new ArrayList<>();
 
         log.info("packageName = {}, path = {}", packageName, path);
 
@@ -96,6 +96,7 @@ public class ObjectUtils {
 
             log.info("resource = {}, resourceFile = {}", resource, resource.getFile());
 
+
             if (resource.getFile().contains(".jar!")) {
                 String p = resource.getFile().split("!")[0];
                 if (p.startsWith("file:")) {
@@ -103,13 +104,21 @@ public class ObjectUtils {
                 }
 
                 jars.add(new File(p));
+            } else if (resource.getFile().contains(".war!")) {
+                String p = resource.getFile().split("!")[0];
+                if (p.startsWith("file:")) {
+                    p = p.substring(5);//file: 제거
+                }
+
+                wars.add(new File(p));
             } else {
                 dirs.add(new File(resource.getFile()));
             }
+
         }
         ArrayList<Class> classes = new ArrayList<>();
 
-        log.info("jars = {}, dirs = {}", jars, dirs);
+        log.info("jars = {}, wars = {}, dirs = {}", jars, wars, dirs);
 
         for (File directory : dirs) {
             classes.addAll(findClasses(directory, packageName, filter));
@@ -117,6 +126,10 @@ public class ObjectUtils {
 
         for (File jar : jars) {
             classes.addAll(findClassesInJar(jar, packageName, filter));
+        }
+
+        for (File war : wars) {
+            classes.addAll(findClassesInWar(war, packageName, filter));
         }
 
         log.info("classes = {}", classes);
@@ -162,6 +175,50 @@ public class ObjectUtils {
         } finally {
             if (crunchifyJarFile != null) {
                 crunchifyJarFile.close();
+            }
+        }
+
+        return classes;
+    }
+
+    public static List<Class> findClassesInWar(File warFile, String packageName, Class<?> filter) throws ClassNotFoundException, IOException {
+        List<Class> classes = new ArrayList<>();
+        JarInputStream crunchifyWarFile = null;
+        try {
+            crunchifyWarFile = new JarInputStream(new FileInputStream(warFile));
+            JarEntry crunchifyWar;
+            while (true) {
+                crunchifyWar = crunchifyWarFile.getNextJarEntry();
+                if (crunchifyWar == null) {
+                    break;
+                }
+
+                if ((crunchifyWar.getName().endsWith(".class"))) {
+                    String className = crunchifyWar.getName().replaceAll("WEB-INF/classes/", "").replaceAll("/", "\\.");
+                    if (className.startsWith(packageName)) {
+                        String myClass = className.substring(0, className.lastIndexOf('.'));
+                        try {
+                            Class clazz = Class.forName(myClass);
+                            if (filter == Enum.class) {
+                                if (clazz.isEnum()) {
+                                    classes.add(clazz);
+                                }
+                            } else {
+                                classes.add(clazz);
+                            }
+                        } catch (NoClassDefFoundError nc) {
+                            //ignore
+                            log.error("error {}", nc.getMessage());
+                        }
+                    }
+                }
+            }
+
+        } catch (IOException e) {
+            log.error("error ", e);
+        } finally {
+            if (crunchifyWarFile != null) {
+                crunchifyWarFile.close();
             }
         }
 
@@ -220,8 +277,8 @@ public class ObjectUtils {
         return jarFiles == null ? null : Arrays.asList(jarFiles);
     }
 
-    public static void main(String[] args) {
-        System.out.println(ObjectUtils.getVfsFileFiles(new File("/Users/p.kanil/Desktop/aa/bb/cc/asdf.jar-sadfasf/contents/com/ubicus/moca")));
+    public static void main(String[] args) throws Exception {
+         System.out.println(ObjectUtils.getVfsFileFiles(new File("/Users/p.kanil/Desktop/aa/bb/cc/asdf.jar-sadfasf/contents/com/ubicus/moca")));
     }
 
 
