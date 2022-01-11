@@ -26,6 +26,16 @@ public class UserRestController {
 
     private final UserService userService;
 
+    @GetMapping("/base/users/me")
+    public ResponseEntity<?> getUserMe(AppUser appUser) {
+        AppUser targetAppUser = userService.findByUserId(appUser.getId());
+        if (targetAppUser != null) {
+            return ResponseEntity.ok(targetAppUser);
+        } else {
+            throw new BadParameterException("해당 유저를 찾을수 없습니다.");
+        }
+    }
+
     @GetMapping("/base/users/{id}")
     public ResponseEntity<?> getUser(AppUser appUser, @PathVariable Integer id) {
         AppUserRequestDto appUserRequestDto = new AppUserRequestDto();

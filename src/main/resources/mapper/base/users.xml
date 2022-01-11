@@ -45,6 +45,16 @@
         WHERE l.username = #{userId}
     </select>
 
+    <select id="findByUserId" resultType="AppUser">
+        SELECT
+        <include refid="user_all">
+            <property name="e" value="e"/>
+            <property name="l" value="l"/>
+        </include>
+        FROM client_user e JOIN client_user_login l ON e.id = l.user_id
+        WHERE e.id = #{id}
+    </select>
+
     <select id="findByUserKey" resultType="AppUser">
         SELECT
         <include refid="user_all">
@@ -62,22 +72,7 @@
         WHERE e.user_key = #{userKey}
     </select>
 
-    <select id="findByUserId" resultType="AppUser">
-        SELECT
-        <include refid="user_all">
-            <property name="e" value="e"/>
-            <property name="l" value="l"/>
-            <property name="dept" value="dept"/>
-            <property name="postn" value="postn"/>
-            <property name="duty" value="duty"/>
-        </include>
-        FROM tb_cmm_emp e
-        JOIN tb_cmm_login l ON e.emp_no = l.emp_no
-        LEFT OUTER JOIN tb_cmm_dept dept ON e.dept_no = dept.dept_no
-        LEFT OUTER JOIN tb_cmm_code postn ON e.postn_cd = postn.cd AND postn.cmpny_no = e.cmpny_no  AND postn.div_cd = 'OR02'
-        LEFT OUTER JOIN tb_cmm_code duty ON e.duty_cd = duty.cd  AND duty.cmpny_no = e.cmpny_no AND duty.div_cd = 'OR01'
-        WHERE l.user_id = #{userId}
-    </select>
+
 
     <select id="find" resultType="AppUser">
         SELECT  <include refid="user_all">

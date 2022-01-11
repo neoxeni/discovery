@@ -291,7 +291,7 @@ public class CodeService {
 
         StringBuilder sb = new StringBuilder();
 
-        sb.append("(function (mercury, $) {");
+        sb.append("(function (mercury) {");
         sb.append("    window.mercury = mercury;");
         sb.append("    mercury.base = mercury.base || {};");
         sb.append("    mercury.base.company = mercury.base.company || {};");
@@ -320,7 +320,7 @@ public class CodeService {
         sb.append("        }");// end of getCode
 
         sb.append("    };");
-        sb.append("})(window.mercury || {}, jQuery);");
+        sb.append("})(window.mercury || {});");
 
         return sb.toString();
     }

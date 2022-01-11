@@ -158,10 +158,10 @@ const templateMenus = {
 };
 
 const getTemplateMenu = (user) => {
-    const userGroupMap = user.groups.reduce(function(map, obj) {
+    /*const userGroupMap = user.roles.reduce(function(map, obj) {
         map[obj] = true;
         return map;
-    }, {});
+    }, {});*/
 
     /*var arr = [
         { key: 'foo', val: 'bar' },
@@ -177,7 +177,7 @@ const getTemplateMenu = (user) => {
         return templateMenus;
     }
 
-    excludeMenuByGroup(templateMenus.children, userGroupMap)
+    excludeMenuByGroup(templateMenus.children, {})
     return templateMenus;
 }
 

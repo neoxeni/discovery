@@ -221,8 +221,8 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public AppUser findByUserId(String userId) {
-        return userRepository.findByUserId(userId);
+    public AppUser findByUserId(Integer id) {
+        return userRepository.findByUserId(id);
     }
 
     public void sendActiveSignal(String userKey, String uuid) {

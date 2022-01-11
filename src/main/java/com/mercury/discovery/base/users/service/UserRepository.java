@@ -27,7 +27,7 @@ public interface UserRepository {
 
     AppUser findByUserKey(String userKey);
 
-    AppUser findByUserId(String userId);
+    AppUser findByUserId(Integer id);
 
     int insert(AppUser appUser);
 

@@ -95,7 +95,7 @@
     <script src="/static/lib/mercury/mercury.base.vue.chart.js" defer></script>
     <script src="/static/js/menu.js" defer></script>
 
-    <script src="/LittleJoe/common/codes" async></script>
+    <script src="/api/v2/base/codes/scripts"></script>
 
     <script type="module">
         import MpAppBar from "/static/vue/components/navigation/MpAppBar.js";
@@ -107,25 +107,10 @@
         const serverMode = "";
         const initialData = {}
         xAjax({
-            url:'/LittleJoe/common/users'
+            url:'/api/v2/base/users/me'
         }).then(resp=>{
-            initialData['user'] = resp.user;
-            initialData['users'] = resp.users;
-            return xAjax({
-                url:'/LittleJoe/api/clients/?page=1&page_size=500'
-            })
-        }).then(resp=>{
-            const clients = []
-            resp.results.forEach(client=> {
-                clients.push({
-                    text: client.name,
-                    value: client.id,
-                    eng_name: client.eng_name,
-                    status: client.status
-                })
-            })
-            initialData['clients'] = clients;
-        }).then(()=>{
+            initialData['user'] = resp;
+
             const menus = getTemplateMenu(initialData['user'])
             const routes = getRoutesByMenu(menus);
             window.vueMain = new Vue({

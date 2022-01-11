@@ -112,3 +112,39 @@ CREATE TABLE tb_cmm_code (
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='코드';
 
 
+CREATE TABLE tb_cmm_code (
+    cd                  varchar(36)         NOT NULL COMMENT '코드',
+    div_cd              varchar(20)         NOT NULL COMMENT '분류코드',
+    prnt_cd             varchar(36)         DEFAULT '0' COMMENT '상위코드',
+    cd_nm               varchar(100)        NOT NULL COMMENT '코드명',
+    sort_no             int(11)             DEFAULT 0 COMMENT '정렬번호',
+    dtl                 varchar(200)            NULL COMMENT '코드상세',
+    use_yn              char(1)             DEFAULT 'Y' COMMENT '사용여부',
+    reg_emp_no          int(11)             NOT NULL COMMENT '등록자',
+    reg_dt              datetime default current_timestamp() COMMENT '등록일시',
+    upd_emp_no          int(11)                 NULL COMMENT '수정자',
+    upd_dt              datetime                NULL COMMENT '수정일시',
+    etc1                varchar(100)            NULL COMMENT 'etc1',
+    etc2                varchar(100)            NULL COMMENT 'etc2',
+    etc3                varchar(100)            NULL COMMENT 'etc3',
+    etc4                varchar(100)            NULL COMMENT 'etc4',
+    cmpny_no            int(11)             NOT NULL COMMENT '회사번호',
+    lvl                 int(11)                 NULL COMMENT '레벨',
+    adpt_fr_dt 			varchar(8)             NOT NULL DEFAULT '20210101'  COMMENT '적용시작일',
+    adpt_to_dt 			varchar(8)             NOT NULL DEFAULT '20991231' COMMENT '적용종료일',
+    PRIMARY KEY (cd,div_cd,cmpny_no),
+    INDEX IX1_TB_CODE (div_cd,prnt_cd,sort_no),
+    INDEX IX2_TB_CODE (prnt_cd)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='코드';
+
+
+CREATE TABLE tb_cmm_code_div (
+    div_cd              varchar(20)         NOT NULL COMMENT '분류코드',
+    div_nm              varchar(100)        NOT NULL COMMENT '분류명',
+    div_service         varchar(10)             NULL COMMENT '서비스구분',
+    upd_enable_yn       char(1)             NOT NULL COMMENT '수정가능여부',
+    cmpny_no            int(11)             NOT NULL COMMENT '회사번호',
+    user_define_col     varchar(50)             NULL COMMENT '유저정의 컬럼',
+
+    PRIMARY KEY (div_cd,cmpny_no)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='코드분류';
