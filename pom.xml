@@ -17,6 +17,21 @@
     <properties>
         <java.version>1.8</java.version>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>ubicus-public</id>
+            <url>http://nexus3.ubicus.co.kr/repository/maven-public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -46,8 +61,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-commons -->
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-commons</artifactId>
@@ -127,7 +140,11 @@
             <artifactId>commons-pool2</artifactId>
             <version>2.4.3</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.ubicus</groupId>
+            <artifactId>ubicus-sitemenu</artifactId>
+            <version>0.0.10</version>
+        </dependency>
 
 
 

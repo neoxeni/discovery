@@ -106,12 +106,18 @@
 
         const serverMode = "";
         const initialData = {}
+        const menus = await xAjax({
+            url: '/base/menu/getMenuList',
+            usePrefixUrl: false,
+            data: {
+                menuId: 'discovery'
+            }
+        });
+
         xAjax({
             url:'/api/v2/base/users/me'
         }).then(resp=>{
             initialData['user'] = resp;
-
-            const menus = getTemplateMenu(initialData['user'])
             const routes = getRoutesByMenu(menus);
             window.vueMain = new Vue({
                 el: '#app-wrapper',

@@ -6,6 +6,7 @@ import com.mercury.discovery.common.model.date.DateRangeMethodArgumentResolver;
 import com.mercury.discovery.config.web.gzip.GZIPFilter;
 import com.mercury.discovery.config.web.gzip.GZIPProperties;
 import com.mercury.discovery.config.web.resolver.UploadFileResourceResolver;
+import com.ubicus.sitemenu.configuration.EnableSitemenu;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +37,7 @@ import java.util.Set;
 
 @Configuration
 @EnableWebMvc
+@EnableSitemenu
 @EnableConfigurationProperties(GZIPProperties.class)
 public class ServletContextConfig implements WebMvcConfigurer {
     @Autowired

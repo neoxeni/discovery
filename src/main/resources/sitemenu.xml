@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemenu id="dure" name="durepack-website">
+
+
+    <application id="discovery" name="discovery" path="/intro" >
+        <menu name="사이트관리" path="/admin/site/code/UbBaseCode">
+            <menu name="코드관리" path="/admin/site/code/UbBaseCode"/>
+            <menu name="메뉴관리" path="/admin/site/menu/UbBaseMenu"/>
+        </menu>
+    </application>
+</sitemenu>
