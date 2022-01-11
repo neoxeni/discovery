@@ -20,11 +20,11 @@ public interface OrganizationRepository {
 
     List<CamelMap> findDeptEmpListForTreeSearch(OrganizationSearchDto organizationSearchDto);
 
-    List<CamelMap> findDepartmentAll(int cmpnyNo);
+    List<CamelMap> findDepartmentAll(int clientId);
 
-    List<CamelMap> findEmployeeAll(int cmpnyNo);
+    List<CamelMap> findEmployeeAll(int clientId);
 
-    Department findDepartment(Integer cmpnyNo, Integer deptNo);
+    Department findDepartment(Integer clientId, Integer deptNo);
 
     int insertDepartment(Department department);
 
@@ -34,13 +34,13 @@ public interface OrganizationRepository {
 
     int changeDepartmentDepartment(ChangeDepartmentDto changeDepartmentDto);
 
-    List<UserRole> findDepartmentsRoles(Integer cmpnyNo, Integer deptNo);
+    List<UserRole> findDepartmentsRoles(Integer clientId, Integer deptNo);
 
-    Set<UserAppRole> findDepartmentsAppRoles(Integer cmpnyNo, Integer deptNo);
+    Set<UserAppRole> findDepartmentsAppRoles(Integer clientId, Integer deptNo);
 
-    List<CamelMap> findDepartmentsTree(Integer cmpnyNo);
+    List<CamelMap> findDepartmentsTree(Integer clientId);
 
-    List<CamelMap> findDepartmentByParent(int cmpnyNo, String useYn, int pDeptNo);
+    List<CamelMap> findDepartmentByParent(int clientId, String useYn, int pDeptNo);
 
-    List<CamelMap> findEmployeeByDepartment(int cmpnyNo, String useYn, String rtrmntYn, String rootYn, int deptNo);
+    List<CamelMap> findEmployeeByDepartment(int clientId, String useYn, String rtrmntYn, String rootYn, int deptNo);
 }

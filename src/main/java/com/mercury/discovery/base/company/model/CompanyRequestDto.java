@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class CompanyRequestDto {
-    private Integer cmpnyNo;
+    private Integer clientId;
 
 
     private String status;//0:비활성, 1:활성

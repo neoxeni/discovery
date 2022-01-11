@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 public class Company implements Serializable {
 
     private static final long serialVersionUID = -621627670582569218L;
-    private Integer cmpnyNo;
+    private Integer clientId;
     private String cmpnyNm;
     private String cmpnyId;
     private String telNo;

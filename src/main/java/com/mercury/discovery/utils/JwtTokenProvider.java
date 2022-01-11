@@ -2,7 +2,6 @@ package com.mercury.discovery.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercury.discovery.base.users.model.TokenUser;
-import com.mercury.discovery.base.users.model.UserType;
 import io.jsonwebtoken.*;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +17,7 @@ import java.util.Map;
  * jti: JWT의 고유 식별자로서, 주로 중복적인 처리를 방지하기 위하여 사용됩니다. 일회용 토큰에 사용하면 유용합니다.
  * appId
  * iss: 토큰 발급자 (issuer)
- * userId:cmpnyNo:userNo:UserType
+ * userId:clientId:userNo:UserType
  * sub: 토큰 제목 (subject)
  * 사용안함
  * aud: 토큰 대상자 (audience)
@@ -59,10 +58,9 @@ public class JwtTokenProvider {
             String iss = (String) map.get("iss");
 
             String[] issuerSplit = iss.split(":");
-            user.setId(issuerSplit[0]);
-            user.setCmpnyNo(Integer.parseInt(issuerSplit[1]));
-            user.setUserNo(Integer.parseInt(issuerSplit[2]));
-            user.setUserType(UserType.valueOf(issuerSplit[3]));
+            user.setId(Integer.parseInt(issuerSplit[0]));
+            user.setClientId(Integer.parseInt(issuerSplit[1]));
+            user.setName(issuerSplit[2]);
             String refreshJwt = getJwtFromUser(user, true);
             user.setJwt(refreshJwt);
 
@@ -73,12 +71,12 @@ public class JwtTokenProvider {
     }
 
     public String getJwtFromUser(TokenUser tokenUser, boolean isRefresh) {
-        Date createdAt = isRefresh ? new Date() : new Date(tokenUser.getCreatedAt());
+        Date createdAt = isRefresh ? new Date() : new Date(tokenUser.getIssuedAt());
         Date expiredAt = isRefresh ? new Date(createdAt.getTime() + tokenValidMillisecond) : new Date(tokenUser.getExpiredAt());
 
 
         String jwt = Jwts.builder()
-                .setIssuer(tokenUser.getId() + ":" + tokenUser.getCmpnyNo() + ":" + tokenUser.getUserNo() + ":" + tokenUser.getUserType().name())
+                .setIssuer(tokenUser.getId() + ":" + tokenUser.getClientId() + ":" + tokenUser.getName())
                 .setSubject(IDGenerator.getUUID())  //고객의 경우 conversation ID로 사용
                 .setId(tokenUser.getUserKey())      // api 아이디 (UUID)
                 .setIssuedAt(createdAt)             // 토큰 발행일자
@@ -88,7 +86,7 @@ public class JwtTokenProvider {
                 .compact();
 
         if (isRefresh) {
-            tokenUser.setCreatedAt(createdAt.getTime());
+            tokenUser.setIssuedAt(createdAt.getTime());
             tokenUser.setExpiredAt(expiredAt.getTime());
             tokenUser.setJwt(jwt);
         }
@@ -119,22 +117,20 @@ public class JwtTokenProvider {
 
         TokenUser user = new TokenUser();
 
-        user.setId(issuerSplit[0]);
-        user.setCmpnyNo(Integer.parseInt(issuerSplit[1]));
-
         try {
-            user.setUserNo(Integer.parseInt(issuerSplit[2]));
+            user.setId(Integer.parseInt(issuerSplit[0]));
         } catch (NumberFormatException nfe) {
-            user.setUserNo(0);
+            user.setId(0);
         }
+        user.setClientId(Integer.parseInt(issuerSplit[1]));
+        user.setName(issuerSplit[2]);
 
-        user.setUserType(UserType.valueOf(issuerSplit[3]));
         user.setUserKey(claims.getId());
         user.setName(claims.getAudience());
 
         user.setJwt(jwt);
         user.setExpiredAt(claims.getExpiration().getTime());
-        user.setCreatedAt(claims.getIssuedAt().getTime());
+        user.setIssuedAt(claims.getIssuedAt().getTime());
 
         return user;
     }

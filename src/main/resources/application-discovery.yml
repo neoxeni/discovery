@@ -62,7 +62,7 @@ spring:
                     auth: true
                     starttls:
                         enable: true
-    jpa:
+    jpa_not:
         open-in-view: false
         properties:
             hibernate:
@@ -118,7 +118,7 @@ apps:
     request-mapping: ${ENV.APPS_REQUEST_MAPPING:/api/v2}
     packages: ${ENV.APPS_PACKAGES:com.mercury.discovery}
     host: ${ENV.APPS_HOST:http://localhost:${server.port}}
-    mode: ${ENV.APPS_MODE:on-premise}       # on-premise(cmpnyNo:1, cmpnyId:voc), service
+    mode: ${ENV.APPS_MODE:on-premise}       # on-premise(clientId:1, cmpnyId:voc), service
     error:
         page: thymeleaf/error
     upload:

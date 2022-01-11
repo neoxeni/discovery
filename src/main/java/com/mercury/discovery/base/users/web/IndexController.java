@@ -38,6 +38,6 @@ public class IndexController {
             userService.resetUserPassword(Integer.parseInt(empNo), passwd);
         }
 
-        return "redirect:/intro";
+        return "redirect:/";
     }
 }

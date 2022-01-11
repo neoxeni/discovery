@@ -13,7 +13,7 @@ public interface CodeRepository {
 
     List<Code> findAll(Code code);
 
-    List<Code> findByDiv(String divCd, Integer cmpnyNo);
+    List<Code> findByDiv(String divCd, Integer clientId);
 
     List<CodeDiv> findCodeDivAll(Code code);
 

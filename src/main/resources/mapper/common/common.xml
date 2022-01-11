@@ -54,7 +54,7 @@
                 -- 해당 부서 하위 부서 리스트
                 WITH CTE AS (
                 SELECT a.dept_no , a.p_dept_no , a.dept_cd, a.dept_nm
-                FROM tb_cmm_dept a WHERE a.use_yn = 'Y' AND a.cmpny_no = ${cmpnyNo}
+                FROM tb_cmm_dept a WHERE a.use_yn = 'Y' AND a.cmpny_no = ${clientId}
                 START WITH DEPT_NO = ${deptNo}
                 CONNECT BY PRIOR DEPT_NO = P_DEPT_NO
                 )
@@ -62,11 +62,11 @@
             <when test="_databaseId == 'mysql'">
                 WITH RECURSIVE CTE AS (
                 SELECT a.dept_no , a.p_dept_no , a.dept_cd, a.dept_nm
-                FROM tb_cmm_dept a WHERE a.use_yn = 'Y' AND a.cmpny_no = ${cmpnyNo} AND a.dept_no = ${deptNo}
+                FROM tb_cmm_dept a WHERE a.use_yn = 'Y' AND a.cmpny_no = ${clientId} AND a.dept_no = ${deptNo}
                 UNION ALL
                 SELECT a.dept_no , a.p_dept_no , a.dept_cd, a.dept_nm
                 FROM tb_cmm_dept a , CTE b
-                WHERE a.p_dept_no = b.dept_no AND a.use_yn = 'Y' AND a.cmpny_no = ${cmpnyNo}
+                WHERE a.p_dept_no = b.dept_no AND a.use_yn = 'Y' AND a.cmpny_no = ${clientId}
                 )
             </when>
             <otherwise>

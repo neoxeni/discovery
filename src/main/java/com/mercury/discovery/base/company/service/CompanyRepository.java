@@ -12,13 +12,13 @@ import java.util.List;
 public interface CompanyRepository {
     List<Company> findAll(CompanyRequestDto companyRequestDto);
 
-    Company getCompany(int cmpnyNo);
+    Company getCompany(int clientId);
 
     int update(Company company);
 
     int insert(Company company);
 
-    int updateEmailPassword(int cmpnyNo, String newPassword);
+    int updateEmailPassword(int clientId, String newPassword);
 
     int confirm(Company company);
 
@@ -27,5 +27,5 @@ public interface CompanyRepository {
     String getDomainsFindByEmail(String email);
 
 
-    void deleteCompany(Integer cmpnyNo);
+    void deleteCompany(Integer clientId);
 }

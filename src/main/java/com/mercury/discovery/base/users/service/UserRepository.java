@@ -16,7 +16,7 @@ import java.util.Set;
 @Repository
 public interface UserRepository {
     //로그인 전용으로 password 정보를 포함한다.
-    AppUser findByUserIdForLogin(String userId, String cmpnyId);
+    AppUser findByUserIdForLogin(String userId, String clientId);
 
     //일반적인 사용자 검색
     List<AppUser> find(AppUserRequestDto appUserRequestDto);
@@ -35,8 +35,6 @@ public interface UserRepository {
 
     int insertLoginHistory(AppUser appUser);
 
-    int insertLogoutHistory(AppUser appUser);
-
     int update(AppUser appUser);
 
     int updateLoginInfo(AppUser appUser);
@@ -45,23 +43,15 @@ public interface UserRepository {
 
     int updateLoginId(String userId, int empNo);
 
-    int plusPsswdErrNum(AppUser appUser);
+    int plusPasswordErrorCount(AppUser appUser);
 
-    int delete(Integer cmpnyNo, Integer empNo);
+    int delete(Integer clientId, Integer empNo);
 
     int resetPassword(Integer empNo, String psswd, LocalDateTime psswdUpdDt);
 
-    int resetPasswordCnt(Integer empNo);
+    int resetPasswordCount(Integer empNo);
 
     AppUser findByUserEmail(String appUser);
 
-    String getEmail(String email, String cmpnyId);
 
-    String getUserId(String userId, String cmpnyId);
-
-    String getEmailForDomain(String email);
-
-    AppUser findByUserEmailWithCmpnyId(String email, String cmpnyId);
-
-    List<AppUser> findDeptEmpList(int cmpnyNo, String deptCd, String rtrmntYn);
 }

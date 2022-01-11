@@ -94,7 +94,7 @@ public class FileRestController {
             attachFile.setExtNm(ext);
             attachFile.setUserFileNm(oriFileName);
             attachFile.setWorkType("INSERT");
-            attachFile.setRegMngrNo(appUser.getUserNo());
+            attachFile.setRegMngrNo(appUser.getId());
 
             if (meta != null && meta.length >= index) {
                 attachFile.setMeta(meta[index]);

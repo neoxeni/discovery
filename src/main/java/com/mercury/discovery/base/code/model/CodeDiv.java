@@ -18,6 +18,6 @@ public class CodeDiv implements Serializable {
     private String divNm;
     private String divService;
     private String updEnableYn;
-    private Integer cmpnyNo;
+    private Integer clientId;
     private String userDefineCol;
 }

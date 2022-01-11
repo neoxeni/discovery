@@ -23,5 +23,5 @@ public class UserRole implements Serializable {
     private Integer dataNo; //부서:deptNo, 사원:empNo
     //GroupMapping 객체와 동일한 이름:E
 
-    private Integer cmpnyNo;
+    private Integer clientId;
 }

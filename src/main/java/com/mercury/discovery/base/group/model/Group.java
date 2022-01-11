@@ -33,7 +33,7 @@ public class Group {
     private LocalDateTime updDt;
     private Integer updUserNo;
 
-    private Integer cmpnyNo;
+    private Integer clientId;
     private String updEnableYn;
     private String callcenterYn;
 }

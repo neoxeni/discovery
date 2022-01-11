@@ -29,12 +29,12 @@ public class CompanyService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(cacheNames = "company", key = "#cmpnyNo")
-    public Company getCompany(Integer cmpnyNo) {
-        return companyRepository.getCompany(cmpnyNo);
+    @Cacheable(cacheNames = "company", key = "#clientId")
+    public Company getCompany(Integer clientId) {
+        return companyRepository.getCompany(clientId);
     }
 
-    @CacheEvict(cacheNames = "company", key = "#company.cmpnyNo")
+    @CacheEvict(cacheNames = "company", key = "#company.clientId")
     public int update(Company company) {
         this.encryptPassword(company);
         return companyRepository.update(company);
@@ -45,12 +45,12 @@ public class CompanyService {
         return companyRepository.insert(company);
     }
 
-    @CacheEvict(cacheNames = "company", key = "#cmpnyNo")
-    public int updateEmailPassword(int cmpnyNo, String newPassword) {
-        return companyRepository.updateEmailPassword(cmpnyNo, aesUtils.encrypt(newPassword));
+    @CacheEvict(cacheNames = "company", key = "#clientId")
+    public int updateEmailPassword(int clientId, String newPassword) {
+        return companyRepository.updateEmailPassword(clientId, aesUtils.encrypt(newPassword));
     }
 
-    @CacheEvict(cacheNames = "company", key = "#company.cmpnyNo")
+    @CacheEvict(cacheNames = "company", key = "#company.clientId")
     public int confirm(Company company) {
         return companyRepository.confirm(company);
     }
@@ -63,11 +63,11 @@ public class CompanyService {
         return companyRepository.getDomainsFindByEmail(email);
     }
 
-    @CacheEvict(cacheNames = "company", key = "#cmpnyNo")
-    public void deleteCompany(Integer cmpnyNo) {
+    @CacheEvict(cacheNames = "company", key = "#clientId")
+    public void deleteCompany(Integer clientId) {
         String profileActive = ContextUtils.getEnvironmentProperty("spring.profiles.active");
         if ("local".equals(profileActive)) {
-            companyRepository.deleteCompany(cmpnyNo);
+            companyRepository.deleteCompany(clientId);
         } else {
             throw new IllegalArgumentException("Who Are You??");
         }

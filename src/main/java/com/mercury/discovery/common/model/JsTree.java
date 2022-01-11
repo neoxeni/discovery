@@ -19,5 +19,5 @@ public class JsTree implements Serializable {
     private Object data;
 
     private String divCd;
-    private Integer cmpnyNo;
+    private Integer clientId;
 }

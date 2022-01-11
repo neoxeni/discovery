@@ -21,7 +21,7 @@ public class CompanyRestController {
 
     @GetMapping("/base/companiesMe")
     public ResponseEntity<?> getCompaniesMe(AppUser appUser) {
-        Company company = companyService.getCompany(appUser.getCmpnyNo());
+        Company company = companyService.getCompany(appUser.getClientId());
         if(company.getEmailPw() != null){
             company.setEmailPw("PROTECTED");
         }
@@ -30,7 +30,7 @@ public class CompanyRestController {
 
     @PatchMapping("/base/companies")
     public ResponseEntity<?> patchCompany(AppUser appUser, @RequestBody Company company) {
-        company.setCmpnyNo(appUser.getCmpnyNo());
+        company.setClientId(appUser.getClientId());
         int affected = companyService.update(company);
         return ResponseEntity.ok(new SimpleResponseModel(affected, MessagesUtils.getMessage("sentence.update")));
     }
@@ -41,7 +41,7 @@ public class CompanyRestController {
             throw new BadParameterException("Not Match newPassword and confirmPassword");
         }
 
-        int affected = companyService.updateEmailPassword(appUser.getCmpnyNo(), newPassword);
+        int affected = companyService.updateEmailPassword(appUser.getClientId(), newPassword);
         return ResponseEntity.ok(new SimpleResponseModel(affected, MessagesUtils.getMessage("sentence.update")));
     }
 }

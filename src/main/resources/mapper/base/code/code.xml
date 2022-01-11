@@ -19,7 +19,7 @@
             cmpny_no,
             lvl
         FROM tb_cmm_code
-        WHERE div_cd = #{divCd} AND cmpny_no IN( -1, #{cmpnyNo})
+        WHERE div_cd = #{divCd} AND cmpny_no IN( -1, #{clientId})
         ORDER BY prnt_cd, sort_no
     </select>
 
@@ -43,7 +43,7 @@
             cmpny_no,
             lvl
         FROM tb_cmm_code
-        WHERE cmpny_no IN( -1, #{cmpnyNo})
+        WHERE cmpny_no IN( -1, #{clientId})
         ORDER BY div_cd, prnt_cd, sort_no
     </select>
 
@@ -51,7 +51,7 @@
         INSERT INTO tb_cmm_code(
             cd, div_cd, prnt_cd, cd_nm, sort_no, dtl, use_yn, reg_emp_no, reg_dt, etc1, etc2, etc3, etc4, cmpny_no, lvl
         ) VALUES (
-            #{cd}, #{divCd}, #{prntCd}, #{cdNm}, #{sortNo}, #{dtl}, #{useYn}, #{regEmpNo}, #{regDt}, #{etc1}, #{etc2}, #{etc3}, #{etc4}, #{cmpnyNo}, #{lvl}
+            #{cd}, #{divCd}, #{prntCd}, #{cdNm}, #{sortNo}, #{dtl}, #{useYn}, #{regEmpNo}, #{regDt}, #{etc1}, #{etc2}, #{etc3}, #{etc4}, #{clientId}, #{lvl}
         )
     </insert>
 
@@ -70,9 +70,9 @@
            etc2 = #{etc2},
            etc3 = #{etc3},
            etc4 = #{etc4},
-           cmpny_no = #{cmpnyNo},
+           cmpny_no = #{clientId},
            lvl = #{lvl}
-        WHERE cmpny_no = #{cmpnyNo}
+        WHERE cmpny_no = #{clientId}
         AND cd = #{cd}
         AND div_cd = #{divCd}
     </update>
@@ -81,7 +81,7 @@
 
 
         DELETE FROM tb_cmm_code
-        WHERE cmpny_no IN( -1, #{cmpnyNo})
+        WHERE cmpny_no IN( -1, #{clientId})
           AND div_cd =  #{divCd}
           AND cd IN (
             <include refid="common.sql.with" /> cte(div_cd, cd, prnt_cd) AS (
@@ -90,7 +90,7 @@
                     a.cd,
                     a.prnt_cd
                 FROM tb_cmm_code a
-                WHERE a.cmpny_no IN( -1, #{cmpnyNo})
+                WHERE a.cmpny_no IN( -1, #{clientId})
                   AND a.div_cd =  #{divCd}
                   AND a.cd = #{cd}
 
@@ -101,7 +101,7 @@
                     a.cd,
                     a.prnt_cd
                 FROM tb_cmm_code a JOIN cte b ON a.prnt_cd = b.cd
-                    AND a.cmpny_no IN( -1, #{cmpnyNo})
+                    AND a.cmpny_no IN( -1, #{clientId})
             )
 
             SELECT cd from cte
@@ -110,7 +110,7 @@
 
     <delete id="deleteCodesByDivCd">
         DELETE FROM tb_cmm_code
-        WHERE cmpny_no = #{cmpnyNo}
+        WHERE cmpny_no = #{clientId}
           AND div_cd = #{divCd}
     </delete>
 
@@ -123,7 +123,7 @@
             cmpny_no,
             user_define_col
         FROM tb_cmm_code_div
-        WHERE cmpny_no IN( -1, #{cmpnyNo})
+        WHERE cmpny_no IN( -1, #{clientId})
         <choose>
             <when test=" divCd != null and divCd != '' ">
                 AND div_cd = #{divCd}
@@ -139,7 +139,7 @@
         INSERT INTO tb_cmm_code_div (
             div_cd, div_nm, div_service, upd_enable_yn, cmpny_no, user_define_col
         ) VALUES (
-            #{divCd}, #{divNm}, #{divService}, #{updEnableYn}, #{cmpnyNo}, #{userDefineCol}
+            #{divCd}, #{divNm}, #{divService}, #{updEnableYn}, #{clientId}, #{userDefineCol}
         )
     </insert>
 
@@ -149,16 +149,16 @@
            div_nm = #{divNm},
            div_service = #{divService},
            upd_enable_yn = #{updEnableYn},
-           cmpny_no = #{cmpnyNo},
+           cmpny_no = #{clientId},
            user_define_col = #{userDefineCol}
-        WHERE cmpny_no = #{cmpnyNo}
+        WHERE cmpny_no = #{clientId}
           AND div_cd = #{divCd}
     </update>
 
     <delete id="deleteCodeDiv">
         DELETE
         FROM tb_cmm_code_div
-        WHERE cmpny_no = #{cmpnyNo}
+        WHERE cmpny_no = #{clientId}
           AND div_cd = #{divCd}
     </delete>
 

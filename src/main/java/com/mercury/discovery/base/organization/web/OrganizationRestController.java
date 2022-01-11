@@ -33,7 +33,7 @@ public class OrganizationRestController {
 
     @GetMapping("/base/organizations")
     public ResponseEntity<?> getOrganizations(AppUser appUser, OrganizationSearchDto organizationSearchDto) {
-        organizationSearchDto.setCmpnyNo(appUser.getCmpnyNo());
+        organizationSearchDto.setClientId(appUser.getClientId());
         String str = organizationSearchDto.getStr();
         List<CamelMap> list;
         if (str == null) {
@@ -62,7 +62,7 @@ public class OrganizationRestController {
 
     @GetMapping("/base/organizations/tree")
     public ResponseEntity<?> getOrganizationsForTree(AppUser appUser) {
-        CamelMap organization = organizationService.findDeptEmpListForTreeAll(appUser.getCmpnyNo());
+        CamelMap organization = organizationService.findDeptEmpListForTreeAll(appUser.getClientId());
         return ResponseEntity.ok(organization);
     }
 
@@ -70,18 +70,18 @@ public class OrganizationRestController {
     public ResponseEntity<?> getOrganizationsForList(AppUser appUser, Boolean department) {
         List<CamelMap> list = new ArrayList<>();
         if (department != null && department) {
-            list.addAll(organizationService.findDeptListAll(appUser.getCmpnyNo()));
+            list.addAll(organizationService.findDeptListAll(appUser.getClientId()));
         }
 
-        list.addAll(organizationService.findEmpListAll(appUser.getCmpnyNo()));
+        list.addAll(organizationService.findEmpListAll(appUser.getClientId()));
         return ResponseEntity.ok(list);
     }
 
     @GetMapping("/base/organizations/departments/{deptNo}")
     public ResponseEntity<?> getDepartment(AppUser appUser, @PathVariable Integer deptNo) {
-        Department department = organizationService.findDepartment(appUser.getCmpnyNo(), deptNo);
+        Department department = organizationService.findDepartment(appUser.getClientId(), deptNo);
 
-        List<UserRole> list = organizationService.findDepartmentsRoles(appUser.getCmpnyNo(), department.getDeptNo());
+        List<UserRole> list = organizationService.findDepartmentsRoles(appUser.getClientId(), department.getDeptNo());
         List<UserRole> roles = new ArrayList<>();
         List<UserRole> parentsRoles = new ArrayList<>();
         list.forEach(userRole -> {
@@ -100,8 +100,8 @@ public class OrganizationRestController {
 
     @PostMapping("/base/organizations/departments")
     public ResponseEntity<?> postDepartment(AppUser appUser, @RequestBody Department department) {
-        department.setCmpnyNo(appUser.getCmpnyNo());
-        department.setRegEmpNo(appUser.getEmpNo());
+        department.setClientId(appUser.getClientId());
+        department.setRegEmpNo(appUser.getId());
         department.setRegDt(LocalDateTime.now());
 
         if(!StringUtils.hasLength(department.getDeptCd())){
@@ -119,8 +119,8 @@ public class OrganizationRestController {
 
     @PatchMapping("/base/organizations/departments")
     public ResponseEntity<?> patchDepartment(AppUser appUser, @RequestBody Department department) {
-        department.setCmpnyNo(appUser.getCmpnyNo());
-        department.setUpdEmpNo(appUser.getEmpNo());
+        department.setClientId(appUser.getClientId());
+        department.setUpdEmpNo(appUser.getId());
         department.setUpdDt(LocalDateTime.now());
         int affected = organizationService.updateDepartment(department);
         return ResponseEntity.ok(new SimpleResponseModel(affected, MessagesUtils.getMessage("sentence.update")));
@@ -129,10 +129,10 @@ public class OrganizationRestController {
     //직위(OR02)
     @PatchMapping("/base/organizations/posts")
     public ResponseEntity<?> patchPosts(AppUser appUser, @RequestBody List<Code> posts) {
-        Integer cmpnyNo = appUser.getCmpnyNo();
+        Integer clientId = appUser.getClientId();
 
-        codeService.setDefault("OR02", cmpnyNo, appUser.getEmpNo(), posts);
-        codeService.deleteCodesByDivCd(cmpnyNo,"OR02");
+        codeService.setDefault("OR02", clientId, appUser.getId(), posts);
+        codeService.deleteCodesByDivCd(clientId,"OR02");
         int affected = posts.stream().mapToInt(codeService::insert).sum();
         return ResponseEntity.ok(new SimpleResponseModel(affected, MessagesUtils.getMessage("sentence.update"), posts));
     }
@@ -140,18 +140,18 @@ public class OrganizationRestController {
     //직책(OR01)
     @PatchMapping("/base/organizations/jobs")
     public ResponseEntity<?> patchJobs(AppUser appUser, @RequestBody List<Code> jobs) {
-        Integer cmpnyNo = appUser.getCmpnyNo();
+        Integer clientId = appUser.getClientId();
 
-        codeService.setDefault("OR01", cmpnyNo, appUser.getEmpNo(), jobs);
-        codeService.deleteCodesByDivCd(cmpnyNo,"OR01");
+        codeService.setDefault("OR01", clientId, appUser.getId(), jobs);
+        codeService.deleteCodesByDivCd(clientId,"OR01");
         int affected = jobs.stream().mapToInt(codeService::insert).sum();
         return ResponseEntity.ok(new SimpleResponseModel(affected, MessagesUtils.getMessage("sentence.update"), jobs));
     }
 
     @PatchMapping("/base/organizations/departments/change")
     public ResponseEntity<?> patchMoveDeptEmp(AppUser appUser, @RequestBody ChangeDepartmentDto changeDepartmentDto) {
-        changeDepartmentDto.setCmpnyNo(appUser.getCmpnyNo());
-        changeDepartmentDto.setUpdEmpNo(appUser.getEmpNo());
+        changeDepartmentDto.setClientId(appUser.getClientId());
+        changeDepartmentDto.setUpdEmpNo(appUser.getId());
         changeDepartmentDto.setUpdDt(LocalDateTime.now());
 
         String moveType = changeDepartmentDto.getMoveType();
@@ -167,28 +167,28 @@ public class OrganizationRestController {
 
     @GetMapping("/base/organizations/departments/tree")
     public ResponseEntity<?> getDepartmentsTree(AppUser appUser) {
-        return ResponseEntity.ok(organizationService.findDepartmentsTree(appUser.getCmpnyNo()));
+        return ResponseEntity.ok(organizationService.findDepartmentsTree(appUser.getClientId()));
     }
 
     @GetMapping("/base/organizations/clearCache")
-    public ResponseEntity<?> clearCache(@RequestParam String cmpnyNo) {
-        return ResponseEntity.ok(organizationService.clearCache(cmpnyNo));
+    public ResponseEntity<?> clearCache(@RequestParam String clientId) {
+        return ResponseEntity.ok(organizationService.clearCache(clientId));
     }
 
     @GetMapping("/base/organizations/departments/list")
     public ResponseEntity<?> getDepartmentsList(AppUser appUser) {
-        return ResponseEntity.ok(organizationService.findDeptListAll(appUser.getCmpnyNo()));
+        return ResponseEntity.ok(organizationService.findDeptListAll(appUser.getClientId()));
     }
 
     @GetMapping("/base/organizations/employee/list")
     public ResponseEntity<?> getEmployeeList(AppUser appUser) {
-        return ResponseEntity.ok(organizationService.findEmpListAll(appUser.getCmpnyNo()));
+        return ResponseEntity.ok(organizationService.findEmpListAll(appUser.getClientId()));
     }
 
     @GetMapping("/base/organizations/departments/parent/{pDeptNo}")
     public ResponseEntity<?> getDepartmentByParent(AppUser appUser, @PathVariable int pDeptNo, OrganizationSearchDto organizationSearchDto) {
         String useYn = organizationSearchDto.getUseYn();
-        return ResponseEntity.ok(organizationService.findDepartmentByParent(appUser.getCmpnyNo(), useYn, pDeptNo));
+        return ResponseEntity.ok(organizationService.findDepartmentByParent(appUser.getClientId(), useYn, pDeptNo));
     }
 
     @GetMapping("/base/organizations/employee/department/{deptNo}")
@@ -196,7 +196,7 @@ public class OrganizationRestController {
         String useYn = organizationSearchDto.getUseYn();
         String rtrmntYn = organizationSearchDto.getRtrmntYn();
         String rootYn = organizationSearchDto.getRootYn();
-        return ResponseEntity.ok(organizationService.findEmployeeByDepartment(appUser.getCmpnyNo(), useYn, rtrmntYn, rootYn, deptNo));
+        return ResponseEntity.ok(organizationService.findEmployeeByDepartment(appUser.getClientId(), useYn, rtrmntYn, rootYn, deptNo));
     }
 
 }

@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class GroupMappingRequestDto {
-    private Integer cmpnyNo;
+    private Integer clientId;
 
     private Integer grpNo;
 

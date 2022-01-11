@@ -54,12 +54,12 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         SavedRequest savedRequest = requestCache.getRequest(request, response);
         AppUser appUser = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        tempPw = appUser.getPsswd();
+        tempPw = appUser.getPassword();
 
         appUser.setLastIpAddress(HttpUtils.getRemoteAddr(request));
         userDetailsService.afterLoginSuccess(appUser);
 
-        String id = appUser.getId();
+        String id = appUser.getUsername();
         String encodeId = passwordEncoder.encode(id);
         int errorNum = 0;
 
@@ -77,19 +77,19 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         }
         */
 
-        if(appUser.getPsswdErrNum() > 6) {
+        if (appUser.getPasswordErrCount() > 6) {
             this.logout(request, response);
             errorNum = 2;
-            redirectStratgy.sendRedirect(request, response, "/login?error="+errorNum);
-        } else if(encodeId.equals(tempPw)) {
+            redirectStratgy.sendRedirect(request, response, "/login?error=" + errorNum);
+        } else if (encodeId.equals(tempPw)) {
             errorNum = 6;
             request.setAttribute("error", errorNum);
-            request.setAttribute("empNo", appUser.getEmpNo());
+            request.setAttribute("empNo", appUser.getId());
             request.setAttribute("userId", appUser.getId());
             request.getRequestDispatcher("/changePassword").forward(request, response);
         } else {
             // 로그인 오류 count 초기화
-            userRepository.resetPasswordCnt(appUser.getEmpNo());
+            userRepository.resetPasswordCount(appUser.getId());
 
             if (savedRequest != null) {
                 String targetUrl = savedRequest.getRedirectUrl();
@@ -110,7 +110,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
     public void logout(HttpServletRequest request, HttpServletResponse response) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null){
+        if (auth != null) {
             new SecurityContextLogoutHandler().logout(request, response, auth);
         }
     }

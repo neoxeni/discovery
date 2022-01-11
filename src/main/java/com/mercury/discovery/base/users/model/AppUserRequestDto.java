@@ -4,10 +4,10 @@ import lombok.Data;
 
 @Data
 public class AppUserRequestDto {
-    private Integer cmpnyNo;// 필수
+    private Integer clientId;// 필수
 
 
-    private Integer empNo;  // empNo가 설정되면 grpCd검색은 무시
+    private Integer id;  // empNo가 설정되면 grpCd검색은 무시
     
     private String grpCd;   // grpCd가 설정되면 empNo는 무시
 

@@ -6,7 +6,7 @@ import lombok.Data;
 public class OrganizationSearchDto {
     private String pageType;
 
-    private int cmpnyNo;
+    private int clientId;
 
     private int level;
 

@@ -180,7 +180,7 @@ public class SecurityLogAop {
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if ((principal instanceof UserDetails)) {
                 AppUser appUser = (AppUser) principal;
-                securityLog.setUserNo(appUser.getUserNo());
+                securityLog.setUserNo(appUser.getId());
             }
         }
     }

@@ -36,4 +36,11 @@ public class CustomPasswordEncoder implements PasswordEncoder {
 
         return encodedPassowrd.equals(encodedPassword);
     }
+
+    public static void main(String[] args) {
+        CustomPasswordEncoder c = new CustomPasswordEncoder();
+        String d = c.encode("1111");
+        System.out.println(d);
+
+    }
 }

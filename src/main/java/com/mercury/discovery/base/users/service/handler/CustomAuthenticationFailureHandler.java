@@ -34,15 +34,17 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException, ServletException {
         log.error("onAuthenticationFailure", e);
 
-        String cmpnyId = request.getParameter("cmpnyId");
+        String clientId = request.getParameter("clientId");
         String userId = request.getParameter("userId");
 
-        AppUser appUser = userRepository.findByUserIdForLogin(userId, cmpnyId);
+        AppUser appUser = userRepository.findByUserIdForLogin(userId, clientId);
 
         int errorNum = 0;
         if (e instanceof BadCredentialsException) {//자격 증명에 실패하였습니다. (패스워드 틀림, 해당 아이디 없음)
             errorNum = 1;
-            userRepository.plusPsswdErrNum(appUser);
+            if(appUser != null){
+                userRepository.plusPasswordErrorCount(appUser);
+            }
         } else if (e instanceof LockedException) { //사용자 계정이 잠겨 있습니다. (비밀번호 여러번 틀림)
             errorNum = 2;
         } else if (e instanceof CredentialsExpiredException) {//자격 증명 유효 기간이 만료되었습니다. (비밀번호 변경일자 지남)
@@ -58,7 +60,7 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
         //userRepository.failureLoginInfo(appuser);
         if(errorNum == 3) {
             request.setAttribute("error", errorNum);
-            request.setAttribute("empNo", appUser.getEmpNo());
+            request.setAttribute("empNo", appUser.getId());
             request.setAttribute("userId", userId);
 
             request.getRequestDispatcher("/changePassword").forward(request, response);

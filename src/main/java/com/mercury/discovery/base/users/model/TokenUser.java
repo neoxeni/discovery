@@ -8,20 +8,18 @@ import java.io.Serializable;
 
 @Alias("TokenUser")
 @Data
-@EqualsAndHashCode(of = {"userNo"})
+@EqualsAndHashCode(of = {"id"})
 public class TokenUser implements Serializable {
     private static final long serialVersionUID = -3098368111659804213L;
 
-    private UserType userType = UserType.NONE;
-    private Integer cmpnyNo;
-    private String userKey;
-
-    private Integer userNo;//same as empNo
-    private String id;
+    private Integer id;
     private String name;
+
+    private String userKey;
+    private Integer clientId;
 
     //아래의 정보는 JWT 관련 정보
     private String jwt;
-    private long createdAt;
+    private long issuedAt;
     private long expiredAt;
 }

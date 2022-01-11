@@ -24,9 +24,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-        String cmpnyId = request.getParameter("cmpnyId");
-        AppUser appUser = userService.getUserForLogin(userId, cmpnyId);
-
+        String clientId = request.getParameter("clientId");
+        AppUser appUser = userService.getUserForLogin(userId, clientId);
 
         if (appUser == null) {
             throw new UsernameNotFoundException(userId);
@@ -37,15 +36,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     public void afterLoginSuccess(AppUser appUser) {
         //password clear
-        appUser.setPsswd("");
+        appUser.setPassword("");
         //appUser.setPsswdErrNum(0);
-        appUser.setLastLoginDt(LocalDateTime.now());
+        appUser.setLastLoginAt(LocalDateTime.now());
 
         //성공시 사용자 정보업데이트 psswdErrNum, lastLoginDt, lastIpAddress 등등
         userService.successLoginInfo(appUser);
 
         //사용자 role 세팅
-        userService.setAppUserRoles(appUser);
+        //userService.setAppUserRoles(appUser);
 
         //api 서버 토큰발행
         String token = userService.getApiToken(appUser);

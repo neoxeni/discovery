@@ -6,14 +6,14 @@
     <select id="findGroup" resultType="Group">
         SELECT *
         FROM tb_cmm_group
-        WHERE cmpny_no = #{cmpnyNo} AND grp_no = #{grpNo}
+        WHERE cmpny_no = #{clientId} AND grp_no = #{grpNo}
     </select>
 
     <select id="findGroupAll" resultType="Group">
         SELECT g.*, cate_nm
         FROM tb_cmm_group g
         LEFT OUTER JOIN tb_cmm_category c ON g.cate_id = c.cate_id
-        WHERE g.cmpny_no = #{cmpnyNo}
+        WHERE g.cmpny_no = #{clientId}
         <if test='useYn != null and useYn != ""'>
             AND g.use_yn = #{useYn}
         </if>
@@ -33,7 +33,7 @@
         INSERT INTO tb_cmm_group (grp_no, cate_id,
         grp_nm ,use_yn ,reg_dt ,grp_cd ,reg_user_no ,cmpny_no ,upd_enable_yn ,callcenter_yn
         ) VALUES (#{grpNo}, #{cateId},
-        #{grpNm} ,#{useYn} ,#{regDt} ,#{grpCd} ,#{regUserNo} ,#{cmpnyNo} ,#{updEnableYn} ,#{callcenterYn}
+        #{grpNm} ,#{useYn} ,#{regDt} ,#{grpCd} ,#{regUserNo} ,#{clientId} ,#{updEnableYn} ,#{callcenterYn}
         )
     </insert>
 
@@ -42,7 +42,7 @@
         INSERT INTO tb_cmm_group (cate_id,
         grp_nm ,use_yn ,reg_dt ,grp_cd ,reg_user_no ,cmpny_no ,upd_enable_yn ,callcenter_yn
         ) VALUES (#{cateId},
-        #{grpNm} ,#{useYn} ,#{regDt} ,#{grpCd} ,#{regUserNo} ,#{cmpnyNo} ,#{updEnableYn} ,#{callcenterYn}
+        #{grpNm} ,#{useYn} ,#{regDt} ,#{grpCd} ,#{regUserNo} ,#{clientId} ,#{updEnableYn} ,#{callcenterYn}
         )
     </insert>
 
@@ -59,14 +59,14 @@
         ,upd_dt = #{updDt}
         ,upd_user_no = #{updUserNo}
         WHERE grp_no = #{grpNo}
-        AND cmpny_no = #{cmpnyNo}
+        AND cmpny_no = #{clientId}
     </update>
 
     <delete id="deleteGroup">
         DELETE
         FROM tb_cmm_group
         WHERE grp_no = #{grpNo}
-        AND cmpny_no = #{cmpnyNo}
+        AND cmpny_no = #{clientId}
     </delete>
 
     <select id="findGroupMappingsByGrpNo" resultType="GroupMappingResponseDto">
@@ -87,14 +87,14 @@
         LEFT OUTER JOIN tb_cmm_code postn ON e.postn_cd = postn.cd  AND postn.div_cd = 'OR02'
         LEFT OUTER JOIN tb_cmm_code duty ON e.duty_cd = duty.cd  AND duty.div_cd = 'OR01'
         LEFT OUTER JOIN tb_cmm_dept dept ON e.dept_no = dept.dept_no
-        WHERE e.cmpny_no =  #{groupMappingRequestDto.cmpnyNo}
+        WHERE e.cmpny_no =  #{groupMappingRequestDto.clientId}
         UNION
         SELECT wd.map_no, wd.grp_no, wd.data_gbn, wd.reg_dt, wd.reg_emp_no, wd.use_yn, wd.sort_no, d.dept_no AS data_no, d.dept_nm AS data_nm,
         (CASE WHEN parent.dept_nm IS NULL THEN '' ELSE parent.dept_nm END) AS tooltip,
         d.dept_cd AS data_cd
         FROM wd JOIN tb_cmm_dept d on  wd.data_no = d.dept_no AND wd.data_gbn = 'D'
         LEFT OUTER JOIN tb_cmm_dept parent ON parent.dept_no = d.p_dept_no
-        WHERE d.cmpny_no = #{groupMappingRequestDto.cmpnyNo}
+        WHERE d.cmpny_no = #{groupMappingRequestDto.clientId}
         )x
         <trim prefix="WHERE" prefixOverrides="AND|OR">
             <if test='groupMappingRequestDto.dataGbn != null and groupMappingRequestDto.dataGbn != ""'>
@@ -145,7 +145,7 @@
         <foreach collection="groupMappingNos" item="item" index="index" open="(" close=")" separator=",">
             #{item}
         </foreach>
-        AND #{cmpnyNo} = (SELECT cmpny_no FROM tb_cmm_company WHERE cmpny_no = #{cmpnyNo})
+        AND #{clientId} = (SELECT cmpny_no FROM tb_cmm_company WHERE cmpny_no = #{clientId})
     </delete>
 
     <delete id="deleteAppGroupMappings">
@@ -155,7 +155,7 @@
         <foreach collection="groupMappingNos" item="item" index="index" open="(" close=")" separator=",">
             #{item}
         </foreach>
-        AND #{cmpnyNo} = (SELECT cmpny_no FROM tb_cmm_company WHERE cmpny_no = #{cmpnyNo})
+        AND #{clientId} = (SELECT cmpny_no FROM tb_cmm_company WHERE cmpny_no = #{clientId})
     </delete>
 
     <delete id="deleteGroupMappingsByGrpNo">
@@ -190,8 +190,8 @@
             <if test="groupMappingHistoryRequestDto.startedAt != null and groupMappingHistoryRequestDto.endedAt != null">
                 AND a.reg_dt BETWEEN #{groupMappingHistoryRequestDto.startedAt} and #{groupMappingHistoryRequestDto.endedAt}
             </if>
-            <if test='groupMappingHistoryRequestDto.cmpnyNo != null'>
-                AND a.cmpny_no = #{groupMappingHistoryRequestDto.cmpnyNo}
+            <if test='groupMappingHistoryRequestDto.clientId != null'>
+                AND a.cmpny_no = #{groupMappingHistoryRequestDto.clientId}
             </if>
             <if test='groupMappingHistoryRequestDto.grpNo != null'>
                 AND a.grp_no = #{groupMappingHistoryRequestDto.grpNo}
@@ -226,7 +226,7 @@
         INSERT INTO tb_cmm_group_map_hst(seq_no,
         map_no, grp_no, data_gbn, data_no, action, reg_emp_no, reg_dt, reg_ip, cmpny_no
         ) VALUES (<include refid="common.sql.seq"><property name="t" value="sq_cmm_group_map_hst"/></include>,
-        #{mapNo}, #{grpNo}, #{dataGbn}, #{dataNo}, #{action}, #{regEmpNo}, #{regDt}, #{regIp}, #{cmpnyNo}
+        #{mapNo}, #{grpNo}, #{dataGbn}, #{dataNo}, #{action}, #{regEmpNo}, #{regDt}, #{regIp}, #{clientId}
         )
     </insert>
 
@@ -243,7 +243,7 @@
             ,cmpny_no
             ,upd_enable_yn
         FROM tb_cmm_app_group
-        WHERE cmpny_no = #{cmpnyNo}
+        WHERE cmpny_no = #{clientId}
         AND cate_id = #{cateId}
     </select>
 
@@ -272,7 +272,7 @@
         ,#{appGrpNm}
         ,#{regDt}
         ,#{regUserNo}
-        ,#{cmpnyNo}
+        ,#{clientId}
         ,#{updEnableYn}
         )
     </insert>
@@ -288,11 +288,11 @@
             ,upd_enable_yn = #{updEnableYn}
         </if>
 
-        WHERE app_grp_no = #{appGrpNo} AND cmpny_no = #{cmpnyNo}
+        WHERE app_grp_no = #{appGrpNo} AND cmpny_no = #{clientId}
     </update>
 
     <delete id="deleteAppGroup">
-        DELETE FROM tb_cmm_app_group WHERE app_grp_no = #{appGrpNo} AND cmpny_no = #{cmpnyNo}
+        DELETE FROM tb_cmm_app_group WHERE app_grp_no = #{appGrpNo} AND cmpny_no = #{clientId}
     </delete>
 
     <select id="selectAppGroupMapping" resultType="AppGroupMapping">
@@ -309,7 +309,7 @@
             ,map.sort_no
         FROM tb_cmm_app_group_map map
         INNER JOIN tb_cmm_app_group sg ON map.app_grp_no = sg.app_grp_no
-        WHERE sg.cmpny_no = #{cmpnyNo} AND map.app_grp_no = #{appGrpNo}
+        WHERE sg.cmpny_no = #{clientId} AND map.app_grp_no = #{appGrpNo}
     </select>
 
     <select id="selectUsedAppGroupMapping" resultType="int">

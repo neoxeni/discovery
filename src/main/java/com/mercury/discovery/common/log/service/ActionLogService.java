@@ -72,7 +72,7 @@ public class ActionLogService {
         actionLog.setEtc4(securityLog.getEtc4());
         actionLog.setEtc5(securityLog.getEtc5());
         actionLog.setDivCd(securityLog.getDivCd());
-        actionLog.setCmpnyNo(securityLog.getCmpnyNo());
+        actionLog.setClientId(securityLog.getClientId());
 
         return actionLog;
     }

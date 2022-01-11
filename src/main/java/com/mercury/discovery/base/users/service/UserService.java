@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -46,18 +45,10 @@ public class UserService {
     @Value("${apps.mode:on-premise}")
     private String appMode;
 
-    public String getCmpnyId(String cmpnyId) {
-        //on-premise 모드시에는 voc로 cmpnyId가 고정된다.
-        if ("on-premise".equals(appMode)) {
-            return "voc";
-        }
-
-        return cmpnyId;
-    }
 
     @Transactional(readOnly = true)
-    public AppUser getUserForLogin(String userId, String cmpnyId) {
-        return userRepository.findByUserIdForLogin(userId, getCmpnyId(cmpnyId));
+    public AppUser getUserForLogin(String userId, String clientId) {
+        return userRepository.findByUserIdForLogin(userId, clientId);
     }
 
 
@@ -93,9 +84,9 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public List<UserRole> getUserRoles(AppUser appUser) {
-        List<UserRole> roles = userRepository.findRolesByEmpNo(appUser.getEmpNo());
-        if (appUser.getDeptNo() != null) {
-            List<UserRole> departmentsRoles = organizationRepository.findDepartmentsRoles(appUser.getCmpnyNo(), appUser.getDeptNo());
+        List<UserRole> roles = userRepository.findRolesByEmpNo(appUser.getId());
+        if (appUser.getDepartmentId() != null) {
+            List<UserRole> departmentsRoles = organizationRepository.findDepartmentsRoles(appUser.getClientId(), appUser.getDepartmentId());
             roles.addAll(departmentsRoles);
         }
 
@@ -104,9 +95,9 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public List<UserAppRole> getUserAppRoles(AppUser appUser) {
-        Set<UserAppRole> roles = userRepository.findAppRolesByEmpNo(appUser.getEmpNo());
-        if (appUser.getDeptNo() != null) {
-            Set<UserAppRole> departmentsRoles = organizationRepository.findDepartmentsAppRoles(appUser.getCmpnyNo(), appUser.getDeptNo());
+        Set<UserAppRole> roles = userRepository.findAppRolesByEmpNo(appUser.getId());
+        if (appUser.getDepartmentId() != null) {
+            Set<UserAppRole> departmentsRoles = organizationRepository.findDepartmentsAppRoles(appUser.getClientId(), appUser.getDepartmentId());
             roles.addAll(departmentsRoles);
         }
         return new ArrayList<>(roles);
@@ -129,13 +120,13 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public AppUser getUser(int cmpnyNo, String userKey) {
+    public AppUser getUser(int clientId, String userKey) {
         AppUser appUser = null;
         Cache cache = cacheManager.getCache("users");
         if (cache != null) {
             String cacheKey = "";
-            if (cmpnyNo > -1) {
-                cacheKey = cmpnyNo + ":" + userKey;
+            if (clientId > -1) {
+                cacheKey = clientId + ":" + userKey;
             } else {
                 cacheKey = userKey;
             }
@@ -157,48 +148,48 @@ public class UserService {
         Cache cache = cacheManager.getCache("users");
         if (cache != null) {
             String userKey = appUser.getUserKey();
-            Integer cmpnyNo = appUser.getCmpnyNo();
+            Integer clientId = appUser.getClientId();
 
-            String cacheKey = cmpnyNo + ":" + userKey;
+            String cacheKey = clientId + ":" + userKey;
             cache.put(cacheKey, appUser);
 
             messagePublisher.convertAndSend(BaseTopic.USER.getBindTopic(userKey), appUser);
-            messagePublisher.convertAndSend(BaseTopic.USERS.getBindTopic(String.valueOf(cmpnyNo)), appUser);
+            messagePublisher.convertAndSend(BaseTopic.USERS.getBindTopic(String.valueOf(clientId)), appUser);
         }
     }
 
     @Caching(evict = {
-            @CacheEvict(cacheNames = "deptEmpListForTreeAll", key = "#appUser.cmpnyNo.toString()"),
-            @CacheEvict(cacheNames = "users", key = "#appUser.cmpnyNo.toString().concat(':').concat(#appUser.userKey)")
+            @CacheEvict(cacheNames = "deptEmpListForTreeAll", key = "#appUser.clientId.toString()"),
+            @CacheEvict(cacheNames = "users", key = "#appUser.clientId.toString().concat(':').concat(#appUser.userKey)")
 
     })
     public int insert(AppUser appUser) {
-        if (appUser.getPsswd() == null) {
-            appUser.setPsswd(appUser.getId());
+        if (appUser.getPassword() == null) {
+            appUser.setPassword(appUser.getUsername());
         }
 
         int affected = userRepository.insert(appUser);
 
-        String password = passwordEncoder.encode(appUser.getPsswd());
-        appUser.setPsswd(password);
+        String password = passwordEncoder.encode(appUser.getPassword());
+        appUser.setPassword(password);
         userRepository.insertLogin(appUser);
         return affected;
     }
 
     @Caching(evict = {
-            @CacheEvict(cacheNames = "deptEmpListForTreeAll", key = "#appUser.cmpnyNo.toString()"),
-            @CacheEvict(cacheNames = "users", key = "#appUser.cmpnyNo.toString().concat(':').concat(#appUser.userKey)")
+            @CacheEvict(cacheNames = "deptEmpListForTreeAll", key = "#appUser.clientId.toString()"),
+            @CacheEvict(cacheNames = "users", key = "#appUser.clientId.toString().concat(':').concat(#appUser.userKey)")
     })
     public int update(AppUser appUser) {
         return userRepository.update(appUser);
     }
 
     @Caching(evict = {
-            @CacheEvict(cacheNames = "deptEmpListForTreeAll", key = "#appUser.cmpnyNo.toString()"),
-            @CacheEvict(cacheNames = "users", key = "#appUser.cmpnyNo.toString().concat(':').concat(#appUser.userKey)")
+            @CacheEvict(cacheNames = "deptEmpListForTreeAll", key = "#appUser.clientId.toString()"),
+            @CacheEvict(cacheNames = "users", key = "#appUser.clientId.toString().concat(':').concat(#appUser.userKey)")
     })
     public int delete(AppUser appUser) {
-        return userRepository.delete(appUser.getCmpnyNo(), appUser.getEmpNo());
+        return userRepository.delete(appUser.getClientId(), appUser.getId());
     }
 
     public int successLoginInfo(AppUser appUser) {
@@ -207,12 +198,11 @@ public class UserService {
     }
 
     public int failureLoginInfo(AppUser appUser) {
-        return userRepository.plusPsswdErrNum(appUser);
+        return userRepository.plusPasswordErrorCount(appUser);
     }
 
     public int updateLogoutInfo(AppUser appUser) {
-        userRepository.insertLogoutHistory(appUser);
-        appUser.setLastLogoutDt(LocalDateTime.now());
+        appUser.setLastLogoutAt(LocalDateTime.now());
         return userRepository.updateLogoutInfo(appUser);
     }
 
@@ -226,34 +216,8 @@ public class UserService {
         return userRepository.findByUserEmail(email);
     }
 
-
-    @Transactional(readOnly = true)
-    public String getEmailForDomain(String email) {
-        return userRepository.getEmailForDomain(email);
-    }
-
     public void updateLoginId(String userId, int empNo) {
         userRepository.updateLoginId(userId, empNo);
-    }
-
-    @Transactional(readOnly = true)
-    public AppUser findByUserEmailWithCmpnyId(String email, String cmpnyId) {
-        return userRepository.findByUserEmailWithCmpnyId(email, getCmpnyId(cmpnyId));
-    }
-
-    @Transactional(readOnly = true)
-    public String getEmail(String email, String cmpnyId) {
-        return userRepository.getEmail(email, cmpnyId);
-    }
-
-    @Transactional(readOnly = true)
-    public String getUserId(String userId, String cmpnyId) {
-        return userRepository.getUserId(userId, cmpnyId);
-    }
-
-    @Transactional(readOnly = true)
-    public List<AppUser> findDeptEmpList(int cmpnyNo, String deptCd, String rtrmntYn) {
-        return userRepository.findDeptEmpList(cmpnyNo, deptCd, rtrmntYn);
     }
 
     @Transactional(readOnly = true)
@@ -264,5 +228,4 @@ public class UserService {
     public void sendActiveSignal(String userKey, String uuid) {
         messagePublisher.convertAndSend(BaseTopic.ACTIVE.getBindTopic(userKey), uuid);
     }
-
 }

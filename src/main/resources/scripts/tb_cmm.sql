@@ -54,18 +54,26 @@ create table client_user(
 
 create table client_user_login(
     id                          INT       auto_increment COMMENT 'ID' PRIMARY KEY,
-    username                    varchar(100)    NOT NULL COMMENT '사용자 아이디'
-    password                    varchar(100)    NOT NULL comment '패스워드',
-    password_err_count          int             NOT NULL default 0 comment '패스워드오류횟수',
-    password_updated_at         datetime        NOT NULL default CURRENT_TIMESTAMP comment '패스워드수정일시',
-    last_login_at               datetime            NULL comment '최종로그인일시',
-    last_logout_at              datetime            NULL comment '최종로그아웃일시',
-    last_ip_address             varchar(40)         NULL comment '최종접속아이피',
+    username                    VARCHAR(100)    NOT NULL COMMENT '사용자아이디'
+    password                    VARCHAR(100)    NOT NULL comment '패스워드',
+    password_err_count          INT             NOT NULL default 0 comment '패스워드오류횟수',
+    password_updated_at         DATETIME        NOT NULL default CURRENT_TIMESTAMP comment '패스워드수정일시',
+    last_login_at               DATETIME            NULL comment '최종로그인일시',
+    last_logout_at              DATETIME            NULL comment '최종로그아웃일시',
+    last_ip_address             VARCHAR(40)         NULL comment '최종접속아이피',
 
-    user_id                     int             NOT NULL comment '사번',
+    user_id                     INT             NOT NULL comment '사번',
     CONSTRAINT FK1_CLIENT_USER_USER_ID FOREIGN KEY (user_id) REFERENCES client_user (id),
     UNIQUE UK1_CLIENT_USER_LOGIN(username)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='로그인';
+
+create table client_user_login_hist(
+    id                          INT       auto_increment COMMENT 'ID' PRIMARY KEY,
+    user_id                     INT                 null comment '아이디',
+    login_at                    datetime            null comment '로그인일시',
+    last_ip_address             varchar(40)         null comment '로그인IP',
+    client_id                   int                 null comment '회사아이디'
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='로그인이력';
 
 
 CREATE TABLE tb_cmm_code_div (
@@ -87,9 +95,9 @@ CREATE TABLE tb_cmm_code (
     dtl                         VARCHAR(200)        NULL COMMENT '코드상세',
     use_yn                      char(1)         NOT NULL DEFAULT 'Y' COMMENT '사용여부',
     reg_emp_no                  INT(11)         NOT NULL COMMENT '등록자',
-    reg_dt                      datetime        NOT NULL COMMENT '등록일시',
+    reg_dt                      DATETIME        NOT NULL COMMENT '등록일시',
     upd_emp_no                  INT(11)             NULL COMMENT '수정자',
-    upd_dt                      datetime            NULL COMMENT '수정일시',
+    upd_dt                      DATETIME            NULL COMMENT '수정일시',
     etc1                        VARCHAR(100)        NULL COMMENT 'etc1',
     etc2                        VARCHAR(100)        NULL COMMENT 'etc2',
     etc3                        VARCHAR(100)        NULL COMMENT 'etc3',

@@ -18,7 +18,7 @@ import java.util.List;
 @Data
 public class Department {
     private Integer deptNo;
-    private Integer cmpnyNo;
+    private Integer clientId;
     private String deptCd;
     private String deptNm;
     private Integer dpth;

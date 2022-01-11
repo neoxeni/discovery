@@ -30,7 +30,7 @@ public class ActionLogRestController {
 
     @GetMapping("/base/logs/actions")
     public ResponseEntity<?> getActionLogs(AppUser appUser, DateRange dateRange, ActionLogRequestDto actionLogRequestDto, Pageable pageable) {
-        actionLogRequestDto.setCmpnyNo(appUser.getCmpnyNo());
+        actionLogRequestDto.setClientId(appUser.getClientId());
         actionLogRequestDto.setStartedAt(dateRange.getStart());
         actionLogRequestDto.setEndedAt(dateRange.getEnd());
         Page<ActionLogResponseDto> list = actionLogService.findAll(actionLogRequestDto, pageable);
@@ -39,7 +39,7 @@ public class ActionLogRestController {
 
     @GetMapping("/base/logs/actions/excel")
     public void getTenanciesExcel(AppUser appUser, DateRange dateRange, ActionLogRequestDto actionLogRequestDto, Pageable pageable) {
-        actionLogRequestDto.setCmpnyNo(appUser.getCmpnyNo());
+        actionLogRequestDto.setClientId(appUser.getClientId());
         actionLogRequestDto.setStartedAt(dateRange.getStart());
         actionLogRequestDto.setEndedAt(dateRange.getEnd());
 

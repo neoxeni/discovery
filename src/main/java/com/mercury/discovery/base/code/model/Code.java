@@ -41,6 +41,6 @@ public class Code implements Serializable {
     private String etc2;
     private String etc3;
     private String etc4;
-    private Integer cmpnyNo;
+    private Integer clientId;
     private Integer lvl;
 }

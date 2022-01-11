@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Data
 public class SecurityLog {
     private Integer seqNo;
-    private Integer cmpnyNo;
+    private Integer clientId;
     private Integer userNo;
     private String ip;
 

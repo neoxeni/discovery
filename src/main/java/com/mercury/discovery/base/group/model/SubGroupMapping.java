@@ -22,6 +22,6 @@ public class SubGroupMapping {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime regDt;
     private Integer regUserNo;
-    private Integer cmpnyNo;
+    private Integer clientId;
 
 }

@@ -3,57 +3,35 @@
 <mapper namespace="com.mercury.discovery.base.users.service.UserRepository">
 
     <sql id="user_all">
-        'AGENT' AS user_type,
-        ${l}.user_id AS id,
-        ${e}.emp_no AS user_no,
-        <choose>
-            <when test="_databaseId == 'oracle'">
-                NVL(${e}.real_emp_nm,${e}.emp_nm) AS name,
-                (SELECT presence FROM (SELECT presence , (RANK() OVER(ORDER BY id DESC)) ROWNUMS FROM tb_ir_agent_presence_history WHERE created_by = ${e}.user_key AND ROWNUM = 1 )) AS presence,
-                (SELECT created_at FROM (SELECT created_at, (RANK() OVER(ORDER BY id DESC)) ROWNUMS  FROM tb_ir_agent_presence_history WHERE created_by = ${e}.user_key AND ROWNUM = 1 )) AS presence_at,
-            </when>
-            <otherwise>
-                IFNULL(${e}.real_emp_nm,${e}.emp_nm) AS name,
-                (SELECT presence FROM tb_ir_agent_presence_history WHERE created_by = ${e}.user_key ORDER BY id DESC limit 1) AS presence,
-                (SELECT created_at FROM tb_ir_agent_presence_history WHERE created_by = ${e}.user_key ORDER BY id DESC limit 1) AS presence_at,
-            </otherwise>
-        </choose>
-
-        ${l}.psswd_err_num,
-        ${l}.psswd_upd_dt,
-        ${l}.last_login_dt,
-        ${l}.last_logout_dt,
+        ${l}.username,
+        ${l}.password,
+        ${l}.password_err_count,
+        ${l}.password_updated_at,
+        ${l}.last_login_at,
+        ${l}.last_logout_at,
         ${l}.last_ip_address,
 
-        ${e}.emp_no,
-        ${e}.cmpny_emp_cd,
-        ${e}.dept_no,
-        ${e}.emp_nm,
-        ${e}.ext_tel_no,
-        ${e}.hire_dd,
-        ${e}.rtrmnt_yn,
-        ${e}.rtrmnt_dd,
-        ${e}.reg_emp_no,
-        ${e}.reg_dt,
-        ${e}.upd_emp_no,
-        ${e}.upd_dt,
-        ${e}.phone_user_id,
-        ${e}.phone_user_tel,
-        ${e}.postn_cd,
-        ${e}.duty_cd,
-        ${e}.cmpny_no,
-        ${e}.emp_sort,
-        ${e}.phone_extension_no,
+        ${e}.id,
+        ${e}.name,
+        ${e}.nickname,
+        ${e}.phone,
         ${e}.email,
+        ${e}.identification,
+        ${e}.position_cd,
+        ${e}.duty_cd,
+        ${e}.sort,
+        ${e}.join_date,
+        ${e}.is_retire,
+        ${e}.retire_date,
 
-        ${e}.emp_tp,
-        ${e}.real_emp_nm,
+        ${e}.created_by,
+        ${e}.created_at,
+        ${e}.updated_by,
+        ${e}.updated_at,
         ${e}.user_key,
 
-        ${dept}.dept_nm,
-        ${postn}.cd_nm as postn_nm,
-        ${duty}.cd_nm as duty_nm,
-        ${dept}.dept_cd
+        ${e}.client_id,
+        ${e}.department_id
     </sql>
 
     <!--로그인 전용-->
@@ -62,20 +40,9 @@
         <include refid="user_all">
             <property name="e" value="e"/>
             <property name="l" value="l"/>
-            <property name="dept" value="dept"/>
-            <property name="postn" value="postn"/>
-            <property name="duty" value="duty"/>
         </include>
-        ,psswd
-        ,c.status status
-        FROM tb_cmm_emp e
-            JOIN tb_cmm_login l ON e.emp_no = l.emp_no
-            JOIN tb_cmm_company c ON e.cmpny_no = c.cmpny_no
-            LEFT OUTER JOIN tb_cmm_dept dept ON e.dept_no = dept.dept_no
-            LEFT OUTER JOIN tb_cmm_code postn ON e.postn_cd = postn.cd AND postn.cmpny_no = e.cmpny_no AND postn.div_cd = 'OR02'
-            LEFT OUTER JOIN tb_cmm_code duty ON e.duty_cd = duty.cd  AND duty.cmpny_no = e.cmpny_no AND duty.div_cd = 'OR01'
-        WHERE l.user_id = #{userId}
-        AND c.cmpny_id = #{cmpnyId}
+        FROM client_user e JOIN client_user_login l ON e.id = l.user_id
+        WHERE l.username = #{userId}
     </select>
 
     <select id="findByUserKey" resultType="AppUser">
@@ -125,7 +92,7 @@
             LEFT OUTER JOIN tb_cmm_dept dept ON e.dept_no = dept.dept_no
             LEFT OUTER JOIN tb_cmm_code postn ON e.postn_cd = postn.cd AND postn.cmpny_no = e.cmpny_no  AND postn.div_cd = 'OR02'
             LEFT OUTER JOIN tb_cmm_code duty ON e.duty_cd = duty.cd AND duty.cmpny_no = e.cmpny_no AND duty.div_cd = 'OR01'
-        WHERE e.cmpny_no = #{cmpnyNo}
+        WHERE e.cmpny_no = #{clientId}
         <choose>
             <when test="empNo != null">
                 AND e.emp_no = #{empNo}
@@ -136,7 +103,7 @@
                         b.data_no as emp_no
                     FROM tb_cmm_group a
                         JOIN tb_cmm_group_map b on a.grp_no  = b.grp_no
-                    WHERE a.cmpny_no = #{cmpnyNo}
+                    WHERE a.cmpny_no = #{clientId}
                     AND a.grp_cd = #{grpCd}
                     AND b.data_gbn = 'E'
 
@@ -150,7 +117,7 @@
                             b.data_no
                         FROM tb_cmm_group a
                             JOIN tb_cmm_group_map b on a.grp_no  = b.grp_no
-                        WHERE a.cmpny_no = #{cmpnyNo}
+                        WHERE a.cmpny_no = #{clientId}
                         AND a.grp_cd = #{grpCd}
                         AND b.data_gbn = 'D'
                     )
@@ -189,7 +156,7 @@
         ) VALUES ( #{empNo},
             #{deptNo}, #{empNm}, #{extTelNo}, #{hireDd},
             #{rtrmntYn}, #{rtrmntDd}, #{regEmpNo}, #{regDt}, #{phoneUserId}, #{phoneUserTel}, #{phoneExtensionNo}
-            , #{postnCd}, #{dutyCd}, #{cmpnyNo}, #{empSort}, #{email}, #{empTp}, #{realEmpNm}, #{userKey}
+            , #{postnCd}, #{dutyCd}, #{clientId}, #{empSort}, #{email}, #{empTp}, #{realEmpNm}, #{userKey}
         )
     </insert>
 
@@ -201,19 +168,10 @@
     </insert>
 
     <insert id="insertLoginHistory">
-
-        INSERT INTO tb_cmm_login_hist ( hist_no,
-            user_id, login_dt, client_ip, cmpny_no
-        )VALUES(<include refid="common.sql.seq"><property name="t" value="sq_cmm_login_hist"/></include>,
-            #{id}, <include refid="common.sql.now"/> ,#{lastIpAddress}, #{cmpnyNo}
-        )
-    </insert>
-
-    <insert id="insertLogoutHistory">
-        INSERT INTO tb_cmm_logout_hist ( hist_no,
-            user_id, logout_dt, cmpny_no)
-        VALUES(<include refid="common.sql.seq"><property name="t" value="sq_cmm_logout_hist"/></include>,
-            #{id}, <include refid="common.sql.now"/>, #{cmpnyNo}
+        INSERT INTO client_user_login_hist (
+            user_id, login_at, last_ip_address, client_id
+        )VALUES(
+            #{id}, #{lastLoginAt} ,#{lastIpAddress}, #{clientId}
         )
     </insert>
 
@@ -238,30 +196,30 @@
         , emp_tp = #{empTp}
         , real_emp_nm = #{realEmpNm}
         WHERE emp_no = #{empNo}
-        AND cmpny_no= #{cmpnyNo}
+        AND cmpny_no= #{clientId}
     </update>
 
     <update id="updateLoginInfo">
-        UPDATE tb_cmm_login SET
-            psswd_err_num = 0,
-            last_login_dt = #{lastLoginDt},
+        UPDATE client_user_login SET
+            password_err_count = 0,
+            password_updated_at = #{lastLoginAt},
             last_ip_address = #{lastIpAddress}
-        WHERE emp_no = #{empNo}
+        WHERE user_id = #{id}
     </update>
 
     <update id="updateLoginId">
-        UPDATE tb_cmm_login SET
-            user_id = #{userId}
-        WHERE emp_no = #{empNo}
+        UPDATE client_user_login SET
+            username = #{username}
+        WHERE user_id = #{id}
     </update>
 
     <update id="updateLogoutInfo">
-        UPDATE tb_cmm_login SET
-            last_logout_dt = #{lastLogoutDt}
-        WHERE emp_no = #{empNo}
+        UPDATE client_user_login SET
+            last_logout_at = #{lastLogoutAt}
+        WHERE user_id = #{id}
     </update>
 
-    <update id="plusPsswdErrNum">
+    <update id="plusPasswordErrorCount">
         <selectKey keyProperty="psswdErrNum" resultType="int" order="AFTER">
             SELECT psswd_err_num FROM tb_cmm_login WHERE emp_no = #{empNo}
         </selectKey>
@@ -282,14 +240,13 @@
     <delete id="delete">
         DELETE FROM tb_cmm_emp
         WHERE emp_no = #{empNo}
-        AND cmpny_no = #{cmpnyNo}
+        AND cmpny_no = #{clientId}
     </delete>
 
-    <update id="resetPasswordCnt">
-        UPDATE tb_cmm_login SET
-            psswd_err_num = 0,
-            psswd_upd_dt = <include refid="common.sql.now"/>
-        WHERE emp_no = #{empNo}
+    <update id="resetPasswordCount">
+        UPDATE client_user_login SET
+            password_err_count = 0
+        WHERE user_id = #{id}
     </update>
 
     <!--로그인 전용-->
@@ -381,7 +338,7 @@
         LEFT OUTER JOIN tb_cmm_code postn ON e.postn_cd = postn.cd AND postn.cmpny_no = e.cmpny_no  AND postn.div_cd = 'OR02'
         LEFT OUTER JOIN tb_cmm_code duty ON e.duty_cd = duty.cd  AND duty.cmpny_no = e.cmpny_no AND duty.div_cd = 'OR01'
         WHERE e.dept_no = #{deptCd}
-        AND e.cmpny_no = #{cmpnyNo}
+        AND e.cmpny_no = #{clientId}
         AND e.rtrmnt_yn = #{rtrmntYn}
         ORDER BY e.emp_nm
 
