@@ -117,7 +117,7 @@
         });
 
         xAjax({
-            url:'/api/v2/base/users/me'
+            url:'/base/users/me'
         }).then(resp=>{
             initialData['user'] = resp;
             const routes = getRoutesByMenu(menus);

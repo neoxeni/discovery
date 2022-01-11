@@ -7,6 +7,7 @@
  * */
 (function (mercury, $) {
     window.mercury = mercury;
+    window.API_HOST = '/api/v2';
     mercury.base = mercury.base || {};
 
     /**
@@ -30,6 +31,10 @@
     };
 
     window.xAjax = function xAjax(options) {
+        if (options['usePrefixUrl'] !== false) {
+            options['url'] = window.API_HOST + options['url'];
+        }
+
         const paramError = options.error;
         return new Promise(function (resolve, reject) {
             const dOptions = {
@@ -78,12 +83,12 @@
                                 }
                             }
 
-                            self.notify({message:message, title: '['+status+']' + stautsText, type: 'error'});
+                            self.notify({message:message, title: '['+status+']' + error.error, type: 'error'});
                             reject(error);
                             return;
                         }
 
-                        self.notify({message: error.detail, title: '['+status+']' + stautsText, type: 'error'});
+                        self.notify({message: error.message, title: '['+status+']' + error.error, type: 'error'});
                         reject(error);
                     }
                 }
@@ -98,23 +103,76 @@
     window.xAjaxMultipart = function (options) {
         const formData = new FormData();
 
-        const isFile = (value) => {
-            return value.lastModified && value.lastModifiedDate && value.name
-                && value.name && value.size && value.type
-        }
+        const isFile = function isFile(value) {
+            return value.lastModified && value.lastModifiedDate && value.name && value.size && value.type;
+        };
 
         if (options.parts) {
-            for (const [key, value] of Object.entries(options.parts)) {
+            let _iteratorNormalCompletion = true;
+            let _didIteratorError = false;
+            let _iteratorError = undefined;
 
-                if (!isFile(value) && _.isObject(value)) {
+            try {
+                for (let _iterator = Object.entries(options.parts)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    const _step$value = _slicedToArray(_step.value, 2);
+
+                    const key = _step$value[0];
+                    const value = _step$value[1];
+
                     const blob = new Blob([JSON.stringify(value)], {
                         type: 'application/json'
                     });
                     formData.append(key, blob);
-                } else {
-                    formData.append(key, value);
                 }
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion && _iterator['return']) {
+                        _iterator['return']();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
+                }
+            }
+        }
 
+        if (options.fileParts) {
+            let _iteratorNormalCompletion2 = true;
+            let _didIteratorError2 = false;
+            let _iteratorError2 = undefined;
+
+            try {
+                for (let _iterator2 = Object.entries(options.fileParts)[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                    const _step2$value = _slicedToArray(_step2.value, 2);
+
+                    const key = _step2$value[0];
+                    const value = _step2$value[1];
+
+                    if (Array.isArray(value)) {
+                        value.forEach(function (e) {
+                            formData.append(key, e);
+                        });
+                    } else {
+                        formData.append(key, value);
+                    }
+                }
+            } catch (err) {
+                _didIteratorError2 = true;
+                _iteratorError2 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion2 && _iterator2['return']) {
+                        _iterator2['return']();
+                    }
+                } finally {
+                    if (_didIteratorError2) {
+                        throw _iteratorError2;
+                    }
+                }
             }
         }
 

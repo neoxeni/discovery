@@ -44,7 +44,7 @@ const MpBaseCode = {
                                 </v-row>
                             </v-card-title>
                             <v-card-text class="div-scroll-y">
-                                <mp-base-tree url="/api/v2/base/codes/tree" ref="codeTree" @changed="treeChanged" state></mp-base-tree>
+                                <mp-base-tree url="/base/codes/tree" ref="codeTree" @changed="treeChanged" state></mp-base-tree>
                             </v-card-text>
                         </v-card>
                     </v-col>
@@ -83,17 +83,17 @@ const MpBaseCode = {
                                                 <v-text-field label="분류코드명*" v-model="form.data.divNm" :readonly="!form.updatable" :rules="[v => (v && v.length > 0) || 'Required field']"></v-text-field>
                                             </v-col>
                                             <v-col cols="12" md="6">
-                                                <v-select label="서비스" v-model="form.data.divService" :readonly="!form.updatable" :items="[{text:'공통',value:'common'},{text:'콜',value:'call'},{text:'VOC',value:'voc'}]"></v-select>
+                                                <v-select label="서비스" v-model="form.data.divService" :readonly="!form.updatable" :items="[{text:'공통',value:'common'}]"></v-select>
                                             </v-col>
                                             <v-col cols="12" md="6">
                                                 <v-select label="수정가능여부" v-model="form.data.updEnableYn" :items="[{text:'가능',value:'Y'},{text:'불가능',value:'N'}]"></v-select>
                                             </v-col>
                                             <v-col cols="12" md="12" class="text-right">
-                                                <ub-button v-show="form.updatable && form.edit" mode="text" color="danger" label="삭제" icon="mdi-delete" @click="deleteItem()" :disabled="!form.updatable"></ub-button>
-                                                <ub-button v-show="form.updatable && !form.edit" mode="text" color="secondary" label="초기화" icon="mdi-refresh" @click="resetItem()"></ub-button>
-                                                <ub-button mode="text" color="warning" label="저장" icon="mdi-text-box-check" @click="saveItem()" :disabled="!form.updatable">
+                                                <mp-button v-show="form.updatable && form.edit" mode="text" color="danger" label="삭제" icon="mdi-delete" @click="deleteItem()" :disabled="!form.updatable"></mp-button>
+                                                <mp-button v-show="form.updatable && !form.edit" mode="text" color="secondary" label="초기화" icon="mdi-refresh" @click="resetItem()"></mp-button>
+                                                <mp-button mode="text" color="warning" label="저장" icon="mdi-text-box-check" @click="saveItem()" :disabled="!form.updatable">
                                                     {{form.updatable ? (form.edit?'저장':'등록') : '수정불가'}}
-                                                </ub-button>
+                                                </mp-button>
                                             </v-col>
                                         </v-row>
                                     </v-form>
@@ -139,11 +139,11 @@ const MpBaseCode = {
                                             </v-col>
             
                                             <v-col cols="12" md="12" class="text-right">
-                                                <ub-button v-show="form.updatable && form.edit" mode="text" color="danger" label="삭제" icon="mdi-delete" @click="deleteItem()" :disabled="!form.updatable"></ub-button>
-                                                <ub-button v-show="form.updatable && !form.edit" mode="text" color="secondary" label="초기화" icon="mdi-refresh" @click="resetItem()"></ub-button>
-                                                <ub-button mode="text" color="warning" label="저장" icon="mdi-text-box-check" @click="saveItem()" :disabled="!form.updatable">
+                                                <mp-button v-show="form.updatable && form.edit" mode="text" color="danger" label="삭제" icon="mdi-delete" @click="deleteItem()" :disabled="!form.updatable"></mp-button>
+                                                <mp-button v-show="form.updatable && !form.edit" mode="text" color="secondary" label="초기화" icon="mdi-refresh" @click="resetItem()"></mp-button>
+                                                <mp-button mode="text" color="warning" label="저장" icon="mdi-text-box-check" @click="saveItem()" :disabled="!form.updatable">
                                                     {{form.updatable ? (form.edit?'저장':'등록') : '수정불가'}}
-                                                </ub-button>
+                                                </mp-button>
                                             </v-col>
                                         </v-row>
                                     </v-form>
