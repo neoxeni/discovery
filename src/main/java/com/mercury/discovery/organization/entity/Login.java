@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Entity(name = "client_login")
+@Entity(name = "client_user_login")
 @Builder
 public class Login {
     @Id
