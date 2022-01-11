@@ -3,9 +3,9 @@
 
 
     <application id="discovery" name="discovery" path="/intro" >
-        <menu name="사이트관리" path="/admin/site/code/UbBaseCode">
-            <menu name="코드관리" path="/admin/site/code/UbBaseCode"/>
-            <menu name="메뉴관리" path="/admin/site/menu/UbBaseMenu"/>
+        <menu name="사이트관리" path="/admin/site/code/MpBaseCode">
+            <menu name="코드관리" path="/admin/site/code/MpBaseCode"/>
+            <menu name="메뉴관리" path="/admin/site/menu/MpBaseMenu"/>
         </menu>
     </application>
 </sitemenu>

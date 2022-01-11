@@ -1,8 +1,8 @@
 
 import MpBaseTree from "/static/apps/components/ui/MpBaseTree.js"
 
-const UbBaseCode = {
-    name: 'ub-base-code',
+const MpBaseCode = {
+    name: 'mp-base-code',
     components: {
         MpBaseTree: MpBaseTree
     },
@@ -316,4 +316,4 @@ const UbBaseCode = {
     }
 };
 
-export default UbBaseCode;
+export default MpBaseCode;

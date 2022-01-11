@@ -1,5 +1,5 @@
-const UbBaseMenu = {
-    name: 'ub-base-menu',
+const MpBaseMenu = {
+    name: 'mp-base-menu',
     template: `
         <div>
             <v-sheet>
@@ -1033,4 +1033,4 @@ const UbBaseMenu = {
     }
 };
 
-export default UbBaseMenu;
+export default MpBaseMenu;
