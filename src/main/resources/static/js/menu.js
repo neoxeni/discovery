@@ -213,7 +213,7 @@ const getRoutesByMenu = (menu) => {
         name: 'SKYLAB',
         label: 'SKYLAB',
         path: '/',
-        component: () => import(`/static/vue/views/MpSkylabMain.js`),
+        component: () => import(`/static/apps/views/MpSkylabMain.js`),
         meta: {
             title: 'SKYLAB'
         }
@@ -234,7 +234,7 @@ const menuToRoutes = (menu, routes) => {
                 name: name,
                 label: menu.name,
                 path: menu.path,
-                component: () => import(`/static/vue/views${menu.path}.js`),
+                component: () => import(`/static/apps/views${menu.path}.js`),
                 meta: {
                     title: menu.name,
                     menu: menu

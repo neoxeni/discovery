@@ -21,6 +21,7 @@
     <link href="/static/lib/sweetalert2/9.17.1/sweetalert2.min.css" rel="stylesheet" type="text/css" media="print" onload="this.media='all'"/>
     <link href="/static/lib/toastr/toastr-2.1.1.min.css" rel="stylesheet" type="text/css" media="print" onload="this.media='all'"/>
     <link href="/static/lib/formulize-0.0.13/formulize.css" rel="stylesheet" type="text/css" media="print" onload="this.media='all'"/>
+    <link href="/static/lib/jstree/3.3.11/style.css" rel="stylesheet" type="text/css" media="print" onload="this.media='all'"/>
 
     <link href="/static/scss/mercury.vuetify.css" rel="stylesheet" type="text/css" media="print" onload="this.media='all'"/>
     <link href="/static/scss/mercury.template.css" rel="stylesheet" type="text/css" media="print" onload="this.media='all'"/>
@@ -94,15 +95,16 @@
     <script src="/static/lib/mercury/mercury.base.vue.js" defer></script>
     <script src="/static/lib/mercury/mercury.base.vue.chart.js" defer></script>
     <script src="/static/js/menu.js" defer></script>
+    <script src="/static/lib/jstree/3.3.11/jstree.min.js" defer></script>
 
     <script src="/api/v2/base/codes/scripts"></script>
 
     <script type="module">
-        import MpAppBar from "/static/vue/components/navigation/MpAppBar.js";
-        import MpOverlay from "/static/vue/components/ui/MpOverlay.js";
-        import MpNavigationDrawer from "/static/vue/components/navigation/MpNavigationDrawer.js";
+        import MpAppBar from "/static/apps/components/navigation/MpAppBar.js";
+        import MpOverlay from "/static/apps/components/ui/MpOverlay.js";
+        import MpNavigationDrawer from "/static/apps/components/navigation/MpNavigationDrawer.js";
 
-        import baseStore from "/static/vue/store/baseStore.js";
+        import baseStore from "/static/apps/store/baseStore.js";
 
         const serverMode = "";
         const initialData = {}
