@@ -19,7 +19,7 @@ ENV:
 
     DATASOURCE_DIALECT: mysql       #mysql, oracle
     DATASOURCE_DRIVER_CLASS_NAME: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-    DATASOURCE_JDBC_URL: jdbc:log4jdbc:mysql://34.64.204.168:3306/LittleJoe_Dev?allowMultiQueries=true
+    DATASOURCE_JDBC_URL: jdbc:log4jdbc:mysql://34.64.204.168:3306/LittleJoe_Dev2?allowMultiQueries=true
     DATASOURCE_USER_NAME: mp_admin
     DATASOURCE_USER_PASSWORD: 1q2w3e4r%T
     DATASOURCE_POOL_SIZE: 5
