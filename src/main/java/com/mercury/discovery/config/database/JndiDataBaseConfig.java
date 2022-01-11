@@ -1,8 +1,6 @@
 package com.mercury.discovery.config.database;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Mapper;
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -19,11 +17,7 @@ import javax.sql.DataSource;
 @Profile("jndi")
 @Configuration
 @Slf4j
-@MapperScan(annotationClass = Mapper.class,
-        basePackages = "${spring.datasource.default.mapper-base-packages:com.mercury.discovery.**}",
-        sqlSessionFactoryRef = "sqlSessionFactory")
 public class JndiDataBaseConfig {
-
     @Value("${spring.datasource.default.jndi-name:java:comp/env/jndi/sampleDatasource}")
     private String jndiName;
 
@@ -32,9 +26,9 @@ public class JndiDataBaseConfig {
         log.info("default Datasource jndi connect [{}]", jndiName);
     }
 
-    @Bean("mocaBaseDataSource")
+    @Bean("dataSource")
     @Primary
-    public DataSource mocaBaseDataSource() {
+    public DataSource dataSource() {
         JndiDataSourceLookup dataSourceLookup = new JndiDataSourceLookup();
         dataSourceLookup.setResourceRef(true);
         return dataSourceLookup.getDataSource(jndiName);
@@ -42,7 +36,7 @@ public class JndiDataBaseConfig {
 
     @Bean(name = "transactionManager")
     @Primary
-    public PlatformTransactionManager transactionManager(@Qualifier("mocaBaseDataSource") DataSource mocaBaseDataSource) {
-        return new DataSourceTransactionManager(mocaBaseDataSource);
+    public PlatformTransactionManager transactionManager(@Qualifier("dataSource") DataSource dataSource) {
+        return new DataSourceTransactionManager(dataSource);
     }
 }

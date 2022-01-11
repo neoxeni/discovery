@@ -2,6 +2,7 @@ package com.mercury.discovery.config.database;
 
 import com.mercury.discovery.common.model.CamelMap;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.mapping.VendorDatabaseIdProvider;
 import org.apache.ibatis.session.Configuration;
@@ -11,10 +12,12 @@ import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeAliasRegistry;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -33,6 +36,9 @@ import java.util.Set;
 
 @Slf4j
 @org.springframework.context.annotation.Configuration
+@MapperScan(annotationClass = Mapper.class,
+        basePackages = "${spring.datasource.default.mapper-base-packages:com.mercury.discovery.**}",
+        sqlSessionFactoryRef = "sqlSessionFactory")
 public class MybatisConfig extends Configuration {
     private static final ResourcePatternResolver RESOURCE_PATTERN_RESOLVER = new PathMatchingResourcePatternResolver();
     private static final MetadataReaderFactory METADATA_READER_FACTORY = new CachingMetadataReaderFactory();
