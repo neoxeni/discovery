@@ -21,8 +21,8 @@ create table client_department(
 
 create table client_user(
     id                          INT       AUTO_INCREMENT COMMENT 'ID' PRIMARY KEY,
-    name                        VARCHAR(100)        NULL COMMENT '이름',
-    nickname                    VARCHAR(100)        NULL COMMENT '예명',
+    name                        VARCHAR(100)    NOT NULL COMMENT '이름',
+    nickname                    VARCHAR(100)    NOT NULL COMMENT '예명',
     phone                       VARCHAR(15)         NULL COMMENT '전화번호',
     email                       VARCHAR(50)         NULL COMMENT '이메일',
 
@@ -38,8 +38,8 @@ create table client_user(
 
     created_by                  INT             NOT NULL COMMENT '생성자',
     created_at                  DATETIME        NOT NULL COMMENT '생성일',
-    received_by                 INT             NOT NULL COMMENT '수정자',
-    received_at                 DATETIME        NOT NULL COMMENT '수정일',
+    updated_by                  INT             NOT NULL COMMENT '수정자',
+    updated_at                  DATETIME        NOT NULL COMMENT '수정일',
     user_key                    VARCHAR(36)     NOT NULL COMMENT '유저키(유니크)',
 
     client_id                   INT                 NULL COMMENT '회사 아이디',

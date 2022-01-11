@@ -62,14 +62,17 @@ spring:
                     auth: true
                     starttls:
                         enable: true
-    jpa-not-use:
+    jpa:
         open-in-view: false
         properties:
             hibernate:
-                dialect: org.hibernate.dialect.MariaDBDialect
+                dialect: org.hibernate.dialect.MySQL8Dialect    # https://2dongdong.tistory.com/66
                 show_sql: true          #하이버네이트가 실행하는 모든 SQL문을 콘솔로 출력해 준다.
                 format_sql: true        #콘솔에 출력되는 JPA 실행 쿼리를 가독성있게 표현한다.
                 use_sql_comments: true  #디버깅이 용이하도록 SQL문 이외에 추가적인 정보를 출력해 준다.
+        generate-ddl: true
+        hibernate:
+            ddl-auto: create
     datasource:
         default:
             mapper-base-packages: ${ENV.MYBATIS_MAPPER_PACKAGES:com.mercury.discovery.**}

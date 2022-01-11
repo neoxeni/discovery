@@ -22,8 +22,6 @@ import javax.sql.DataSource;
 @Configuration
 @Slf4j
 @MapperScan(annotationClass = Mapper.class,
-        //basePackages = {"com.mercury.discovery.**"},
-        //basePackages = {"${spring.datasource.default.mapper-base-packages:com.mercury.discovery.**}"},
         basePackages = "${spring.datasource.default.mapper-base-packages:com.mercury.discovery.**}",
         sqlSessionFactoryRef = "sqlSessionFactory")
 public class DatabaseConfig {

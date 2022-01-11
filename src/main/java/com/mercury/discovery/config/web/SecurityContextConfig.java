@@ -75,7 +75,7 @@ public class SecurityContextConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/static/**").permitAll()
                 .mvcMatchers("/", "/changePassword", "/changePasswordOk", "/login", "/logout", "/health/*").permitAll()
                 // .requestMatchers(CorsUtils::isPreFlightRequest, endpointsMatcher).permitAll()
-                .anyRequest().authenticated(); // 나머지 리소스에 대한 접근 설정
+                .anyRequest().permitAll(); // 나머지 리소스에 대한 접근 설정
 
 
         // 2. 로그인 설정
