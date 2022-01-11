@@ -679,7 +679,27 @@
     window.mercury = mercury;
     mercury.base = mercury.base || {};
 
-    mercury.base.vue = {
-
+    const self = mercury.base.vue = {
+        menuToRoutes: function(menu, routes) {
+            if (menu.children && menu.children.length > 0) {
+                menu.children.forEach(childMenu => {
+                    self.menuToRoutes(childMenu, routes);
+                });
+            } else {
+                if (menu.path) {
+                    const name = menu.path.substring(menu.path.lastIndexOf('/') + 1);
+                    routes.push({
+                        name: name,
+                        label: menu.name,
+                        path: menu.path,
+                        component: () => import(`/static/apps/views${menu.path}.js`),
+                        meta: {
+                            title: menu.name,
+                            menu: menu
+                        }
+                    });
+                }
+            }
+        }
     };
 })(window.mercury || {});

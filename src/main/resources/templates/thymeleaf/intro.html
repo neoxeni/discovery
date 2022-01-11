@@ -8,7 +8,7 @@
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="theme-color" content="#ffffff">
 
-    <title>Skylab</title>
+    <title>Discovery</title>
 
     <link rel="apple-touch-icon" sizes="180x180" href="/static/image/favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/static/image/favicon/favicon-32x32.png">
@@ -71,6 +71,7 @@
     <script src="/static/lib/jquery/jquery-3.6.0.min.js" defer></script>
     <script src="/static/lib/lodash.min.js" defer></script>
     <script src="/static/lib/moment.min.js" defer></script>
+
     <script src="/static/lib/chartJs/chart-3.6.1.min.js" defer></script>
     <script src="/static/lib/chartJs/plugins/chart-word-cloud.js" defer></script>
 
@@ -87,17 +88,16 @@
     <script src="/static/lib/jquery/jquery.filedownload.min.js" defer></script>
     <script src="/static/lib/sweetalert2/9.17.1/sweetalert2.min.js" defer></script>
     <script src="/static/lib/toastr/toastr-2.1.1.min.js" defer></script>
-
-    <script src="/static/lib/mercury/mercury.base.util.js" defer></script>
-    <script src="/static/lib/mercury/mercury.base.lib.js" defer></script>
-    <script src="/static/lib/mercury/mercury.base.rule.js" defer></script>
-    <script src="/static/lib/mercury/mercury.base.skylab.js" defer></script>
-    <script src="/static/lib/mercury/mercury.base.vue.js" defer></script>
-    <script src="/static/lib/mercury/mercury.base.vue.chart.js" defer></script>
-    <script src="/static/js/menu.js" defer></script>
     <script src="/static/lib/jstree/3.3.11/jstree.min.js" defer></script>
 
-    <script src="/api/v2/base/codes/scripts"></script>
+    <script src="/api/v2/base/codes/scripts" defer></script>
+    <script th:src="@{/static/lib/mercury/mercury.base.util.js}" defer></script>
+    <script th:src="@{/static/lib/mercury/mercury.base.lib.js}" defer></script>
+    <script th:src="@{/static/lib/mercury/mercury.base.rule.js}" defer></script>
+    <script th:src="@{/static/lib/mercury/mercury.base.skylab.js}" defer></script>
+    <script th:src="@{/static/lib/mercury/mercury.base.vue.js}" defer></script>
+    <script th:src="@{/static/lib/mercury/mercury.base.vue.chart.js}" defer></script>
+
 
     <script type="module">
         import MpAppBar from "/static/apps/components/navigation/MpAppBar.js";
@@ -106,6 +106,7 @@
 
         import baseStore from "/static/apps/store/baseStore.js";
 
+        const projectName = "Discovery";
         const serverMode = "";
         const initialData = {}
         const menus = await xAjax({
@@ -120,7 +121,18 @@
             url:'/base/users/me'
         }).then(resp=>{
             initialData['user'] = resp;
-            const routes = getRoutesByMenu(menus);
+            const routes = [{
+                name: projectName,
+                label: projectName,
+                path: '/',
+                component: () => import(`/static/apps/views/MpSkylabMain.js`),
+                meta: {
+                    title: projectName
+                }
+            }];
+
+            window.mercury.base.vue.menuToRoutes(menus, routes);
+
             window.vueMain = new Vue({
                 el: '#app-wrapper',
                 vuetify: new Vuetify(),
@@ -144,7 +156,7 @@
                         serverMode: serverMode,
                         logo: {
                             src: '/static/image/logo.png',
-                            title: ' Skylab',
+                            title: ' Discovery',
                             width: 25,
                             height: 20
                         },
@@ -162,7 +174,7 @@
                         immediate: true,
                         handler(to) {
                             if(to !== undefined){
-                                document.title = to.meta.title || 'Skylab';
+                                document.title = to.meta.title || projectName;
                             }
                         }
                     }
