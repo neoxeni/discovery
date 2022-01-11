@@ -62,7 +62,7 @@ spring:
                     auth: true
                     starttls:
                         enable: true
-    jpa-not:
+    jpa:
         open-in-view: false
         properties:
             hibernate:
@@ -72,7 +72,7 @@ spring:
                 use_sql_comments: true  #디버깅이 용이하도록 SQL문 이외에 추가적인 정보를 출력해 준다.
         generate-ddl: true
         hibernate:
-            ddl-auto: none
+            ddl-auto: create
     datasource:
         default:
             mapper-base-packages: ${ENV.MYBATIS_MAPPER_PACKAGES:com.mercury.discovery.**}

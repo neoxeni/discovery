@@ -50,16 +50,3 @@ spring:
             enabled: true
         livereload:
             enabled: true
-
----
-spring:
-    main:
-        allow-bean-definition-overriding: true
-    config:
-        activate:
-            on-profile: test
-    devtools:
-        restart:
-            enabled: true
-        livereload:
-            enabled: true

@@ -1,7 +1,5 @@
 package com.mercury.discovery.organization.entity;
 
-import com.mercury.discovery.organization.entity.Client;
-import com.mercury.discovery.organization.entity.Department;
 import lombok.*;
 
 import javax.persistence.*;
@@ -82,6 +80,10 @@ public class User {
     @NonNull
     @JoinColumn(name = "department_id")
     Department department;
+
+
+    @OneToOne(mappedBy = "user")
+    private Login login;
 
     @PrePersist
     public void prePersist() {

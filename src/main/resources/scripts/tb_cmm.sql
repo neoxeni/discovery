@@ -57,7 +57,7 @@ create table client_user_login(
     username                    varchar(100)    NOT NULL COMMENT '사용자 아이디'
     password                    varchar(100)    NOT NULL comment '패스워드',
     password_err_count          int             NOT NULL default 0 comment '패스워드오류횟수',
-    password_update_at          datetime        NOT NULL default CURRENT_TIMESTAMP comment '패스워드수정일시',
+    password_updated_at         datetime        NOT NULL default CURRENT_TIMESTAMP comment '패스워드수정일시',
     last_login_at               datetime            NULL comment '최종로그인일시',
     last_logout_at              datetime            NULL comment '최종로그아웃일시',
     last_ip_address             varchar(40)         NULL comment '최종접속아이피',
