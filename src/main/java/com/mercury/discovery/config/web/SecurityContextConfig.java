@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -39,9 +40,16 @@ public class SecurityContextConfig extends WebSecurityConfigurerAdapter {
     // favicon 요청등 정적인 요청 처리 시 필터 등록 제외
     @Override
     public void configure(WebSecurity web) throws Exception {
-        super.configure(web);
-        web.ignoring().antMatchers("/static/**", "/ws-stomp/**");//spring-security filter bypass
-        web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+        //super.configure(web);
+        //web.ignoring().antMatchers("/static/**", "/ws-stomp/**");//spring-security filter bypass
+        //web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+        
+        //위에 걸로는 안먹히는듯
+        web.ignoring()
+                .requestMatchers(PathRequest.toStaticResources().atCommonLocations())
+                .requestMatchers(new AntPathRequestMatcher("/**.html"))
+                .requestMatchers(new AntPathRequestMatcher("/ws-stomp/**"))
+                .requestMatchers(new AntPathRequestMatcher("/static/**"));
     }
 
     @Override

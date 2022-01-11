@@ -126,7 +126,6 @@ apps:
         allowedUploadExtensions: jpg,jpeg,png,gif,mp4,pdf
         allowedAccessExtensions: jpg,jpeg,png,gif,mp4,pdf
     api:
-        host: ${ENV.APPS_API_HOST}
         jwt:
             issuer: ${ENV.APPS_API_JWT_ISSURE:localhost}  #localhost 인경우 moca-nexus로 가지 않음    (localhost||external)
             secret: ${ENV.APPS_API_JWT_SECRET:ubicu@@$&}  #issuer 가 localhost인 경우 secret이 moca-nexus와 동일해야 함

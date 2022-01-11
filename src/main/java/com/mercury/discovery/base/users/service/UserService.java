@@ -18,7 +18,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,8 +33,6 @@ public class UserService {
 
     private final CacheManager cacheManager;
 
-    private final RestTemplate restTemplate;
-
     private final UserRepository userRepository;
 
     private final OrganizationRepository organizationRepository;
@@ -45,12 +42,6 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
 
     private final MessagePublisher messagePublisher;
-
-    @Value("${apps.api.host:}")
-    private String host;
-
-    @Value("${apps.api.jwt.issuer:external}")
-    private String issuer;
 
     @Value("${apps.mode:on-premise}")
     private String appMode;
@@ -235,24 +226,6 @@ public class UserService {
         return userRepository.findByUserEmail(email);
     }
 
-    public int patchUserSettings(AppUser appUser, Map<String, Object> settings) {
-        AppUser refreshAppUser = getUser(appUser.getCmpnyNo(), appUser.getUserKey());
-        if (settings.get("chatAcceptAutoYn") != null) {
-            refreshAppUser.setChatAcceptAutoYn((String) settings.get("chatAcceptAutoYn"));
-        }
-
-        if (settings.get("chatAcceptMaxCnt") != null) {
-            refreshAppUser.setChatAcceptMaxCnt((int) settings.get("chatAcceptMaxCnt"));
-        }
-
-        int cnt = userRepository.patchUserSettings(refreshAppUser);
-        if (cnt == 0) {
-            cnt = userRepository.insertUserSettings(refreshAppUser);
-        }
-        cacheUser(refreshAppUser);
-
-        return cnt;
-    }
 
     @Transactional(readOnly = true)
     public String getEmailForDomain(String email) {
@@ -286,20 +259,6 @@ public class UserService {
     @Transactional(readOnly = true)
     public AppUser findByUserId(String userId) {
         return userRepository.findByUserId(userId);
-    }
-
-
-    @Transactional(readOnly = true)
-    public List<AppUser> findConversationUserList(AppUser appUser) {
-        return userRepository.findConversationUserList(appUser);
-    }
-
-    @Caching(evict = {
-            @CacheEvict(cacheNames = "deptEmpListForTreeAll", key = "#appUser.cmpnyNo.toString()"),
-            @CacheEvict(cacheNames = "users", key = "#appUser.cmpnyNo.toString().concat(':').concat(#appUser.userKey)")
-    })
-    public int updateConversationUserInfo(AppUser appUser) {
-        return userRepository.updateConversationUserInfo(appUser);
     }
 
     public void sendActiveSignal(String userKey, String uuid) {

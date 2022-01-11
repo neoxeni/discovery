@@ -34,11 +34,6 @@
         <otherwise>Not-Defined!!</otherwise>
     </choose></sql>
 
-    <!--
-    SELECT AUTO_INCREMENT FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'tb_cmm_login_hist' AND TABLE_SCHEMA = DATABASE()
-    SELECT NEXTVAL(${t})
-    -->
-
     <sql id="seq">
         <choose>
             <when test="_databaseId == 'mysql'">
@@ -46,6 +41,33 @@
             </when>
             <when test="_databaseId == 'oracle'">
                 ${t}.NEXTVAL
+            </when>
+            <otherwise>
+                Not-Defined!!
+            </otherwise>
+        </choose>
+    </sql>
+
+    <sql id="withChildDeptList">
+        <choose>
+            <when test="_databaseId == 'oracle'">
+                -- 해당 부서 하위 부서 리스트
+                WITH CTE AS (
+                SELECT a.dept_no , a.p_dept_no , a.dept_cd, a.dept_nm
+                FROM tb_cmm_dept a WHERE a.use_yn = 'Y' AND a.cmpny_no = ${cmpnyNo}
+                START WITH DEPT_NO = ${deptNo}
+                CONNECT BY PRIOR DEPT_NO = P_DEPT_NO
+                )
+            </when>
+            <when test="_databaseId == 'mysql'">
+                WITH RECURSIVE CTE AS (
+                SELECT a.dept_no , a.p_dept_no , a.dept_cd, a.dept_nm
+                FROM tb_cmm_dept a WHERE a.use_yn = 'Y' AND a.cmpny_no = ${cmpnyNo} AND a.dept_no = ${deptNo}
+                UNION ALL
+                SELECT a.dept_no , a.p_dept_no , a.dept_cd, a.dept_nm
+                FROM tb_cmm_dept a , CTE b
+                WHERE a.p_dept_no = b.dept_no AND a.use_yn = 'Y' AND a.cmpny_no = ${cmpnyNo}
+                )
             </when>
             <otherwise>
                 Not-Defined!!

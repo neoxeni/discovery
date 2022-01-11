@@ -32,7 +32,6 @@ ENV:
     APPS_HOST: http://localhost:${server.port}
     APPS_MODE: on-premise
 
-    APPS_API_HOST: https://moca-nexus-dev.ubicus.co.kr
     APPS_ENCRYPTION_KEY: ENC(Hkolyo7gXulS+kALO5yRUAdmjp+BaZG1KIHCldKDvy0=)
 
     # 서버 응답 압축관련

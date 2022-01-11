@@ -57,17 +57,6 @@ public interface UserRepository {
 
     String getEmail(String email, String cmpnyId);
 
-    List<String> findAgentUserKeysByCmpnyNo(int cmpnyNo);
-
-    List<String> findUserKeysByCmpnyNo(int cmpnyNo);
-
-
-    void insertUserPresenceHistory(String presence, String userKey, LocalDateTime presenceAt);
-
-    int patchUserSettings(AppUser refreshAppUser);
-
-    int insertUserSettings(AppUser refreshAppUser);
-
     String getUserId(String userId, String cmpnyId);
 
     String getEmailForDomain(String email);
@@ -75,8 +64,4 @@ public interface UserRepository {
     AppUser findByUserEmailWithCmpnyId(String email, String cmpnyId);
 
     List<AppUser> findDeptEmpList(int cmpnyNo, String deptCd, String rtrmntYn);
-
-    List<AppUser> findConversationUserList(AppUser appUser);
-
-    int updateConversationUserInfo(AppUser appUser);
 }
