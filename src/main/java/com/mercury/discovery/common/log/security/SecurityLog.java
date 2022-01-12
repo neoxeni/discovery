@@ -8,20 +8,20 @@ import java.time.LocalDateTime;
 
 @Data
 public class SecurityLog {
-    private Integer seqNo;
-    private Integer clientId;
-    private Integer userNo;
+    private Long id;
+    private Integer userId;
     private String ip;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime regDt;
+    private LocalDateTime createdAt;
+
     private String menu;
     private String subMenu;
     private String action;
     private String actionUrl;
     private String inputVal;
-    private String regNation;
+    private String language;
     private String etc1;
     private String etc2;
     private String etc3;
@@ -30,4 +30,6 @@ public class SecurityLog {
     private String divCd;
 
 
+
+    private Integer clientId;
 }

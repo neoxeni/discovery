@@ -11,7 +11,7 @@ create table client_department(
     received_at                 DATETIME        NOT NULL COMMENT '수정일',
     department_key              VARCHAR(36)         NULL COMMENT '부서키(유니크)',
 
-    client_id                   INT                 NULL COMMENT '회사 아이디',
+    client_id                   INT             NOT NULL COMMENT '회사 아이디',
 
     CONSTRAINT FK1_CLIENT_CLIENT_ID FOREIGN KEY (client_id) REFERENCES client (id),
     UNIQUE KEY UK1_CLIENT_DEPARTMENT_KEY(department_key),
@@ -148,3 +148,26 @@ CREATE TABLE tb_cmm_code_div (
 
     PRIMARY KEY (div_cd,cmpny_no)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='코드분류';
+
+
+
+create table cmm_action_log(
+    id                  bigint        auto_increment comment '시퀀스' primary key,
+    user_id             int                     null comment '사번',
+    ip                  varchar(40)             null comment '접속아이피',
+    created_at          datetime default current_timestamp() comment '등록일시',
+    menu                varchar(300)            null comment '메뉴명',
+    sub_menu            varchar(300)            null comment '서브메뉴명',
+    action              varchar(300)            null comment '행위',
+    action_url          varchar(300)            null comment 'url',
+    input_val           varchar(4000)           null comment '인풋',
+    language            varchar(30)             null comment '언어',
+    etc1                varchar(100)            null comment '기타1',
+    etc2                varchar(100)            null comment '기타2',
+    etc3                varchar(100)            null comment '기타3',
+    etc4                varchar(100)            null comment '기타4',
+    etc5                varchar(100)            null comment '기타5',
+    div_cd              varchar(20)             null comment '구분코드',
+    client_id                   INT             NULL COMMENT '회사 아이디',
+    INDEX IX1_TB_ADMIN_LOG (created_at, user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='관리자 로그 히스토리';
