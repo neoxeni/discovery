@@ -114,7 +114,7 @@ jasypt:
         bean: encryptorBean
 
 apps:
-    index: ${ENV.APPS_INDEX:redirect:/intro}
+    index: ${ENV.APPS_INDEX:thymeleaf/index}
     request-mapping: ${ENV.APPS_REQUEST_MAPPING:/api/v2}
     packages: ${ENV.APPS_PACKAGES:com.mercury.discovery}
     host: ${ENV.APPS_HOST:http://localhost:${server.port}}
