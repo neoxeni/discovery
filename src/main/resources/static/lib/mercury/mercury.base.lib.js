@@ -76,12 +76,14 @@
                         }
                     } else {
                         if(status === 400){
-                            let message = '';
-                            for(let fieldName in error){
-                                if(error.hasOwnProperty(fieldName)){
-                                    message += '[' + fieldName + '] '+error[fieldName][0];
-                                }
+                            let message = '<ul>';
+                            const errors = error.errors;
+
+                            for(let i = 0, ic = errors.length; i < ic; i++){
+                                const errorDesc = errors[i];
+                                message += '<li>[' + errorDesc['field'] +':'+ errorDesc['value']+']<br/> '+errorDesc['reason']+'<br/><br/></li>';
                             }
+                            message += '</ul>';
 
                             self.notify({message:message, title: '['+status+']' + error.error, type: 'error'});
                             reject(error);
@@ -320,6 +322,10 @@
             }
 
             console.log(toastType, toastTitle, toastMessage)
+
+            if(toastType === 'error' && timeOut === "2000"){
+                timeOut = "10000";
+            }
 
             return window.toastr[toastType](toastMessage, toastTitle, {positionClass: positionClass, timeOut: timeOut});
         }

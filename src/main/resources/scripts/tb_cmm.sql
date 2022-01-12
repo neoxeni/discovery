@@ -168,5 +168,5 @@ create table cmm_action_log(
     etc5                varchar(100)            null comment '기타5',
     div_cd              varchar(20)             null comment '구분코드',
     client_id                   INT             NULL COMMENT '회사 아이디',
-    INDEX IX1_TB_ADMIN_LOG (created_at, user_id)
+    INDEX IX1_TB_ADMIN_LOG (created_at, client_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='관리자 로그 히스토리';

@@ -179,6 +179,7 @@ public class SecurityLogAop {
             if ((principal instanceof UserDetails)) {
                 AppUser appUser = (AppUser) principal;
                 securityLog.setUserId(appUser.getId());
+                securityLog.setClientId(appUser.getClientId());
             }
         }
     }

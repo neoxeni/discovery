@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration active="true" activeProfiles="local,dev,stg,prod">
-
     <request-param save="true" include-value="NON_NULL">
         <ignore>
             <key>password</key>
@@ -18,6 +17,7 @@
             </action>
         </actions>
     </meta-mapping>
+
     <exclude>
         <actions>
             <!--<action method="GET" path="/**/scripts"/>-->

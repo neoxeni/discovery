@@ -288,28 +288,19 @@
          *      {custNo : 1}
          * */
         dataTablesParam: function (options, data, excludeKeys) {
-            const page = options.page ? (options.page) : 1;
+            const page = options.page ? options.page : 1;
             const size = options.itemsPerPage ? options.itemsPerPage : 5;
             const sortBy = options.sortBy ? options.sortBy : [];
             const sortDesc = options.sortDesc ? options.sortDesc : [];
 
             let query = '';
-            query += 'format=json&page=' + page + '&page_size=' + size;
+            query += 'pageType=dataTables&page=' + page + '&size=' + size;
             for (let i = 0, ic = sortBy.length; i < ic; i++) {
-                query += '&ordering='+(sortDesc[i] ? '':'-') + sortBy[i];
+                query += '&sort=' + self.snakeCase(sortBy[i]) + ',' + (sortDesc[i] ? 'DESC' : 'ASC');
             }
 
             if (data) {
-                const copyData = Object.assign({},{}, data);
-                if(excludeKeys && excludeKeys.length > 0){
-                    excludeKeys.forEach(item=>{
-                        delete copyData[item];
-                    });
-                }
-
-                delete copyData['range'];//always delete
-
-                query += '&' + $.param(copyData);
+                query += '&' + $.param(data);
             }
 
             return query;

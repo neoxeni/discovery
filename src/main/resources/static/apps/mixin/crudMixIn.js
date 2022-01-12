@@ -61,8 +61,8 @@ const crudMixIn = {
                         this.tbl.items = resp;
                         this.tbl.total = resp.length;
                     }else{
-                        this.tbl.items = resp['results'];
-                        this.tbl.total = resp['count'];
+                        this.tbl.items = resp.data;
+                        this.tbl.total = resp.recordsTotal;
                     }
 
                     this.onCrudMixInActions('fetchData', resp);
@@ -73,17 +73,20 @@ const crudMixIn = {
         },
         excelData() {
             this.mercury.base.lib.download({
-                url: this.url + 'excel/',
+                url: `${this.$settings.requestMapping}${this.url}/excel`,
                 method: 'GET',
                 data: this.getQueryString()
             });
         },
-        selectItem(item) {
+        selectItem(item, row) {
             this.onCrudMixInActions('beforeSelectItem', item, {});
-            this.form.data = Object.assign({}, this.form.init, item);
+            this.form.data = Object.assign({}, this._.cloneDeep(this.form.init), item);
             this.view.edit = true;
             this.view.show = true;
             this.onCrudMixInActions('selectItem', item, {});
+            if(row !== undefined){
+                row.select(true);
+            }
         },
         newItem() {
             this.onCrudMixInActions('newItem');
@@ -107,7 +110,7 @@ const crudMixIn = {
             }
 
             this.xAjaxJson({
-                url: method === 'POST' ? this.url : this.url + data.id + '/', //python은 마지막에 /가 추가되어야함.
+                url: this.url,
                 method: method,
                 data: data
             }).then((resp) => {
@@ -120,22 +123,22 @@ const crudMixIn = {
                 this.onCrudMixInActions('afterSaveItem', {},  {method: method, data: this.form.data})
             });
         },
-        deleteItem(item) {
-            let name = item['name'];
-            if (name === undefined) {
-                name = '';
+        deleteItem(item, name) {
+            let _name = name || item['name'];
+            if (_name === undefined) {
+                _name = '';
             } else {
-                name = '[' + name + '] ';
+                _name = '[' + _name + '] ';
             }
 
             if(this.onCrudMixInActions('beforeDeleteItem', item, {}) === false){
                 return;
             }
 
-            this.mercury.base.lib.confirm(name + '삭제 하시겠습니까?').then(result => {
+            this.mercury.base.lib.confirm(_name + '삭제 하시겠습니까?').then(result => {
                 if (result.isConfirmed) {
                     this.xAjaxJson({
-                        url: this.url + item.id,
+                        url: this.url +'/'+ item[this.pk],
                         method: 'DELETE',
                         data: this.form.data
                     }).then((resp) => {
@@ -149,12 +152,15 @@ const crudMixIn = {
             });
         },
         resetItem: function () {//입력폼 초기화
-            this.form.data = Object.assign({}, this.form.init); //init에 설정된 값으로 data를 모두 초기화
+            this.form.data = Object.assign({}, this._.cloneDeep(this.form.init)); //init에 설정된 값으로 data를 모두 초기화
             if (this.$refs.form !== undefined) {
                 this.$refs.form.resetValidation();  //form에 표시된 모든 error validation 표시를 제거
             }
             this.onCrudMixInActions('resetItem', this.form.data);
-        }
+        },
+        ...baseHelper.mapActions({
+            $setOverlay: 'setOverlay'
+        })
     }
 }
 

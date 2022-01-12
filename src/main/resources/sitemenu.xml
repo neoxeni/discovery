@@ -4,6 +4,7 @@
         <menu name="사이트관리" path="/admin/site/code/MpBaseCode">
             <menu name="코드관리" path="/admin/site/code/MpBaseCode"/>
             <menu name="메뉴관리" path="/admin/site/menu/MpBaseMenu"/>
+            <menu name="로그관리" path="/admin/site/log/MpBaseLog"/>
         </menu>
     </application>
 </sitemenu>

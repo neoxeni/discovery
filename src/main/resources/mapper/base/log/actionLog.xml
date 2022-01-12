@@ -12,7 +12,7 @@
 
         <trim prefix="WHERE" prefixOverrides="AND|OR">
             <if test="actionLogRequestDto.startedAt != null and actionLogRequestDto.endedAt != null">
-                AND a.createdAt BETWEEN #{actionLogRequestDto.startedAt} and #{actionLogRequestDto.endedAt}
+                AND a.created_at BETWEEN #{actionLogRequestDto.startedAt} and CONCAT(#{actionLogRequestDto.endedAt},'.999')
             </if>
             <if test="actionLogRequestDto.clientId != null">
                 AND a.client_id = #{actionLogRequestDto.clientId}
@@ -20,11 +20,11 @@
             <if test='actionLogRequestDto.divCd != null and actionLogRequestDto.divCd != ""'>
                 AND a.div_cd = #{actionLogRequestDto.divCd}
             </if>
-            <if test='actionLogRequestDto.empNm != null and actionLogRequestDto.empNm != ""'>
-                AND e.name LIKE CONCAT(CONCAT('%',#{actionLogRequestDto.empNm}),'%')
+            <if test='actionLogRequestDto.name != null and actionLogRequestDto.name != ""'>
+                AND e.name LIKE CONCAT(CONCAT('%',#{actionLogRequestDto.name}),'%')
             </if>
-            <if test='actionLogRequestDto.userId != null and actionLogRequestDto.userId != ""'>
-                AND l.username LIKE CONCAT(CONCAT('%',#{actionLogRequestDto.userId}),'%')
+            <if test='actionLogRequestDto.username != null and actionLogRequestDto.username != ""'>
+                AND l.username LIKE CONCAT(CONCAT('%',#{actionLogRequestDto.username}),'%')
             </if>
             <if test='actionLogRequestDto.ip != null and actionLogRequestDto.ip != ""'>
                 AND a.ip LIKE CONCAT(CONCAT('%',#{actionLogRequestDto.ip}),'%')
@@ -32,7 +32,7 @@
         </trim>
 
         <include refid="common.sql.fragmentOrderBy">
-            <property name="OrderBy" value="ORDER BY seq_no DESC"/>
+            <property name="OrderBy" value="ORDER BY id DESC"/>
         </include>
     </select>
 
