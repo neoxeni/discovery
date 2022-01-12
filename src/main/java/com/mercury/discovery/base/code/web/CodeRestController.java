@@ -91,7 +91,7 @@ public class CodeRestController {
     @PostMapping("/base/codes/{divCd}")
     public ResponseEntity<?> postCodes(AppUser appUser, @RequestBody Code code, @PathVariable String divCd) {
         LocalDateTime now = LocalDateTime.now();
-        code.setCd(IDGenerator.getUUID());
+        code.setCode(IDGenerator.getUUID());
         code.setClientId(appUser.getClientId());
         code.setCreatedBy(appUser.getId());
         code.setCreatedAt(LocalDateTime.now());
@@ -131,7 +131,7 @@ public class CodeRestController {
 
         code.setClientId(appUser.getClientId());
 
-        Objects.requireNonNull(code.getCd());
+        Objects.requireNonNull(code.getCode());
         Objects.requireNonNull(code.getDivCd());
 
         int affected = codeService.delete(code);

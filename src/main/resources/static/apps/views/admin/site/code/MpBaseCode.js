@@ -108,10 +108,10 @@ const MpBaseCode = {
                                                 <v-text-field label="분류코드" v-model="form.data.divCd" readonly></v-text-field>
                                             </v-col>
                                             <v-col cols="12" md="6">
-                                                <v-text-field label="상위코드" v-model="form.data.parentCd" readonly></v-text-field>
+                                                <v-text-field label="상위코드" v-model="form.data.parentCode" readonly></v-text-field>
                                             </v-col>
                                             <v-col cols="12" md="6">
-                                                <v-text-field label="코드*" v-model="form.data.cd" :readonly="!form.updatable || form.edit" :rules="form.rules.cd"></v-text-field>
+                                                <v-text-field label="코드*" v-model="form.data.code" :readonly="!form.updatable || form.edit" :rules="form.rules.code"></v-text-field>
                                             </v-col>
                                             <v-col cols="12" md="6">
                                                 <v-text-field label="코드명*" v-model="form.data.name" :readonly="!form.updatable" :rules="[v => (v && v.length > 0) || 'Required field']"></v-text-field>
@@ -172,9 +172,9 @@ const MpBaseCode = {
             form: {
                 init: {
                     code: {
-                        cd: undefined,
+                        code: undefined,
                         divCd: undefined,
-                        parentCd: undefined,
+                        parentCode: undefined,
                         name: undefined,
                         sort: 0,
                         description: undefined,
@@ -200,7 +200,7 @@ const MpBaseCode = {
                 valid: false,
                 rules: {
                     required: [v => v && v.length > 0 || 'Required field'],
-                    cd: [v => v && v.length > 0 || 'Required field', v => v !== this.form.data.parentCd || 'Duplicated value']
+                    code: [v => v && v.length > 0 || 'Required field', v => v !== this.form.data.parentCode || 'Duplicated value']
                 }
             }
         };
@@ -252,9 +252,9 @@ const MpBaseCode = {
             
             if(!this.form.edit){//새로 생성
                 const codeAll = this.$refs['codeTree'].instance.element.jstree(true).get_json('#', {flat: true});
-                const existCode = codeAll.find(e => e.id === `${this.form.data.divCd}_${this.form.data.cd}`);
+                const existCode = codeAll.find(e => e.id === `${this.form.data.divCd}_${this.form.data.code}`);
                 if(existCode) {
-                    this.mercury.base.lib.alert(`중복된 코드입니다. [${this.form.data.cd}]`);
+                    this.mercury.base.lib.alert(`중복된 코드입니다. [${this.form.data.code}]`);
                     return;
                 }
             }
@@ -293,12 +293,12 @@ const MpBaseCode = {
             if (dataType === 'code') {
                 const selectedNode = this.$refs['codeTree'].getSelectedNode(true)[0];
                 const initData = Object.assign({}, this.form.init.code);
-                const parentCd = selectedNode.data.cd || 'ROOT'; //divCd인 경우 값이 없음
+                const parentCode = selectedNode.data.code || 'ROOT'; //divCd인 경우 값이 없음
                 //divCd인 경우 값이 없음
                 const divCd = selectedNode.data.divCd;
-                initData['cd'] = parentCd !== 'ROOT' ? parentCd : '';
+                initData['code'] = parentCode !== 'ROOT' ? parentCode : '';
                 initData['divCd'] = divCd;
-                initData['parentCd'] = parentCd;
+                initData['parentCode'] = parentCode;
                 this.form.data = initData;
             } else {
                 this.form.data = Object.assign({}, this.form.init.codeDiv);

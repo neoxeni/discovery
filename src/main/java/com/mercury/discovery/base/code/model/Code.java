@@ -19,10 +19,10 @@ public class Code implements Serializable {
     private static final long serialVersionUID = 5435721294464776663L;
 
     private String divCd;
-    private String cd;
-    private String parentCd;
+    private String parentCode;
+    private String code;
     private String name;
-    private Integer sort;
+    private int sort;
     private String useYn;
     private String etc1;
     private String etc2;

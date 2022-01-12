@@ -118,7 +118,7 @@ const MpBaseTree = {
                         keyword = keyword.toLowerCase();
 
                         if (target === 'code') {
-                            return (node.data.cd || node.data.divCd).toLowerCase().includes(keyword);
+                            return (node.data.code || node.data.divCd).toLowerCase().includes(keyword);
                         } else {
                             if (keyword.indexOf('/') === 0) {//경로 검색
                                 const path = node.data.path + node.data.paths;

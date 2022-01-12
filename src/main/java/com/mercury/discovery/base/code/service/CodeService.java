@@ -86,9 +86,9 @@ public class CodeService {
                 for (Object e : enumConstants) {
                     Enum<?> enumObject = (Enum<?>) e;
 
-                    String cd = enumObject.name();
+                    String code = enumObject.name();
 
-                    String messageCode = "enum." + name + "." + cd;
+                    String messageCode = "enum." + name + "." + code;
                     String ko = msgAccessor.getMessage(messageCode, localeKo);
                     String en = null;
                     if (ko.startsWith("enum.")) {
@@ -102,7 +102,7 @@ public class CodeService {
                             Method method = enumObject.getDeclaringClass().getDeclaredMethod("getLabel");
                             ko = (String) method.invoke(enumObject);
                         } catch (Exception ex) {
-                            ko = cd;
+                            ko = code;
                         }
                     }
 
@@ -115,14 +115,14 @@ public class CodeService {
                     String etc3 = getEnumInvokeMethod(enumObject, "getEtc3");
                     String etc4 = getEnumInvokeMethod(enumObject, "getEtc4");
                     String useYn = getEnumInvokeMethod(enumObject, "getUseYn");
-                    String parentCd = getEnumInvokeMethod(enumObject, "getParentCd");
+                    String parentCode = getEnumInvokeMethod(enumObject, "getParentCode");
 
 
-                    sb.append("[").append(cd).append(":").append(ko).append(":").append(en).append("]");
+                    sb.append("[").append(code).append(":").append(ko).append(":").append(en).append("]");
 
 
-                    codesKo.add(makeEnumCode(name, cd, ko, etc1, etc2, etc3, etc4, sort, useYn, parentCd, now));
-                    codesEn.add(makeEnumCode(name, cd, en, etc1, etc2, etc3, etc4, sort, useYn, parentCd, now));
+                    codesKo.add(makeEnumCode(name, code, ko, etc1, etc2, etc3, etc4, sort, useYn, parentCode, now));
+                    codesEn.add(makeEnumCode(name, code, en, etc1, etc2, etc3, etc4, sort, useYn, parentCode, now));
                 }
                 sb.append("\n");
                 enumCodeMapKo.put(name, codesKo);
@@ -152,10 +152,10 @@ public class CodeService {
     }
 
     private Code makeEnumCode(String divCd, String cd, String name, String etc1, String etc2, String etc3, String etc4,
-                              int sort, String useYn, String parentCd, LocalDateTime now) {
+                              int sort, String useYn, String parentCode, LocalDateTime now) {
         Code code = new Code();
         code.setDivCd(divCd);
-        code.setCd(cd);
+        code.setCode(cd);
         code.setName(name);
         code.setEtc1(etc1 == null ? "" : etc1);
         code.setEtc2(etc2 == null ? "" : etc2);
@@ -163,7 +163,7 @@ public class CodeService {
         code.setEtc4(etc4 == null ? "" : etc4);
         code.setUseYn(useYn == null ? "Y" : useYn);//null 인경우 Y
         code.setSort(sort);
-        code.setParentCd(parentCd == null ? "ROOT" : parentCd);
+        code.setParentCode(parentCode == null ? "ROOT" : parentCode);
 
         code.setCreatedAt(now);
         code.setCreatedBy(-1);
@@ -229,13 +229,13 @@ public class CodeService {
             jsTree.setDataType("code");
             jsTree.setType("code");
 
-            if ("ROOT".equals(item.getParentCd())) {
+            if ("ROOT".equals(item.getParentCode())) {
                 jsTree.setParent(item.getDivCd());
             } else {
-                jsTree.setParent(item.getDivCd() + "_" + item.getParentCd());
+                jsTree.setParent(item.getDivCd() + "_" + item.getParentCode());
             }
 
-            jsTree.setId(item.getDivCd() + "_" + item.getCd());
+            jsTree.setId(item.getDivCd() + "_" + item.getCode());
             jsTree.setText(item.getName());
             jsTree.setData(item);
             jsTree.setDivCd(item.getDivCd());
@@ -254,7 +254,7 @@ public class CodeService {
 
         Map<String, List<Code>> childrenMap = new HashMap<>();
         for (Code lCode : codes) {
-            String pid = lCode.getParentCd();
+            String pid = lCode.getParentCode();
             if ("ROOT".equals(pid)) {
                 pid = lCode.getDivCd();
             }
@@ -311,7 +311,7 @@ public class CodeService {
         sb.append("            if(options.type === 'option'){");
         sb.append("                let option = '';");
         sb.append("                children.forEach(child=>{");
-        sb.append("                    option += `<option value=\"${child.cd}\" data-div-cd=\"${child.divCd}\" data-etc1=\"${child.etc1}\" data-etc2=\"${child.etc2}\" data-etc3=\"${child.etc3}\" data-etc4=\"${child.etc4}\">${child.name}</option>`;");
+        sb.append("                    option += `<option value=\"${child.code}\" data-div-cd=\"${child.divCd}\" data-etc1=\"${child.etc1}\" data-etc2=\"${child.etc2}\" data-etc3=\"${child.etc3}\" data-etc4=\"${child.etc4}\">${child.name}</option>`;");
         sb.append("                });");
         sb.append("                return option;");
         sb.append("            }");
@@ -375,8 +375,8 @@ public class CodeService {
             post.setDivCd(divCd);
             post.setClientId(clientId);
 
-            if (post.getCd() == null) {
-                post.setCd(IDGenerator.getUUID());
+            if (post.getCode() == null) {
+                post.setCode(IDGenerator.getUUID());
                 post.setCreatedBy(empNo);
                 post.setCreatedAt(now);
             } else {
@@ -384,8 +384,8 @@ public class CodeService {
                 post.setUpdatedAt(now);
             }
 
-            if (post.getParentCd() == null) {
-                post.setParentCd("ROOT");
+            if (post.getParentCode() == null) {
+                post.setParentCode("ROOT");
             }
 
             if (post.getUseYn() == null) {

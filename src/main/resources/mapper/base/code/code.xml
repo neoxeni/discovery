@@ -5,9 +5,9 @@
 
     <select id="findByDiv" resultType="Code">
         SELECT
-            cd,
+            code,
             div_cd,
-            parent_cd,
+            parent_code,
             name,
             sort,
             description,
@@ -19,14 +19,14 @@
             client_id
         FROM cmm_code
         WHERE div_cd = #{divCd} AND client_id IN( -1, #{clientId})
-        ORDER BY parent_cd, sort
+        ORDER BY parent_code, sort
     </select>
 
     <select id="findAll" resultType="Code">
         SELECT
-            cd,
+            code,
             div_cd,
-            parent_cd,
+            parent_code,
             name,
             sort,
             description,
@@ -42,22 +42,22 @@
             client_id
         FROM cmm_code
         WHERE client_id IN( -1, #{clientId})
-        ORDER BY div_cd, parent_cd, sort
+        ORDER BY div_cd, parent_code, sort
     </select>
 
     <insert id="insert">
         INSERT INTO cmm_code(
-            cd, div_cd, parent_cd, name, sort, description, use_yn, etc1, etc2, etc3, etc4, created_by, created_at, updated_by, updated_at, client_id
+            code, div_cd, parent_code, name, sort, description, use_yn, etc1, etc2, etc3, etc4, created_by, created_at, updated_by, updated_at, client_id
         ) VALUES (
-            #{cd}, #{divCd}, #{parentCd}, #{name}, #{sort}, #{description}, #{useYn}, #{etc1}, #{etc2}, #{etc3}, #{etc4}, #{createdBy}, #{createdAt}, #{createdBy}, #{createdAt}, #{clientId}
+            #{code}, #{divCd}, #{parentCode}, #{name}, #{sort}, #{description}, #{useYn}, #{etc1}, #{etc2}, #{etc3}, #{etc4}, #{createdBy}, #{createdAt}, #{createdBy}, #{createdAt}, #{clientId}
         )
     </insert>
 
     <update id="update">
         UPDATE cmm_code SET
-           cd = #{cd},
+           code = #{code},
            div_cd = #{divCd},
-           parent_cd = #{parentCd},
+           parent_code = #{parentCode},
            name = #{name},
            sort = #{sort},
            description = #{description},
@@ -70,7 +70,7 @@
            etc4 = #{etc4},
            client_id = #{clientId}
         WHERE client_id = #{clientId}
-        AND cd = #{cd}
+        AND code = #{code}
         AND div_cd = #{divCd}
     </update>
 
@@ -78,28 +78,28 @@
         DELETE FROM cmm_code
         WHERE client_id IN( -1, #{clientId})
           AND div_cd =  #{divCd}
-          AND cd IN (
-            <include refid="common.sql.with" /> cte(div_cd, cd, parent_cd) AS (
+          AND code IN (
+            <include refid="common.sql.with" /> cte(div_cd, code, parent_code) AS (
                 SELECT
                     a.div_cd,
-                    a.cd,
-                    a.parent_cd
+                    a.code,
+                    a.parent_code
                 FROM cmm_code a
                 WHERE a.client_id IN( -1, #{clientId})
                   AND a.div_cd =  #{divCd}
-                  AND a.cd = #{cd}
+                  AND a.code = #{code}
 
                 UNION ALL
 
                 SELECT
                     a.div_cd,
-                    a.cd,
-                    a.parent_cd
-                FROM cmm_code a JOIN cte b ON a.parent_cd = b.cd
+                    a.code,
+                    a.parent_code
+                FROM cmm_code a JOIN cte b ON a.parent_code = b.code
                     AND a.client_id IN( -1, #{clientId})
             )
 
-            SELECT cd from cte
+            SELECT code from cte
         )
     </delete>
 
