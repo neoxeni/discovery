@@ -1,8 +1,9 @@
-package com.mercury.discovery.config.web.security;
+package com.mercury.discovery.config.web.security.handler;
 
 
 import com.mercury.discovery.base.users.model.AppUser;
 import com.mercury.discovery.base.users.service.UserRepository;
+import com.mercury.discovery.config.web.security.handler.UserDetailsServiceImpl;
 import com.mercury.discovery.utils.HttpUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

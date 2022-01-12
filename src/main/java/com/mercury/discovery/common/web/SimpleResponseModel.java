@@ -1,4 +1,4 @@
-package com.mercury.discovery.common;
+package com.mercury.discovery.common.web;
 
 public class SimpleResponseModel {
     private final int affected;

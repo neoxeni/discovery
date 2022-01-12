@@ -6,7 +6,7 @@
  * the book and help support the authors, development of more free code,
  * and the JSP/Servlet/J2EE community.
  */
-package com.mercury.discovery.config.web.gzip;
+package com.mercury.discovery.common.web.gzip;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.WriteListener;

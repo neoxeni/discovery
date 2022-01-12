@@ -1,5 +1,7 @@
 package com.mercury.discovery.config.web.security;
 
+import com.mercury.discovery.config.web.security.handler.CustomAuthenticationFailureHandler;
+import com.mercury.discovery.config.web.security.handler.CustomAuthenticationSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;

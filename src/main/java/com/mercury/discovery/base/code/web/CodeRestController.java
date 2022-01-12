@@ -4,7 +4,7 @@ import com.mercury.discovery.base.code.model.Code;
 import com.mercury.discovery.base.code.model.CodeDiv;
 import com.mercury.discovery.base.code.service.CodeService;
 import com.mercury.discovery.base.users.model.AppUser;
-import com.mercury.discovery.common.SimpleResponseModel;
+import com.mercury.discovery.common.web.SimpleResponseModel;
 import com.mercury.discovery.common.error.exception.BadParameterException;
 import com.mercury.discovery.common.model.JsTree;
 import com.mercury.discovery.utils.IDGenerator;

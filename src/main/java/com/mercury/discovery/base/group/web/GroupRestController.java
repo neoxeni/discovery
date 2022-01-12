@@ -4,7 +4,7 @@ import com.github.pagehelper.Page;
 import com.mercury.discovery.base.group.model.*;
 import com.mercury.discovery.base.group.service.GroupService;
 import com.mercury.discovery.base.users.model.AppUser;
-import com.mercury.discovery.common.SimpleResponseModel;
+import com.mercury.discovery.common.web.SimpleResponseModel;
 import com.mercury.discovery.common.excel.ExcelUtils;
 import com.mercury.discovery.common.excel.ResultExcelDataHandler;
 import com.mercury.discovery.common.excel.model.ExcelColumn;

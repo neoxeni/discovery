@@ -2,7 +2,7 @@ package com.mercury.discovery.base.users.web;
 
 import com.mercury.discovery.base.users.model.AppUser;
 import com.mercury.discovery.base.users.service.UserService;
-import com.mercury.discovery.common.SimpleResponseModel;
+import com.mercury.discovery.common.web.SimpleResponseModel;
 import com.mercury.discovery.common.error.exception.BadParameterException;
 import com.mercury.discovery.common.log.security.SecurityLogging;
 import com.mercury.discovery.utils.IDGenerator;

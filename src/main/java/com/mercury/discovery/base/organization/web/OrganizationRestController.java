@@ -8,7 +8,7 @@ import com.mercury.discovery.base.organization.model.OrganizationSearchDto;
 import com.mercury.discovery.base.organization.service.OrganizationService;
 import com.mercury.discovery.base.users.model.AppUser;
 import com.mercury.discovery.base.users.model.UserRole;
-import com.mercury.discovery.common.SimpleResponseModel;
+import com.mercury.discovery.common.web.SimpleResponseModel;
 import com.mercury.discovery.common.model.CamelMap;
 import com.mercury.discovery.utils.IDGenerator;
 import com.mercury.discovery.utils.MessagesUtils;

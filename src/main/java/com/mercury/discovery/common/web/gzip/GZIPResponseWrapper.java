@@ -1,4 +1,4 @@
-package com.mercury.discovery.config.web.gzip;
+package com.mercury.discovery.common.web.gzip;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;

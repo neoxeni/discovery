@@ -1,4 +1,4 @@
-package com.mercury.discovery.config.web.gzip;
+package com.mercury.discovery.common.web.gzip;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
