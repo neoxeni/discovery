@@ -27,27 +27,19 @@ public interface UserRepository {
 
     int insert(AppUser appUser);
 
+    int update(AppUser appUser);
+
+    int delete(Integer clientId, Integer empNo);
+
     int insertLogin(AppUser appUser);
 
     int insertLoginHistory(AppUser appUser);
-
-    int update(AppUser appUser);
 
     int updateLoginInfo(AppUser appUser);
 
     int updateLogoutInfo(AppUser appUser);
 
-    int updateLoginId(String userId, int empNo);
+    int plusPasswordErrorCount(String username);
 
-    int plusPasswordErrorCount(AppUser appUser);
-
-    int delete(Integer clientId, Integer empNo);
-
-    int resetPassword(Integer empNo, String psswd, LocalDateTime psswdUpdDt);
-
-    int resetPasswordCount(Integer empNo);
-
-    AppUser findByUserEmail(String appUser);
-
-
+    int resetPassword(Integer id, String password, LocalDateTime passwordUpdatedAt);
 }

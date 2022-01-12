@@ -1,9 +1,6 @@
 package com.mercury.discovery.config.web.security.handler;
 
-
 import com.mercury.discovery.base.users.model.AppUser;
-import com.mercury.discovery.base.users.service.UserRepository;
-import com.mercury.discovery.config.web.security.handler.UserDetailsServiceImpl;
 import com.mercury.discovery.utils.HttpUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-
 @Slf4j
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
     @Autowired
@@ -31,9 +27,6 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
     @Autowired
     PasswordEncoder passwordEncoder;
-
-    @Autowired
-    UserRepository userRepository;
 
     private final String defaultUrl;
     private final RequestCache requestCache = new HttpSessionRequestCache();
@@ -45,15 +38,9 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        SavedRequest savedRequest = requestCache.getRequest(request, response);
         AppUser appUser = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String tempPw = appUser.getPassword();
-
         appUser.setLastIpAddress(HttpUtils.getRemoteAddr(request));
-        userDetailsService.afterLoginSuccess(appUser);
 
-        String id = appUser.getUsername();
-        String encodeId = passwordEncoder.encode(id);
         int errorNum;
 
         /*
@@ -74,16 +61,16 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             this.logout(request, response);
             errorNum = 2;
             redirectStrategy.sendRedirect(request, response, "/login?error=" + errorNum);
-        } else if (encodeId.equals(tempPw)) {
+        } else if (appUser.getPassword().equals(passwordEncoder.encode(appUser.getUsername()))) {
             errorNum = 6;
             request.setAttribute("error", errorNum);
-            request.setAttribute("empNo", appUser.getId());
             request.setAttribute("userId", appUser.getId());
+            request.setAttribute("username", appUser.getUsername());
             request.getRequestDispatcher("/changePassword").forward(request, response);
         } else {
-            // 로그인 오류 count 초기화
-            userRepository.resetPasswordCount(appUser.getId());
+            userDetailsService.afterLoginSuccess(appUser);
 
+            SavedRequest savedRequest = requestCache.getRequest(request, response);
             if (savedRequest != null) {
                 String targetUrl = savedRequest.getRedirectUrl();
                 if (targetUrl.endsWith("/error") || targetUrl.contains("/ws-stomp")) {

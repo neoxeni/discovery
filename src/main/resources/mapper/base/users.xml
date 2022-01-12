@@ -153,21 +153,6 @@
         )
     </insert>
 
-    <insert id="insertLogin">
-        INSERT INTO tb_cmm_login
-        ( user_id, psswd, psswd_err_num, emp_no )
-        VALUES
-        ( #{id},#{psswd},0 ,#{empNo})
-    </insert>
-
-    <insert id="insertLoginHistory">
-        INSERT INTO client_user_login_hist (
-            user_id, login_at, last_ip_address, client_id
-        )VALUES(
-            #{id}, #{lastLoginAt} ,#{lastIpAddress}, #{clientId}
-        )
-    </insert>
-
     <update id="update">
         UPDATE tb_cmm_emp SET
         cmpny_emp_cd = #{cmpnyEmpCd}
@@ -192,17 +177,33 @@
         AND cmpny_no= #{clientId}
     </update>
 
+    <delete id="delete">
+        DELETE FROM client_user_login
+        WHERE user_id = #{id}
+          AND client_id = #{clientId}
+    </delete>
+
+    <insert id="insertLogin">
+        INSERT INTO client_user_login
+            ( username, password, password_err_count, user_id )
+        VALUES(
+            #{username}, #{password}, 0 , #{id}
+        )
+    </insert>
+
+    <insert id="insertLoginHistory">
+        INSERT INTO client_user_login_hist (
+            user_id, login_at, last_ip_address, client_id
+        )VALUES(
+            #{id}, #{lastLoginAt} ,#{lastIpAddress}, #{clientId}
+        )
+    </insert>
+
     <update id="updateLoginInfo">
         UPDATE client_user_login SET
             password_err_count = 0,
-            password_updated_at = #{lastLoginAt},
+            last_login_at = #{lastLoginAt},
             last_ip_address = #{lastIpAddress}
-        WHERE user_id = #{id}
-    </update>
-
-    <update id="updateLoginId">
-        UPDATE client_user_login SET
-            username = #{username}
         WHERE user_id = #{id}
     </update>
 
@@ -213,127 +214,16 @@
     </update>
 
     <update id="plusPasswordErrorCount">
-        <selectKey keyProperty="psswdErrNum" resultType="int" order="AFTER">
-            SELECT psswd_err_num FROM tb_cmm_login WHERE emp_no = #{empNo}
-        </selectKey>
-
-        UPDATE tb_cmm_login SET
-            psswd_err_num = psswd_err_num + 1
-        WHERE emp_no = #{empNo}
+        UPDATE client_user_login SET
+            password_err_count = password_err_count + 1
+        WHERE username = #{username}
     </update>
 
     <update id="resetPassword">
-        UPDATE tb_cmm_login SET
-            psswd = #{psswd},
-            psswd_err_num = 0,
-            psswd_upd_dt = #{psswdUpdDt}
-        WHERE emp_no = #{empNo}
-    </update>
-
-    <delete id="delete">
-        DELETE FROM tb_cmm_emp
-        WHERE emp_no = #{empNo}
-        AND cmpny_no = #{clientId}
-    </delete>
-
-    <update id="resetPasswordCount">
         UPDATE client_user_login SET
-            password_err_count = 0
+            password = #{password},
+            password_err_count = 0,
+            password_updated_at = #{passwordUpdatedAt}
         WHERE user_id = #{id}
     </update>
-
-    <!--로그인 전용-->
-    <select id="findByUserEmail" resultType="AppUser">
-        SELECT
-        <include refid="user_all">
-            <property name="e" value="e"/>
-            <property name="l" value="l"/>
-            <property name="dept" value="dept"/>
-            <property name="postn" value="postn"/>
-            <property name="duty" value="duty"/>
-        </include>
-        ,psswd
-        FROM tb_cmm_emp e
-        JOIN tb_cmm_login l ON e.emp_no = l.emp_no
-        LEFT OUTER JOIN tb_cmm_dept dept ON e.dept_no = dept.dept_no
-        LEFT OUTER JOIN tb_cmm_code postn ON e.postn_cd = postn.cd AND postn.cmpny_no = e.cmpny_no AND postn.div_cd = 'OR02'
-        LEFT OUTER JOIN tb_cmm_code duty ON e.duty_cd = duty.cd AND duty.cmpny_no = e.cmpny_no AND duty.div_cd = 'OR01'
-        WHERE e.email = #{email}
-        LIMIT 1
-    </select>
-
-
-    <!--로그인 전용-->
-    <select id="findByUserEmailWithCmpnyId" resultType="AppUser">
-
-        SELECT
-        <include refid="user_all">
-            <property name="e" value="e"/>
-            <property name="l" value="l"/>
-            <property name="dept" value="dept"/>
-            <property name="postn" value="postn"/>
-            <property name="duty" value="duty"/>
-        </include>
-        ,psswd
-        FROM tb_cmm_emp e
-        JOIN tb_cmm_login l ON e.emp_no = l.emp_no
-        JOIN tb_cmm_company c ON e.cmpny_no = c.cmpny_no
-        LEFT OUTER JOIN tb_cmm_dept dept ON e.dept_no = dept.dept_no
-        LEFT OUTER JOIN tb_cmm_code postn ON e.postn_cd = postn.cd AND postn.cmpny_no = e.cmpny_no AND postn.div_cd = 'OR02'
-        LEFT OUTER JOIN tb_cmm_code duty ON e.duty_cd = duty.cd  AND duty.cmpny_no = e.cmpny_no AND duty.div_cd = 'OR01'
-        WHERE e.email = #{email}
-        AND c.cmpny_id = #{cmpnyId}
-    </select>
-
-    <select id="getEmail" resultType="String">
-        SELECT a.email
-        FROM tb_cmm_emp a,
-            tb_cmm_company b
-        WHERE a.cmpny_no = b.cmpny_no
-        AND rtrmnt_yn = 'N'
-        AND a.email = #{email}
-        AND b.cmpny_id = #{cmpnyId}
-    </select>
-
-    <select id="getEmailForDomain" resultType="String">
-        SELECT a.email
-        FROM tb_cmm_emp a
-        WHERE 1=1
-        AND rtrmnt_yn = 'N'
-        AND a.email = #{email}
-        LIMIT 1
-    </select>
-
-    <select id="getUserId" resultType="String">
-        SELECT user_id
-        FROM tb_cmm_login a,
-            tb_cmm_emp b,
-            tb_cmm_company c
-        WHERE a.emp_no = b.emp_no
-        AND b.cmpny_no = c.cmpny_no
-        AND b.rtrmnt_yn = 'N'
-        AND a.user_id = #{userId}
-        AND c.cmpny_id = #{cmpnyId}
-    </select>
-
-    <select id="findDeptEmpList" resultType="AppUser">
-        SELECT
-        <include refid="user_all">
-            <property name="e" value="e"/>
-            <property name="l" value="l"/>
-            <property name="dept" value="dept"/>
-            <property name="postn" value="postn"/>
-            <property name="duty" value="duty"/>
-        </include>
-        FROM tb_cmm_emp e
-        JOIN tb_cmm_login l ON e.emp_no = l.emp_no
-        LEFT OUTER JOIN tb_cmm_dept dept ON e.dept_no = dept.dept_no
-        LEFT OUTER JOIN tb_cmm_code postn ON e.postn_cd = postn.cd AND postn.cmpny_no = e.cmpny_no  AND postn.div_cd = 'OR02'
-        LEFT OUTER JOIN tb_cmm_code duty ON e.duty_cd = duty.cd  AND duty.cmpny_no = e.cmpny_no AND duty.div_cd = 'OR01'
-        WHERE e.dept_no = #{deptCd}
-        AND e.cmpny_no = #{clientId}
-        AND e.rtrmnt_yn = #{rtrmntYn}
-        ORDER BY e.emp_nm
-
-    </select>
 </mapper>

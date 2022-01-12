@@ -186,10 +186,6 @@ public class UserService {
         return userRepository.updateLoginInfo(appUser);
     }
 
-    public int failureLoginInfo(AppUser appUser) {
-        return userRepository.plusPasswordErrorCount(appUser);
-    }
-
     public int updateLogoutInfo(AppUser appUser) {
         appUser.setLastLogoutAt(LocalDateTime.now());
         return userRepository.updateLogoutInfo(appUser);
@@ -201,12 +197,8 @@ public class UserService {
         return userRepository.resetPassword(empNo, encPassword, now);
     }
 
-    public AppUser findByUserEmail(String email) {
-        return userRepository.findByUserEmail(email);
-    }
-
-    public void updateLoginId(String userId, int empNo) {
-        userRepository.updateLoginId(userId, empNo);
+    public int plusPasswordErrorCount(String username){
+        return userRepository.plusPasswordErrorCount(username);
     }
 
     @Transactional(readOnly = true)

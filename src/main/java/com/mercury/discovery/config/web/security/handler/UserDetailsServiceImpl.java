@@ -35,12 +35,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     public void afterLoginSuccess(AppUser appUser) {
-        //password clear
         appUser.setPassword("");
-        //appUser.setPsswdErrNum(0);
+        appUser.setPasswordErrCount(0);
         appUser.setLastLoginAt(LocalDateTime.now());
 
-        //성공시 사용자 정보업데이트 psswdErrNum, lastLoginDt, lastIpAddress 등등
+        //성공시 사용자 정보업데이트 passwordErrCount, lastLoginAt, lastIpAddress 등등
         userService.successLoginInfo(appUser);
 
         //사용자 role 세팅
@@ -51,5 +50,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         appUser.setJwt(token);
 
         userService.cacheUser(appUser);
+    }
+
+    public void plusPasswordErrorCount(String username) {
+        userService.plusPasswordErrorCount(username);
     }
 }
