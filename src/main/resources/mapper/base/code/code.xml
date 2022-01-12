@@ -7,7 +7,7 @@
         SELECT
             cd,
             div_cd,
-            prnt_cd,
+            parent_cd,
             cd_nm,
             sort_no,
             dtl,
@@ -19,14 +19,14 @@
             client_id
         FROM cmm_code
         WHERE div_cd = #{divCd} AND client_id IN( -1, #{clientId})
-        ORDER BY prnt_cd, sort_no
+        ORDER BY parent_cd, sort_no
     </select>
 
     <select id="findAll" resultType="Code">
         SELECT
             cd,
             div_cd,
-            prnt_cd,
+            parent_cd,
             cd_nm,
             sort_no,
             dtl,
@@ -42,14 +42,14 @@
             client_id
         FROM cmm_code
         WHERE client_id IN( -1, #{clientId})
-        ORDER BY div_cd, prnt_cd, sort_no
+        ORDER BY div_cd, parent_cd, sort_no
     </select>
 
     <insert id="insert">
         INSERT INTO cmm_code(
-            cd, div_cd, prnt_cd, cd_nm, sort_no, dtl, use_yn, etc1, etc2, etc3, etc4, created_by, created_at, updated_by, updated_at, client_id
+            cd, div_cd, parent_cd, cd_nm, sort_no, dtl, use_yn, etc1, etc2, etc3, etc4, created_by, created_at, updated_by, updated_at, client_id
         ) VALUES (
-            #{cd}, #{divCd}, #{prntCd}, #{cdNm}, #{sortNo}, #{dtl}, #{useYn}, #{etc1}, #{etc2}, #{etc3}, #{etc4}, #{createdBy}, #{createdAt}, #{createdBy}, #{createdAt}, #{clientId}
+            #{cd}, #{divCd}, #{parentCd}, #{cdNm}, #{sortNo}, #{dtl}, #{useYn}, #{etc1}, #{etc2}, #{etc3}, #{etc4}, #{createdBy}, #{createdAt}, #{createdBy}, #{createdAt}, #{clientId}
         )
     </insert>
 
@@ -57,7 +57,7 @@
         UPDATE cmm_code SET
            cd = #{cd},
            div_cd = #{divCd},
-           prnt_cd = #{prntCd},
+           parent_cd = #{parentCd},
            cd_nm = #{cdNm},
            sort_no = #{sortNo},
            dtl = #{dtl},
@@ -79,11 +79,11 @@
         WHERE client_id IN( -1, #{clientId})
           AND div_cd =  #{divCd}
           AND cd IN (
-            <include refid="common.sql.with" /> cte(div_cd, cd, prnt_cd) AS (
+            <include refid="common.sql.with" /> cte(div_cd, cd, parent_cd) AS (
                 SELECT
                     a.div_cd,
                     a.cd,
-                    a.prnt_cd
+                    a.parent_cd
                 FROM cmm_code a
                 WHERE a.client_id IN( -1, #{clientId})
                   AND a.div_cd =  #{divCd}
@@ -94,8 +94,8 @@
                 SELECT
                     a.div_cd,
                     a.cd,
-                    a.prnt_cd
-                FROM cmm_code a JOIN cte b ON a.prnt_cd = b.cd
+                    a.parent_cd
+                FROM cmm_code a JOIN cte b ON a.parent_cd = b.cd
                     AND a.client_id IN( -1, #{clientId})
             )
 

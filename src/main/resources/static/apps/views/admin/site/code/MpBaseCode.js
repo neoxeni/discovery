@@ -108,7 +108,7 @@ const MpBaseCode = {
                                                 <v-text-field label="분류코드" v-model="form.data.divCd" readonly></v-text-field>
                                             </v-col>
                                             <v-col cols="12" md="6">
-                                                <v-text-field label="상위코드" v-model="form.data.prntCd" readonly></v-text-field>
+                                                <v-text-field label="상위코드" v-model="form.data.parentCd" readonly></v-text-field>
                                             </v-col>
                                             <v-col cols="12" md="6">
                                                 <v-text-field label="코드*" v-model="form.data.cd" :readonly="!form.updatable || form.edit" :rules="form.rules.cd"></v-text-field>
@@ -174,7 +174,7 @@ const MpBaseCode = {
                     code: {
                         cd: undefined,
                         divCd: undefined,
-                        prntCd: undefined,
+                        parentCd: undefined,
                         cdNm: undefined,
                         sortNo: 0,
                         dtl: undefined,
@@ -200,7 +200,7 @@ const MpBaseCode = {
                 valid: false,
                 rules: {
                     required: [v => v && v.length > 0 || 'Required field'],
-                    cd: [v => v && v.length > 0 || 'Required field', v => v !== this.form.data.prntCd || 'Duplicated value']
+                    cd: [v => v && v.length > 0 || 'Required field', v => v !== this.form.data.parentCd || 'Duplicated value']
                 }
             }
         };
@@ -293,12 +293,12 @@ const MpBaseCode = {
             if (dataType === 'code') {
                 const selectedNode = this.$refs['codeTree'].getSelectedNode(true)[0];
                 const initData = Object.assign({}, this.form.init.code);
-                const prntCd = selectedNode.data.cd || 'ROOT'; //divCd인 경우 값이 없음
+                const parentCd = selectedNode.data.cd || 'ROOT'; //divCd인 경우 값이 없음
                 //divCd인 경우 값이 없음
                 const divCd = selectedNode.data.divCd;
-                initData['cd'] = prntCd !== 'ROOT' ? prntCd : '';
+                initData['cd'] = parentCd !== 'ROOT' ? parentCd : '';
                 initData['divCd'] = divCd;
-                initData['prntCd'] = prntCd;
+                initData['parentCd'] = parentCd;
                 this.form.data = initData;
             } else {
                 this.form.data = Object.assign({}, this.form.init.codeDiv);

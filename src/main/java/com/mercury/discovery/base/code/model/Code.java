@@ -20,7 +20,7 @@ public class Code implements Serializable {
 
     private String cd;
     private String divCd;
-    private String prntCd;
+    private String parentCd;
     private String cdNm;
     private Integer sortNo;
     private String dtl;

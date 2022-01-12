@@ -89,7 +89,7 @@ CREATE TABLE cmm_code_div (
 CREATE TABLE cmm_code (
     cd                          VARCHAR(36)         NOT NULL COMMENT '코드',
     div_cd                      VARCHAR(20)         NOT NULL COMMENT '분류코드',
-    prnt_cd                     VARCHAR(36)         NOT NULL DEFAULT 'ROOT' COMMENT '상위코드',
+    parent_cd                   VARCHAR(36)         NOT NULL DEFAULT 'ROOT' COMMENT '상위코드',
     cd_nm                       VARCHAR(100)        NOT NULL COMMENT '코드명',
     sort_no                     INT                 NOT NULL DEFAULT 0 COMMENT '정렬번호',
     dtl                         VARCHAR(200)            NULL COMMENT '코드상세',
@@ -109,8 +109,8 @@ CREATE TABLE cmm_code (
     client_id                   INT                 NOT NULL COMMENT '회사아이디',
 
     UNIQUE UK1_CMM_CODE (cd,div_cd,client_id),
-    INDEX IX1_CMM_CODE (div_cd,prnt_cd,sort_no),
-    INDEX IX2_CMM_CODE (prnt_cd)
+    INDEX IX1_CMM_CODE (div_cd,parent_cd,sort_no),
+    INDEX IX2_CMM_CODE (parent_cd)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='코드';
 
 

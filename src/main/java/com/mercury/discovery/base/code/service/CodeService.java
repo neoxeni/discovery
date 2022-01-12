@@ -115,14 +115,14 @@ public class CodeService {
                     String etc3 = getEnumInvokeMethod(enumObject, "getEtc3");
                     String etc4 = getEnumInvokeMethod(enumObject, "getEtc4");
                     String useYn = getEnumInvokeMethod(enumObject, "getUseYn");
-                    String prntCd = getEnumInvokeMethod(enumObject, "getPrntCd");
+                    String parentCd = getEnumInvokeMethod(enumObject, "getParentCd");
 
 
                     sb.append("[").append(cd).append(":").append(ko).append(":").append(en).append("]");
 
 
-                    codesKo.add(makeEnumCode(name, cd, ko, etc1, etc2, etc3, etc4, sortNo, useYn, prntCd, now));
-                    codesEn.add(makeEnumCode(name, cd, en, etc1, etc2, etc3, etc4, sortNo, useYn, prntCd, now));
+                    codesKo.add(makeEnumCode(name, cd, ko, etc1, etc2, etc3, etc4, sortNo, useYn, parentCd, now));
+                    codesEn.add(makeEnumCode(name, cd, en, etc1, etc2, etc3, etc4, sortNo, useYn, parentCd, now));
                 }
                 sb.append("\n");
                 enumCodeMapKo.put(name, codesKo);
@@ -152,7 +152,7 @@ public class CodeService {
     }
 
     private Code makeEnumCode(String divCd, String cd, String cdNm, String etc1, String etc2, String etc3, String etc4,
-                              int sortNo, String useYn, String prntCd, LocalDateTime now) {
+                              int sortNo, String useYn, String parentCd, LocalDateTime now) {
         Code code = new Code();
         code.setDivCd(divCd);
         code.setCd(cd);
@@ -163,7 +163,7 @@ public class CodeService {
         code.setEtc4(etc4 == null ? "" : etc4);
         code.setUseYn(useYn == null ? "Y" : useYn);//null 인경우 Y
         code.setSortNo(sortNo);
-        code.setPrntCd(prntCd == null ? "ROOT" : prntCd);
+        code.setParentCd(parentCd == null ? "ROOT" : parentCd);
 
         code.setCreatedAt(now);
         code.setCreatedBy(-1);
@@ -229,10 +229,10 @@ public class CodeService {
             jsTree.setDataType("code");
             jsTree.setType("code");
 
-            if ("ROOT".equals(item.getPrntCd())) {
+            if ("ROOT".equals(item.getParentCd())) {
                 jsTree.setParent(item.getDivCd());
             } else {
-                jsTree.setParent(item.getDivCd() + "_" + item.getPrntCd());
+                jsTree.setParent(item.getDivCd() + "_" + item.getParentCd());
             }
 
             jsTree.setId(item.getDivCd() + "_" + item.getCd());
@@ -254,7 +254,7 @@ public class CodeService {
 
         Map<String, List<Code>> childrenMap = new HashMap<>();
         for (Code lCode : codes) {
-            String pid = lCode.getPrntCd();
+            String pid = lCode.getParentCd();
             if ("ROOT".equals(pid)) {
                 pid = lCode.getDivCd();
             }
@@ -384,8 +384,8 @@ public class CodeService {
                 post.setUpdatedAt(now);
             }
 
-            if (post.getPrntCd() == null) {
-                post.setPrntCd("ROOT");
+            if (post.getParentCd() == null) {
+                post.setParentCd("ROOT");
             }
 
             if (post.getUseYn() == null) {
