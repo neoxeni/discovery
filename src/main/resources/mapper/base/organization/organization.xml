@@ -6,14 +6,14 @@
     <select id="findDeptEmpListForTree" resultType="CamelMap">
         WITH RECURSIVE cte_parent AS(
             SELECT
-                1 as level, a.dept_no, a.p_dept_no, a.dept_nm, a.sort_no, a.dept_cd, a.use_yn,
+                1 as level, a.dept_no, a.p_dept_no, a.dept_nm, a.sort, a.dept_cd, a.use_yn,
                 CONVERT(a.dept_nm, CHAR(255)) depth_fullname
             FROM tb_cmm_dept a
             WHERE cmpny_no = #{clientId}
               AND a.p_dept_no = #{pDeptNo}
             UNION ALL
             SELECT
-                level+1 AS level, a.dept_no, a.p_dept_no, a.dept_nm, a.sort_no, a.dept_cd, a.use_yn,
+                level+1 AS level, a.dept_no, a.p_dept_no, a.dept_nm, a.sort, a.dept_cd, a.use_yn,
                 CAST( CONCAT(CONVERT(b.depth_fullname, CHAR(255)) , '>' ,  CONVERT(a.dept_nm, CHAR(255))) AS CHAR(255)) depth_fullname
             FROM tb_cmm_dept a INNER JOIN cte_parent b ON a.p_dept_no = b.dept_no
             WHERE a.cmpny_no = #{clientId}
@@ -47,7 +47,7 @@
             FROM cte_parent x
             WHERE level = 1
               AND use_yn = 'Y'
-            ORDER BY sort_no
+            ORDER BY sort
         )x
         UNION ALL
         SELECT
@@ -72,20 +72,20 @@
     <select id="findDeptEmpListForTreeSearch" resultType="CamelMap">
         WITH RECURSIVE cte_parent AS(
             SELECT
-                1 AS LEVEL, a.dept_no, a.p_dept_no, a.dept_nm, a.sort_no, a.dept_cd, a.use_yn,
+                1 AS LEVEL, a.dept_no, a.p_dept_no, a.dept_nm, a.sort, a.dept_cd, a.use_yn,
                 CONVERT(a.dept_nm, CHAR(255)) depth_fullname
             FROM tb_cmm_dept a
             WHERE cmpny_no = #{clientId}
             AND a.p_dept_no = 0
             UNION ALL
             SELECT
-                level+1 AS level, a.dept_no, a.p_dept_no, a.dept_nm, a.sort_no, a.dept_cd, a.use_yn,
+                level+1 AS level, a.dept_no, a.p_dept_no, a.dept_nm, a.sort, a.dept_cd, a.use_yn,
                 CAST( CONCAT(CONVERT(b.depth_fullname, CHAR(255)) , '>' ,  CONVERT(a.dept_nm, CHAR(255))) AS CHAR(255)) depth_fullname
             FROM tb_cmm_dept a INNER JOIN cte_parent b ON a.p_dept_no = b.dept_no
 		),
 		cte_parent2 AS (
             SELECT
-                1 AS level, a.dept_no, a.p_dept_no, a.dept_nm, a.sort_no, a.dept_cd, a.use_yn,
+                1 AS level, a.dept_no, a.p_dept_no, a.dept_nm, a.sort, a.dept_cd, a.use_yn,
                 CONVERT( a.dept_nm, CHAR(255)) depth_fullname
             FROM tb_cmm_dept a
             WHERE cmpny_no = #{clientId}
@@ -94,7 +94,7 @@
             UNION ALL
 
             SELECT
-                level+1 as level, a.dept_no, a.p_dept_no, a.dept_nm, a.sort_no, a.dept_cd, a.use_yn,
+                level+1 as level, a.dept_no, a.p_dept_no, a.dept_nm, a.sort, a.dept_cd, a.use_yn,
                 cast( concat(convert(b.depth_fullname, CHAR(255)) , '>' ,  convert(a.dept_nm, CHAR(255))) as char(255)) depth_fullname
             FROM tb_cmm_dept a INNER JOIN cte_parent2 b ON a.p_dept_no = b.dept_no
         )
@@ -150,7 +150,7 @@
         FROM tb_cmm_dept
         WHERE cmpny_no = #{clientId}
         -- AND use_yn = 'Y'
-        ORDER BY p_dept_no desc , sort_no
+        ORDER BY p_dept_no desc , sort
     </select>
 
     <select id="findEmployeeAll" resultType="CamelMap">
@@ -176,9 +176,9 @@
         </selectKey>
 
         INSERT INTO tb_cmm_dept (dept_no,
-        cmpny_no, dept_cd, dept_nm, dpth, sort_no, use_yn, p_dept_no, reg_emp_no , reg_dt
+        cmpny_no, dept_cd, dept_nm, dpth, sort, use_yn, p_dept_no, reg_emp_no , reg_dt
         ) VALUES (#{deptNo},
-        #{clientId}, #{deptCd}, #{deptNm}, #{dpth}, #{sortNo}, #{useYn}, #{pDeptNo}, #{regEmpNo}, #{regDt}
+        #{clientId}, #{deptCd}, #{deptNm}, #{dpth}, #{sort}, #{useYn}, #{pDeptNo}, #{regEmpNo}, #{regDt}
         )
     </insert>
 
@@ -187,7 +187,7 @@
             dept_cd = #{deptCd}
             , dept_nm = #{deptNm}
             , dpth = #{dpth}
-            , sort_no = #{sortNo}
+            , sort = #{sort}
             , use_yn = #{useYn}
             , p_dept_no = #{pDeptNo}
             , upd_emp_no = #{updEmpNo}
@@ -349,7 +349,7 @@
             AND use_yn = #{useYn}
         </if>
         AND p_dept_no = #{pDeptNo}
-        ORDER BY sort_no
+        ORDER BY sort
     </select>
 
     <select id="findEmployeeByDepartment" resultType="CamelMap">
@@ -357,9 +357,9 @@
             <property name="clientId" value="#{clientId}"/>
             <property name="deptNo" value="#{deptNo}"/>
         </include>
-        , cte_parent (lvl, dept_no, p_dept_no, dept_nm, sort_no, dept_cd, use_yn, org_path_nm) AS (
+        , cte_parent (lvl, dept_no, p_dept_no, dept_nm, sort, dept_cd, use_yn, org_path_nm) AS (
             SELECT
-                1 as lvl, a.dept_no, a.p_dept_no, a.dept_nm, a.sort_no, a.dept_cd, a.use_yn,
+                1 as lvl, a.dept_no, a.p_dept_no, a.dept_nm, a.sort, a.dept_cd, a.use_yn,
                 a.dept_nm AS org_path_nm
             FROM tb_cmm_dept a
             WHERE cmpny_no = #{clientId}
@@ -373,7 +373,7 @@
             </choose>
             UNION ALL
             SELECT
-                lvl+1 AS lvl, a.dept_no, a.p_dept_no, a.dept_nm, a.sort_no, a.dept_cd, a.use_yn,
+                lvl+1 AS lvl, a.dept_no, a.p_dept_no, a.dept_nm, a.sort, a.dept_cd, a.use_yn,
                 CONCAT(b.org_path_nm, CONCAT(' > ' ,  a.dept_nm)) AS org_path_nm
             FROM tb_cmm_dept a INNER JOIN cte_parent b ON a.p_dept_no = b.dept_no
             WHERE a.cmpny_no = #{clientId}

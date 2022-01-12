@@ -107,7 +107,7 @@ public class GroupRestController {
                 groupMapping.setRegDt(now);
                 groupMapping.setRegEmpNo(appUser.getId());
                 groupMapping.setUseYn("Y");
-                groupMapping.setSortNo(idx++);
+                groupMapping.setSort(idx++);
             }
 
             affected = groupService.insertGroupMappings(groupMappings);
@@ -144,7 +144,7 @@ public class GroupRestController {
                     groupMapping.setRegDt(now);
                     groupMapping.setRegEmpNo(appUser.getId());
                     groupMapping.setUseYn("Y");
-                    groupMapping.setSortNo(index++);
+                    groupMapping.setSort(index++);
 
                     mergeMappings.add(groupMapping);
                 }

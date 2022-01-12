@@ -82,7 +82,7 @@ public class CodeService {
                 List<Code> codesKo = new ArrayList<>();
                 List<Code> codesEn = new ArrayList<>();
                 Object[] enumConstants = clazz.getEnumConstants();
-                int sortNo = 1;
+                int sort = 1;
                 for (Object e : enumConstants) {
                     Enum<?> enumObject = (Enum<?>) e;
 
@@ -121,8 +121,8 @@ public class CodeService {
                     sb.append("[").append(cd).append(":").append(ko).append(":").append(en).append("]");
 
 
-                    codesKo.add(makeEnumCode(name, cd, ko, etc1, etc2, etc3, etc4, sortNo, useYn, parentCd, now));
-                    codesEn.add(makeEnumCode(name, cd, en, etc1, etc2, etc3, etc4, sortNo, useYn, parentCd, now));
+                    codesKo.add(makeEnumCode(name, cd, ko, etc1, etc2, etc3, etc4, sort, useYn, parentCd, now));
+                    codesEn.add(makeEnumCode(name, cd, en, etc1, etc2, etc3, etc4, sort, useYn, parentCd, now));
                 }
                 sb.append("\n");
                 enumCodeMapKo.put(name, codesKo);
@@ -152,7 +152,7 @@ public class CodeService {
     }
 
     private Code makeEnumCode(String divCd, String cd, String cdNm, String etc1, String etc2, String etc3, String etc4,
-                              int sortNo, String useYn, String parentCd, LocalDateTime now) {
+                              int sort, String useYn, String parentCd, LocalDateTime now) {
         Code code = new Code();
         code.setDivCd(divCd);
         code.setCd(cd);
@@ -162,7 +162,7 @@ public class CodeService {
         code.setEtc3(etc3 == null ? "" : etc3);
         code.setEtc4(etc4 == null ? "" : etc4);
         code.setUseYn(useYn == null ? "Y" : useYn);//null 인경우 Y
-        code.setSortNo(sortNo);
+        code.setSort(sort);
         code.setParentCd(parentCd == null ? "ROOT" : parentCd);
 
         code.setCreatedAt(now);

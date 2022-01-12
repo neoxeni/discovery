@@ -117,7 +117,7 @@ const MpBaseCode = {
                                                 <v-text-field label="코드명*" v-model="form.data.cdNm" :readonly="!form.updatable" :rules="[v => (v && v.length > 0) || 'Required field']"></v-text-field>
                                             </v-col>
                                             <v-col cols="12" md="6">
-                                                <v-text-field label="정렬순서*" v-model="form.data.sortNo" :readonly="!form.updatable" type="number" min="0" :rules="[v => (v !== '' && !isNaN(v)) || 'Required field']"></v-text-field>
+                                                <v-text-field label="정렬순서*" v-model="form.data.sort" :readonly="!form.updatable" type="number" min="0" :rules="[v => (v !== '' && !isNaN(v)) || 'Required field']"></v-text-field>
                                             </v-col>
                                             <v-col cols="12" md="6">
                                                 <v-select label="사용여부*" v-model="form.data.useYn" :readonly="!form.updatable" :items="[{text:'사용',value:'Y'},{text:'미사용',value:'N'}]"></v-select>
@@ -135,7 +135,7 @@ const MpBaseCode = {
                                                 <v-text-field label="기타4" v-model="form.data.etc4" :readonly="!form.updatable"></v-text-field>
                                             </v-col>
                                             <v-col cols="12" md="12">
-                                                <v-text-field label="코드설명" v-model="form.data.dtl" :readonly="!form.updatable"></v-text-field>
+                                                <v-text-field label="코드설명" v-model="form.data.description" :readonly="!form.updatable"></v-text-field>
                                             </v-col>
             
                                             <v-col cols="12" md="12" class="text-right">
@@ -176,8 +176,8 @@ const MpBaseCode = {
                         divCd: undefined,
                         parentCd: undefined,
                         cdNm: undefined,
-                        sortNo: 0,
-                        dtl: undefined,
+                        sort: 0,
+                        description: undefined,
                         useYn: 'Y',
                         etc1: undefined,
                         etc2: undefined,

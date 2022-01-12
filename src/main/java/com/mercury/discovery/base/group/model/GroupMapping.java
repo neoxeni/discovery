@@ -28,5 +28,5 @@ public class GroupMapping {
     private Integer regEmpNo;
 
     private String useYn;
-    private Integer sortNo;
+    private Integer sort;
 }

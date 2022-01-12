@@ -22,7 +22,7 @@ public class Department {
     private String deptCd;
     private String deptNm;
     private Integer dpth;
-    private Integer sortNo;
+    private Integer sort;
     private String useYn;
     private Integer pDeptNo;
 

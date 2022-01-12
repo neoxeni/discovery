@@ -87,19 +87,17 @@ CREATE TABLE cmm_code_div (
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='코드분류';
 
 CREATE TABLE cmm_code (
-    cd                          VARCHAR(36)         NOT NULL COMMENT '코드',
     div_cd                      VARCHAR(20)         NOT NULL COMMENT '분류코드',
+    cd                          VARCHAR(36)         NOT NULL COMMENT '코드',
     parent_cd                   VARCHAR(36)         NOT NULL DEFAULT 'ROOT' COMMENT '상위코드',
     cd_nm                       VARCHAR(100)        NOT NULL COMMENT '코드명',
-    sort_no                     INT                 NOT NULL DEFAULT 0 COMMENT '정렬번호',
-    dtl                         VARCHAR(200)            NULL COMMENT '코드상세',
+    sort                        INT                 NOT NULL DEFAULT 0 COMMENT '정렬번호',
     use_yn                      CHAR(1)             NOT NULL DEFAULT 'Y' COMMENT '사용여부',
-
     etc1                        VARCHAR(100)            NULL COMMENT 'etc1',
     etc2                        VARCHAR(100)            NULL COMMENT 'etc2',
     etc3                        VARCHAR(100)            NULL COMMENT 'etc3',
     etc4                        VARCHAR(100)            NULL COMMENT 'etc4',
-
+    description                 VARCHAR(200)            NULL COMMENT '설명',
     start_apply_at 			    DATETIME            NOT NULL DEFAULT CURRENT_TIMESTAMP  COMMENT '적용시작일',
     end_apply_at 			    DATETIME            NOT NULL DEFAULT '2099-12-31T23:59:59.999'  COMMENT '적용종료일',
     created_by                  INT                 NOT NULL COMMENT '생성자',
@@ -109,13 +107,13 @@ CREATE TABLE cmm_code (
     client_id                   INT                 NOT NULL COMMENT '회사아이디',
 
     UNIQUE UK1_CMM_CODE (cd,div_cd,client_id),
-    INDEX IX1_CMM_CODE (div_cd,parent_cd,sort_no),
+    INDEX IX1_CMM_CODE (div_cd,parent_cd,sort),
     INDEX IX2_CMM_CODE (parent_cd)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='코드';
 
 
 CREATE TABLE cmm_action_log(
-    id                  bigint        auto_increment COMMENT 'ID' primary key,
+    id                  BIGINT        AUTO_INCREMENT COMMENT 'ID' PRIMARY KEY,
     user_id             INT                     NULL COMMENT '사번',
     ip                  VARCHAR(40)             NULL COMMENT '접속아이피',
     created_at          DATETIME default current_timestamp() COMMENT '등록일시',

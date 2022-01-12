@@ -71,15 +71,15 @@
 
     <select id="findGroupMappingsByGrpNo" resultType="GroupMappingResponseDto">
         WITH wd AS(
-        SELECT map_no, grp_no, data_gbn, data_no, reg_emp_no, reg_dt, use_yn, sort_no
+        SELECT map_no, grp_no, data_gbn, data_no, reg_emp_no, reg_dt, use_yn, sort
         FROM tb_cmm_group_map
         WHERE grp_no = #{groupMappingRequestDto.grpNo}
         ORDER BY data_gbn
         )
 
-        SELECT map_no, grp_no, data_gbn, data_no, reg_dt, reg_emp_no, use_yn, sort_no, data_nm, tooltip, data_cd
+        SELECT map_no, grp_no, data_gbn, data_no, reg_dt, reg_emp_no, use_yn, sort, data_nm, tooltip, data_cd
         FROM (
-        SELECT wd.map_no, wd.grp_no, wd.data_gbn, wd.reg_dt, wd.reg_emp_no, wd.use_yn, wd.sort_no, e.emp_no AS data_no,
+        SELECT wd.map_no, wd.grp_no, wd.data_gbn, wd.reg_dt, wd.reg_emp_no, wd.use_yn, wd.sort, e.emp_no AS data_no,
         CONCAT(CONCAT(e.emp_nm,' '),(CASE WHEN postn.cd_nm IS NULL THEN '' ELSE postn.cd_nm END)) AS data_nm,
         CONCAT(CONCAT((CASE WHEN dept.dept_nm IS NULL THEN '' ELSE dept.dept_nm END),' '), (CASE WHEN duty.cd_nm IS NULL THEN '' ELSE duty.cd_nm END)) as tooltip,
         e.cmpny_emp_cd AS data_cd
@@ -89,7 +89,7 @@
         LEFT OUTER JOIN tb_cmm_dept dept ON e.dept_no = dept.dept_no
         WHERE e.cmpny_no =  #{groupMappingRequestDto.clientId}
         UNION
-        SELECT wd.map_no, wd.grp_no, wd.data_gbn, wd.reg_dt, wd.reg_emp_no, wd.use_yn, wd.sort_no, d.dept_no AS data_no, d.dept_nm AS data_nm,
+        SELECT wd.map_no, wd.grp_no, wd.data_gbn, wd.reg_dt, wd.reg_emp_no, wd.use_yn, wd.sort, d.dept_no AS data_no, d.dept_nm AS data_nm,
         (CASE WHEN parent.dept_nm IS NULL THEN '' ELSE parent.dept_nm END) AS tooltip,
         d.dept_cd AS data_cd
         FROM wd JOIN tb_cmm_dept d on  wd.data_no = d.dept_no AND wd.data_gbn = 'D'
@@ -106,13 +106,13 @@
         </trim>
 
         <include refid="common.sql.fragmentOrderBy">
-            <property name="OrderBy" value="ORDER BY sort_no"/>
+            <property name="OrderBy" value="ORDER BY sort"/>
         </include>
     </select>
 
     <update id="insertGroupMappings" databaseId="oracle">
         INSERT INTO tb_cmm_group_map (
-        map_no, grp_no, data_gbn, data_no, reg_emp_no, reg_dt, use_yn, sort_no
+        map_no, grp_no, data_gbn, data_no, reg_emp_no, reg_dt, use_yn, sort
         )
         SELECT sq_cmm_group_map.NEXTVAL AS map_no , T.* FROM (
         <foreach collection="collection" item="item" index="index" separator="union all">
@@ -123,7 +123,7 @@
             #{item.regEmpNo} as reg_emp_no ,
             #{item.regDt} as reg_dt ,
             #{item.useYn} as use_yn ,
-            #{item.sortNo} as sort_no
+            #{item.sort} as sort
             FROM SYS.DUAL
         </foreach>
         ) T
@@ -131,10 +131,10 @@
 
     <insert id="insertGroupMappings" useGeneratedKeys="true" keyProperty="mapNo" databaseId="mysql">
         INSERT INTO tb_cmm_group_map
-        (grp_no, data_gbn, data_no, reg_emp_no, reg_dt, use_yn, sort_no)
+        (grp_no, data_gbn, data_no, reg_emp_no, reg_dt, use_yn, sort)
         VALUES
         <foreach collection="collection" item="item" index="index" separator=",">
-            (#{item.grpNo}, #{item.dataGbn}, #{item.dataNo}, #{item.regEmpNo}, #{item.regDt}, #{item.useYn}, #{item.sortNo})
+            (#{item.grpNo}, #{item.dataGbn}, #{item.dataNo}, #{item.regEmpNo}, #{item.regDt}, #{item.useYn}, #{item.sort})
         </foreach>
     </insert>
 
@@ -306,7 +306,7 @@
             ,map.reg_dt
             ,map.reg_user_no
             ,map.use_yn
-            ,map.sort_no
+            ,map.sort
         FROM tb_cmm_app_group_map map
         INNER JOIN tb_cmm_app_group sg ON map.app_grp_no = sg.app_grp_no
         WHERE sg.cmpny_no = #{clientId} AND map.app_grp_no = #{appGrpNo}
@@ -330,7 +330,7 @@
         ,data_gbn
         ,data_no
         ,reg_user_no
-        ,sort_no
+        ,sort
         )
         VALUES
         (
@@ -340,7 +340,7 @@
         ,#{dataGbn}
         ,#{dataNo}
         ,#{regUserNo}
-        ,#{sortNo}
+        ,#{sort}
         )
     </insert>
 

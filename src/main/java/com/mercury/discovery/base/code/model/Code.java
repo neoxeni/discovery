@@ -18,18 +18,17 @@ import java.time.LocalDateTime;
 public class Code implements Serializable {
     private static final long serialVersionUID = 5435721294464776663L;
 
-    private String cd;
     private String divCd;
+    private String cd;
     private String parentCd;
     private String cdNm;
-    private Integer sortNo;
-    private String dtl;
+    private Integer sort;
     private String useYn;
-
     private String etc1;
     private String etc2;
     private String etc3;
     private String etc4;
+    private String description;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

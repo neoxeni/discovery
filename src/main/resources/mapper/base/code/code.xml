@@ -9,8 +9,8 @@
             div_cd,
             parent_cd,
             cd_nm,
-            sort_no,
-            dtl,
+            sort,
+            description,
             use_yn,
             created_by,
             created_at,
@@ -19,7 +19,7 @@
             client_id
         FROM cmm_code
         WHERE div_cd = #{divCd} AND client_id IN( -1, #{clientId})
-        ORDER BY parent_cd, sort_no
+        ORDER BY parent_cd, sort
     </select>
 
     <select id="findAll" resultType="Code">
@@ -28,8 +28,8 @@
             div_cd,
             parent_cd,
             cd_nm,
-            sort_no,
-            dtl,
+            sort,
+            description,
             use_yn,
             created_by,
             created_at,
@@ -42,14 +42,14 @@
             client_id
         FROM cmm_code
         WHERE client_id IN( -1, #{clientId})
-        ORDER BY div_cd, parent_cd, sort_no
+        ORDER BY div_cd, parent_cd, sort
     </select>
 
     <insert id="insert">
         INSERT INTO cmm_code(
-            cd, div_cd, parent_cd, cd_nm, sort_no, dtl, use_yn, etc1, etc2, etc3, etc4, created_by, created_at, updated_by, updated_at, client_id
+            cd, div_cd, parent_cd, cd_nm, sort, description, use_yn, etc1, etc2, etc3, etc4, created_by, created_at, updated_by, updated_at, client_id
         ) VALUES (
-            #{cd}, #{divCd}, #{parentCd}, #{cdNm}, #{sortNo}, #{dtl}, #{useYn}, #{etc1}, #{etc2}, #{etc3}, #{etc4}, #{createdBy}, #{createdAt}, #{createdBy}, #{createdAt}, #{clientId}
+            #{cd}, #{divCd}, #{parentCd}, #{cdNm}, #{sort}, #{description}, #{useYn}, #{etc1}, #{etc2}, #{etc3}, #{etc4}, #{createdBy}, #{createdAt}, #{createdBy}, #{createdAt}, #{clientId}
         )
     </insert>
 
@@ -59,8 +59,8 @@
            div_cd = #{divCd},
            parent_cd = #{parentCd},
            cd_nm = #{cdNm},
-           sort_no = #{sortNo},
-           dtl = #{dtl},
+           sort = #{sort},
+           description = #{description},
            use_yn = #{useYn},
            updated_by = #{updatedBy},
            updated_at = #{updatedAt},
