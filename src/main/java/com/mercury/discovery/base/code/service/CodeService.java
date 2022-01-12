@@ -165,8 +165,8 @@ public class CodeService {
         code.setSortNo(sortNo);
         code.setPrntCd(prntCd == null ? "ROOT" : prntCd);
 
-        code.setRegDt(now);
-        code.setRegEmpNo(-1);
+        code.setCreatedAt(now);
+        code.setCreatedBy(-1);
         code.setClientId(-1);
 
         return code;
@@ -377,11 +377,11 @@ public class CodeService {
 
             if (post.getCd() == null) {
                 post.setCd(IDGenerator.getUUID());
-                post.setRegEmpNo(empNo);
-                post.setRegDt(now);
+                post.setCreatedBy(empNo);
+                post.setCreatedAt(now);
             } else {
-                post.setUpdEmpNo(empNo);
-                post.setUpdDt(now);
+                post.setUpdatedBy(empNo);
+                post.setUpdatedAt(now);
             }
 
             if (post.getPrntCd() == null) {

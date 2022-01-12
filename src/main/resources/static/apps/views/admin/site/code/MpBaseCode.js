@@ -248,12 +248,15 @@ const MpBaseCode = {
                 return this.$refs.form.validate();
             }
             const dataType = this.form.type;
-
-            const codeAll = this.$refs['codeTree'].instance.element.jstree(true).get_json('#', {flat: true});
-            const existCode = codeAll.find(e => e.id === `${this.form.data.divCd}_${this.form.data.cd}`);
-            if(existCode) {
-                this.mercury.base.lib.alert(`중복된 코드입니다. [${this.form.data.cd}]`);
-                return;
+            
+            
+            if(!this.form.edit){//새로 생성
+                const codeAll = this.$refs['codeTree'].instance.element.jstree(true).get_json('#', {flat: true});
+                const existCode = codeAll.find(e => e.id === `${this.form.data.divCd}_${this.form.data.cd}`);
+                if(existCode) {
+                    this.mercury.base.lib.alert(`중복된 코드입니다. [${this.form.data.cd}]`);
+                    return;
+                }
             }
 
             this.xAjaxJson({

@@ -79,10 +79,10 @@ public class CodeRestController {
     public ResponseEntity<?> postCodes(AppUser appUser, @RequestBody Code code) {
         LocalDateTime now = LocalDateTime.now();
         code.setClientId(appUser.getClientId());
-        code.setRegEmpNo(appUser.getId());
-        code.setRegDt(now);
-        code.setUpdEmpNo(appUser.getId());
-        code.setUpdDt(now);
+        code.setCreatedBy(appUser.getId());
+        code.setCreatedAt(now);
+        code.setUpdatedBy(appUser.getId());
+        code.setUpdatedAt(now);
         int affected = codeService.insert(code);
         return ResponseEntity.ok(new SimpleResponseModel(affected, MessagesUtils.getMessage("sentence.insert")));
     }
@@ -93,10 +93,10 @@ public class CodeRestController {
         LocalDateTime now = LocalDateTime.now();
         code.setCd(IDGenerator.getUUID());
         code.setClientId(appUser.getClientId());
-        code.setRegEmpNo(appUser.getId());
-        code.setRegDt(LocalDateTime.now());
-        code.setUpdEmpNo(appUser.getId());
-        code.setUpdDt(now);
+        code.setCreatedBy(appUser.getId());
+        code.setCreatedAt(LocalDateTime.now());
+        code.setUpdatedBy(appUser.getId());
+        code.setUpdatedAt(now);
         code.setDivCd(divCd);
         int affected = codeService.insert(code);
         return ResponseEntity.ok(new SimpleResponseModel(affected, MessagesUtils.getMessage("sentence.insert")));
@@ -106,8 +106,8 @@ public class CodeRestController {
     @PatchMapping("/base/codes/{divCd}")
     public ResponseEntity<?> patchCodes(AppUser appUser, @RequestBody Code code, @PathVariable String divCd) {
         code.setClientId(appUser.getClientId());
-        code.setUpdEmpNo(appUser.getId());
-        code.setUpdDt(LocalDateTime.now());
+        code.setUpdatedBy(appUser.getId());
+        code.setUpdatedAt(LocalDateTime.now());
         code.setDivCd(divCd);
         int affected = codeService.update(code);
         return ResponseEntity.ok(new SimpleResponseModel(affected, MessagesUtils.getMessage("sentence.update")));
@@ -117,8 +117,8 @@ public class CodeRestController {
     @PatchMapping("/base/codes")
     public ResponseEntity<?> patchCodes(AppUser appUser, @RequestBody Code code) {
         code.setClientId(appUser.getClientId());
-        code.setUpdEmpNo(appUser.getId());
-        code.setUpdDt(LocalDateTime.now());
+        code.setUpdatedBy(appUser.getId());
+        code.setUpdatedAt(LocalDateTime.now());
         int affected = codeService.update(code);
         return ResponseEntity.ok(new SimpleResponseModel(affected, MessagesUtils.getMessage("sentence.update")));
     }

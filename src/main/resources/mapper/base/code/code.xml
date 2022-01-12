@@ -49,7 +49,7 @@
         INSERT INTO cmm_code(
             cd, div_cd, prnt_cd, cd_nm, sort_no, dtl, use_yn, etc1, etc2, etc3, etc4, created_by, created_at, updated_by, updated_at, client_id
         ) VALUES (
-            #{cd}, #{divCd}, #{prntCd}, #{cdNm}, #{sortNo}, #{dtl}, #{useYn}, #{etc1}, #{etc2}, #{etc3}, #{etc4}, #{regEmpNo}, #{regDt}, #{regEmpNo}, #{regDt}, #{clientId}
+            #{cd}, #{divCd}, #{prntCd}, #{cdNm}, #{sortNo}, #{dtl}, #{useYn}, #{etc1}, #{etc2}, #{etc3}, #{etc4}, #{createdBy}, #{createdAt}, #{createdBy}, #{createdAt}, #{clientId}
         )
     </insert>
 
@@ -62,8 +62,8 @@
            sort_no = #{sortNo},
            dtl = #{dtl},
            use_yn = #{useYn},
-           updated_by = #{updEmpNo},
-           updated_at = #{updDt},
+           updated_by = #{updatedBy},
+           updated_at = #{updatedAt},
            etc1 = #{etc1},
            etc2 = #{etc2},
            etc3 = #{etc3},
@@ -75,8 +75,6 @@
     </update>
 
     <delete id="delete">
-
-
         DELETE FROM cmm_code
         WHERE client_id IN( -1, #{clientId})
           AND div_cd =  #{divCd}
