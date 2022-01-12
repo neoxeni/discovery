@@ -52,7 +52,7 @@ const MpAppBar = {
                                 </v-list-item-content>
                             </v-list-item>
                             <!-- 로그아웃 -->
-                            <v-list-item dense href="/LittleJoe/logout">
+                            <v-list-item dense href="/logout">
                                 <v-icon left dense color="red">mdi-power mdi-18px</v-icon>
                                 <v-list-item-content>
                                     <v-list-item-title>Logout</v-list-item-title>

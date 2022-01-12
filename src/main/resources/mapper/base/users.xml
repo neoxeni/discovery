@@ -72,8 +72,6 @@
         WHERE e.user_key = #{userKey}
     </select>
 
-
-
     <select id="find" resultType="AppUser">
         SELECT  <include refid="user_all">
         <property name="e" value="e"/>

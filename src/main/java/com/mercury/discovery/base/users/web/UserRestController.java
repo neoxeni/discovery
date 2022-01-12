@@ -1,7 +1,6 @@
 package com.mercury.discovery.base.users.web;
 
 import com.mercury.discovery.base.users.model.AppUser;
-import com.mercury.discovery.base.users.model.AppUserRequestDto;
 import com.mercury.discovery.base.users.service.UserService;
 import com.mercury.discovery.common.SimpleResponseModel;
 import com.mercury.discovery.common.error.exception.BadParameterException;
@@ -38,11 +37,7 @@ public class UserRestController {
 
     @GetMapping("/base/users/{id}")
     public ResponseEntity<?> getUser(AppUser appUser, @PathVariable Integer id) {
-        AppUserRequestDto appUserRequestDto = new AppUserRequestDto();
-        appUserRequestDto.setClientId(appUser.getClientId());
-        appUserRequestDto.setId(id);
-
-        AppUser targetAppUser = userService.getUser(appUserRequestDto);
+        AppUser targetAppUser = userService.findByUserId(id);
         if (targetAppUser != null) {
             return ResponseEntity.ok(targetAppUser);
         } else {

@@ -25,6 +25,7 @@ public class AppUser extends TokenUser implements UserDetails {
     private Collection<? extends GrantedAuthority> authorities;
 
     private String username;
+    @JsonIgnore
     private String password;
     private int passwordErrCount;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

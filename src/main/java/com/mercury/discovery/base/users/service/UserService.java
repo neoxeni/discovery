@@ -104,17 +104,6 @@ public class UserService {
 
     }
 
-    @Transactional(readOnly = true)
-    @Nullable
-    public AppUser getUser(AppUserRequestDto appUserRequestDto) {
-        AppUser appUser = userRepository.find(appUserRequestDto).stream().findFirst().orElse(null);
-        if (appUser != null) {
-            setAppUserRoles(appUser);
-        }
-
-        return appUser;
-    }
-
     public AppUser getUser(String userKey) {
         return getUser(-1, userKey);
     }

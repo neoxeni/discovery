@@ -2,7 +2,6 @@ package com.mercury.discovery.base.users.service;
 
 
 import com.mercury.discovery.base.users.model.AppUser;
-import com.mercury.discovery.base.users.model.AppUserRequestDto;
 import com.mercury.discovery.base.users.model.UserAppRole;
 import com.mercury.discovery.base.users.model.UserRole;
 import org.apache.ibatis.annotations.Mapper;
@@ -17,9 +16,6 @@ import java.util.Set;
 public interface UserRepository {
     //로그인 전용으로 password 정보를 포함한다.
     AppUser findByUserIdForLogin(String userId, String clientId);
-
-    //일반적인 사용자 검색
-    List<AppUser> find(AppUserRequestDto appUserRequestDto);
 
     List<UserRole> findRolesByEmpNo(int empNo);
 
