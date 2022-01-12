@@ -1,4 +1,4 @@
-package com.mercury.discovery.base.users.service;
+package com.mercury.discovery.common;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -6,7 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class CustomPasswordEncoder implements PasswordEncoder {
+public class DefaultPasswordEncoder implements PasswordEncoder {
 
     public static String sha256(String plainText) {
         try {
@@ -38,7 +38,7 @@ public class CustomPasswordEncoder implements PasswordEncoder {
     }
 
     public static void main(String[] args) {
-        CustomPasswordEncoder c = new CustomPasswordEncoder();
+        DefaultPasswordEncoder c = new DefaultPasswordEncoder();
         String d = c.encode("1111");
         System.out.println(d);
 

@@ -6,72 +6,68 @@ import javax.servlet.http.HttpServletResponseWrapper;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 
 public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 
-    protected HttpServletResponse origResponse = null;
+    protected HttpServletResponse origResponse;
 
     protected ServletOutputStream stream = null;
 
     protected PrintWriter writer = null;
 
-    public GZIPResponseWrapper( HttpServletResponse response ) {
-
-        super( response );
+    public GZIPResponseWrapper(HttpServletResponse response) {
+        super(response);
         origResponse = response;
     }
 
     public ServletOutputStream createOutputStream() throws IOException {
-
-        return ( new GZIPResponseStream( origResponse ) );
+        return (new GZIPResponseStream(origResponse));
     }
 
     public void finishResponse() {
-
         try {
-            if ( writer != null ) {
+            if (writer != null) {
                 writer.close();
             } else {
-                if ( stream != null ) {
+                if (stream != null) {
                     stream.close();
                 }
             }
-        } catch ( IOException e ) {
+        } catch (IOException e) {
+            //ignore
         }
     }
 
     public void flushBuffer() throws IOException {
-
         stream.flush();
     }
 
     public ServletOutputStream getOutputStream() throws IOException {
-
-        if ( writer != null ) {
-            throw new IllegalStateException( "getWriter() has already been called!" );
+        if (writer != null) {
+            throw new IllegalStateException("getWriter() has already been called!");
         }
 
-        if ( stream == null )
+        if (stream == null)
             stream = createOutputStream();
-        return ( stream );
+        return (stream);
     }
 
     public PrintWriter getWriter() throws IOException {
-
-        if ( writer != null ) {
-            return ( writer );
+        if (writer != null) {
+            return (writer);
         }
 
-        if ( stream != null ) {
-            throw new IllegalStateException( "getOutputStream() has already been called!" );
+        if (stream != null) {
+            throw new IllegalStateException("getOutputStream() has already been called!");
         }
 
         stream = createOutputStream();
-        writer = new PrintWriter( new OutputStreamWriter( stream, "UTF-8" ) );
-        return ( writer );
+        writer = new PrintWriter(new OutputStreamWriter(stream, StandardCharsets.UTF_8));
+        return (writer);
     }
 
-    public void setContentLength( int length ) {
-
+    public void setContentLength(int length) {
+        //noop
     }
 }

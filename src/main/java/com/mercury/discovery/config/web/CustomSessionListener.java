@@ -1,4 +1,4 @@
-package com.mercury.discovery.base.users.service;
+package com.mercury.discovery.config.web;
 
 import com.mercury.discovery.base.users.model.AppUser;
 import com.mercury.discovery.base.users.service.UserService;
