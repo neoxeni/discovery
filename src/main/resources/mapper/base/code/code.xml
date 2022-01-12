@@ -8,7 +8,7 @@
             cd,
             div_cd,
             parent_cd,
-            cd_nm,
+            name,
             sort,
             description,
             use_yn,
@@ -27,7 +27,7 @@
             cd,
             div_cd,
             parent_cd,
-            cd_nm,
+            name,
             sort,
             description,
             use_yn,
@@ -47,9 +47,9 @@
 
     <insert id="insert">
         INSERT INTO cmm_code(
-            cd, div_cd, parent_cd, cd_nm, sort, description, use_yn, etc1, etc2, etc3, etc4, created_by, created_at, updated_by, updated_at, client_id
+            cd, div_cd, parent_cd, name, sort, description, use_yn, etc1, etc2, etc3, etc4, created_by, created_at, updated_by, updated_at, client_id
         ) VALUES (
-            #{cd}, #{divCd}, #{parentCd}, #{cdNm}, #{sort}, #{description}, #{useYn}, #{etc1}, #{etc2}, #{etc3}, #{etc4}, #{createdBy}, #{createdAt}, #{createdBy}, #{createdAt}, #{clientId}
+            #{cd}, #{divCd}, #{parentCd}, #{name}, #{sort}, #{description}, #{useYn}, #{etc1}, #{etc2}, #{etc3}, #{etc4}, #{createdBy}, #{createdAt}, #{createdBy}, #{createdAt}, #{clientId}
         )
     </insert>
 
@@ -58,7 +58,7 @@
            cd = #{cd},
            div_cd = #{divCd},
            parent_cd = #{parentCd},
-           cd_nm = #{cdNm},
+           name = #{name},
            sort = #{sort},
            description = #{description},
            use_yn = #{useYn},

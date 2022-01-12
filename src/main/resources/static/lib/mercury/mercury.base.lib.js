@@ -212,12 +212,12 @@
                         selected = ' selected="selected" '
                     }
 
-                    option += `<option value="${child.cd}" ${selected} data-div-cd="${child.divCd}" data-etc1="${child.etc1}" data-etc2="${child.etc2}" data-etc3="${child.etc3}" data-etc4="${child.etc4}">${child.cdNm}</option>`;
+                    option += `<option value="${child.cd}" ${selected} data-div-cd="${child.divCd}" data-etc1="${child.etc1}" data-etc2="${child.etc2}" data-etc3="${child.etc3}" data-etc4="${child.etc4}">${child.name}</option>`;
                 });
                 return option;
             } else if (options.type === 'v-object') {
                 children.forEach(child => {
-                    child.text = child.cdNm;
+                    child.text = child.name;
                     child.value = child.cd;
                 });
             }

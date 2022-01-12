@@ -90,7 +90,7 @@ CREATE TABLE cmm_code (
     div_cd                      VARCHAR(20)         NOT NULL COMMENT '분류코드',
     cd                          VARCHAR(36)         NOT NULL COMMENT '코드',
     parent_cd                   VARCHAR(36)         NOT NULL DEFAULT 'ROOT' COMMENT '상위코드',
-    cd_nm                       VARCHAR(100)        NOT NULL COMMENT '코드명',
+    name                       VARCHAR(100)        NOT NULL COMMENT '코드명',
     sort                        INT                 NOT NULL DEFAULT 0 COMMENT '정렬번호',
     use_yn                      CHAR(1)             NOT NULL DEFAULT 'Y' COMMENT '사용여부',
     etc1                        VARCHAR(100)            NULL COMMENT 'etc1',

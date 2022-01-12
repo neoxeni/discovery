@@ -151,12 +151,12 @@ public class CodeService {
         }
     }
 
-    private Code makeEnumCode(String divCd, String cd, String cdNm, String etc1, String etc2, String etc3, String etc4,
+    private Code makeEnumCode(String divCd, String cd, String name, String etc1, String etc2, String etc3, String etc4,
                               int sort, String useYn, String parentCd, LocalDateTime now) {
         Code code = new Code();
         code.setDivCd(divCd);
         code.setCd(cd);
-        code.setCdNm(cdNm);
+        code.setName(name);
         code.setEtc1(etc1 == null ? "" : etc1);
         code.setEtc2(etc2 == null ? "" : etc2);
         code.setEtc3(etc3 == null ? "" : etc3);
@@ -236,7 +236,7 @@ public class CodeService {
             }
 
             jsTree.setId(item.getDivCd() + "_" + item.getCd());
-            jsTree.setText(item.getCdNm());
+            jsTree.setText(item.getName());
             jsTree.setData(item);
             jsTree.setDivCd(item.getDivCd());
             jsTree.setClientId(item.getClientId());
@@ -311,7 +311,7 @@ public class CodeService {
         sb.append("            if(options.type === 'option'){");
         sb.append("                let option = '';");
         sb.append("                children.forEach(child=>{");
-        sb.append("                    option += `<option value=\"${child.cd}\" data-div-cd=\"${child.divCd}\" data-etc1=\"${child.etc1}\" data-etc2=\"${child.etc2}\" data-etc3=\"${child.etc3}\" data-etc4=\"${child.etc4}\">${child.cdNm}</option>`;");
+        sb.append("                    option += `<option value=\"${child.cd}\" data-div-cd=\"${child.divCd}\" data-etc1=\"${child.etc1}\" data-etc2=\"${child.etc2}\" data-etc3=\"${child.etc3}\" data-etc4=\"${child.etc4}\">${child.name}</option>`;");
         sb.append("                });");
         sb.append("                return option;");
         sb.append("            }");

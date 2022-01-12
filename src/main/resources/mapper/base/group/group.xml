@@ -80,8 +80,8 @@
         SELECT map_no, grp_no, data_gbn, data_no, reg_dt, reg_emp_no, use_yn, sort, data_nm, tooltip, data_cd
         FROM (
         SELECT wd.map_no, wd.grp_no, wd.data_gbn, wd.reg_dt, wd.reg_emp_no, wd.use_yn, wd.sort, e.emp_no AS data_no,
-        CONCAT(CONCAT(e.emp_nm,' '),(CASE WHEN postn.cd_nm IS NULL THEN '' ELSE postn.cd_nm END)) AS data_nm,
-        CONCAT(CONCAT((CASE WHEN dept.dept_nm IS NULL THEN '' ELSE dept.dept_nm END),' '), (CASE WHEN duty.cd_nm IS NULL THEN '' ELSE duty.cd_nm END)) as tooltip,
+        CONCAT(CONCAT(e.emp_nm,' '),(CASE WHEN postn.name IS NULL THEN '' ELSE postn.name END)) AS data_nm,
+        CONCAT(CONCAT((CASE WHEN dept.dept_nm IS NULL THEN '' ELSE dept.dept_nm END),' '), (CASE WHEN duty.name IS NULL THEN '' ELSE duty.name END)) as tooltip,
         e.cmpny_emp_cd AS data_cd
         FROM wd JOIN tb_cmm_emp e ON wd.data_no = e.emp_no AND wd.data_gbn = 'E'
         LEFT OUTER JOIN cmm_code postn ON e.postn_cd = postn.cd  AND postn.div_cd = 'OR02'

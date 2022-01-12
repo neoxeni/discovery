@@ -21,18 +21,14 @@ public enum AttachDivCd {
     ETC("ETC")
     ;
 
-    private String cdNm;
+    private final String name;
 
-    AttachDivCd(String cdNm) {
-        this.cdNm = cdNm;
-    }
-
-    public String getCdNm() {
-        return cdNm;
+    AttachDivCd(String name) {
+        this.name = name;
     }
 
     public String getLabel() {
-        return cdNm;
+        return name;
     }
 
     public static AttachDivCd fromString(String text) {

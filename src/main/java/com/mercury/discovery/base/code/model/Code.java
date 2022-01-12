@@ -21,7 +21,7 @@ public class Code implements Serializable {
     private String divCd;
     private String cd;
     private String parentCd;
-    private String cdNm;
+    private String name;
     private Integer sort;
     private String useYn;
     private String etc1;

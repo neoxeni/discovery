@@ -114,7 +114,7 @@ const MpBaseCode = {
                                                 <v-text-field label="코드*" v-model="form.data.cd" :readonly="!form.updatable || form.edit" :rules="form.rules.cd"></v-text-field>
                                             </v-col>
                                             <v-col cols="12" md="6">
-                                                <v-text-field label="코드명*" v-model="form.data.cdNm" :readonly="!form.updatable" :rules="[v => (v && v.length > 0) || 'Required field']"></v-text-field>
+                                                <v-text-field label="코드명*" v-model="form.data.name" :readonly="!form.updatable" :rules="[v => (v && v.length > 0) || 'Required field']"></v-text-field>
                                             </v-col>
                                             <v-col cols="12" md="6">
                                                 <v-text-field label="정렬순서*" v-model="form.data.sort" :readonly="!form.updatable" type="number" min="0" :rules="[v => (v !== '' && !isNaN(v)) || 'Required field']"></v-text-field>
@@ -175,7 +175,7 @@ const MpBaseCode = {
                         cd: undefined,
                         divCd: undefined,
                         parentCd: undefined,
-                        cdNm: undefined,
+                        name: undefined,
                         sort: 0,
                         description: undefined,
                         useYn: 'Y',
@@ -271,7 +271,7 @@ const MpBaseCode = {
         deleteItem() {
             const dataType = this.form.type;
             const data = this.form.data;
-            let confirmMsg = '코드[' + data['cdNm'] + '] 및 모든 하위 코드를 삭제 하시겠습니까?';
+            let confirmMsg = '코드[' + data['name'] + '] 및 모든 하위 코드를 삭제 하시겠습니까?';
             if (dataType === 'codeDiv') {
                 confirmMsg = '코드분류[' + data['divNm'] + '] 및 모든 하위 코드를 삭제 하시겠습니까?';
             }

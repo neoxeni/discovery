@@ -221,7 +221,7 @@ CREATE TABLE tb_cmm_code (
     cd                  varchar(36)         NOT NULL COMMENT '코드',
     div_cd              varchar(20)         NOT NULL COMMENT '분류코드',
     prnt_cd             varchar(36)         DEFAULT '0' COMMENT '상위코드',
-    cd_nm               varchar(100)        NOT NULL COMMENT '코드명',
+    name               varchar(100)        NOT NULL COMMENT '코드명',
     sort_no             int(11)             DEFAULT 0 COMMENT '정렬번호',
     dtl                 varchar(200)            NULL COMMENT '코드상세',
     use_yn              char(1)             DEFAULT 'Y' COMMENT '사용여부',
