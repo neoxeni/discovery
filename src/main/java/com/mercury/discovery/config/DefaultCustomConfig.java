@@ -1,6 +1,6 @@
 package com.mercury.discovery.config;
 
-import com.mercury.discovery.base.users.service.handler.CustomPasswordEncoder;
+import com.mercury.discovery.base.users.service.CustomPasswordEncoder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

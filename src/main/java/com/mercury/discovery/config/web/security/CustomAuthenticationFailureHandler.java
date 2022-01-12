@@ -1,4 +1,4 @@
-package com.mercury.discovery.base.users.service.handler;
+package com.mercury.discovery.config.web.security;
 
 import com.mercury.discovery.base.users.model.AppUser;
 import com.mercury.discovery.base.users.service.UserRepository;
@@ -28,7 +28,7 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
     @Autowired
     UserRepository userRepository;
 
-    private RedirectStrategy redirectStratgy = new DefaultRedirectStrategy();
+    private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException, ServletException {
@@ -39,10 +39,10 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
 
         AppUser appUser = userRepository.findByUserIdForLogin(userId, clientId);
 
-        int errorNum = 0;
+        int errorNum;
         if (e instanceof BadCredentialsException) {//자격 증명에 실패하였습니다. (패스워드 틀림, 해당 아이디 없음)
             errorNum = 1;
-            if(appUser != null){
+            if (appUser != null) {
                 userRepository.plusPasswordErrorCount(appUser);
             }
         } else if (e instanceof LockedException) { //사용자 계정이 잠겨 있습니다. (비밀번호 여러번 틀림)
@@ -58,7 +58,7 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
         }
 
         //userRepository.failureLoginInfo(appuser);
-        if(errorNum == 3) {
+        if (errorNum == 3) {
             request.setAttribute("error", errorNum);
             request.setAttribute("empNo", appUser.getId());
             request.setAttribute("userId", userId);
@@ -67,7 +67,7 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
 
         } else {
             request.getSession().setAttribute(WebAttributes.AUTHENTICATION_EXCEPTION, e);
-            redirectStratgy.sendRedirect(request, response, "/login?error=" + errorNum);
+            redirectStrategy.sendRedirect(request, response, "/login?error=" + errorNum);
         }
     }
 

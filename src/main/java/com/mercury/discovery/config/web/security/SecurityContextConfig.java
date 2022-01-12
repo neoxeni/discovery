@@ -1,8 +1,5 @@
-package com.mercury.discovery.config.web;
+package com.mercury.discovery.config.web.security;
 
-
-import com.mercury.discovery.base.users.service.handler.CustomAuthenticationFailureHandler;
-import com.mercury.discovery.base.users.service.handler.CustomAuthenticationSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -118,6 +115,7 @@ public class SecurityContextConfig extends WebSecurityConfigurerAdapter {
         return source;
     }
 
+
     @Bean
     public AuthenticationSuccessHandler customAuthenticationSuccessHandler() {
         String defaultUrl = "/";
@@ -128,7 +126,6 @@ public class SecurityContextConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationFailureHandler customAuthenticationFailureHandler() {
         return new CustomAuthenticationFailureHandler();
     }
-
 
     /**
      * [Disable browser authentication dialog in spring security](https://stackoverflow.com/questions/31424196/disable-browser-authentication-dialog-in-spring-security)

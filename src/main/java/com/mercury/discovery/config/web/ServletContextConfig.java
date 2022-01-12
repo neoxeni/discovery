@@ -1,6 +1,6 @@
 package com.mercury.discovery.config.web;
 
-import com.mercury.discovery.base.users.service.handler.UserArgumentResolver;
+import com.mercury.discovery.config.web.resolver.UserArgumentResolver;
 import com.mercury.discovery.common.excel.model.mapper.ExcelModelArgumentResolver;
 import com.mercury.discovery.common.model.date.DateRangeMethodArgumentResolver;
 import com.mercury.discovery.config.web.gzip.GZIPFilter;

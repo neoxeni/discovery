@@ -1,4 +1,4 @@
-package com.mercury.discovery.base.users.service.handler;
+package com.mercury.discovery.config.web.security;
 
 
 import com.mercury.discovery.base.users.model.AppUser;
@@ -16,7 +16,6 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
-import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -30,17 +29,14 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     UserDetailsServiceImpl userDetailsService;
 
     @Autowired
-    RestTemplate restTemplate;
-
-    @Autowired
     PasswordEncoder passwordEncoder;
 
     @Autowired
     UserRepository userRepository;
 
-    private String defaultUrl;
-    private RequestCache requestCache = new HttpSessionRequestCache();
-    private RedirectStrategy redirectStratgy = new DefaultRedirectStrategy();
+    private final String defaultUrl;
+    private final RequestCache requestCache = new HttpSessionRequestCache();
+    private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
     public CustomAuthenticationSuccessHandler(String defaultUrl) {
         this.defaultUrl = defaultUrl;
@@ -48,20 +44,16 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-
-        String tempPw = "";
-
         SavedRequest savedRequest = requestCache.getRequest(request, response);
         AppUser appUser = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        tempPw = appUser.getPassword();
+        String tempPw = appUser.getPassword();
 
         appUser.setLastIpAddress(HttpUtils.getRemoteAddr(request));
         userDetailsService.afterLoginSuccess(appUser);
 
         String id = appUser.getUsername();
         String encodeId = passwordEncoder.encode(id);
-        int errorNum = 0;
+        int errorNum;
 
         /*
         //Ajax 지원
@@ -80,7 +72,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         if (appUser.getPasswordErrCount() > 6) {
             this.logout(request, response);
             errorNum = 2;
-            redirectStratgy.sendRedirect(request, response, "/login?error=" + errorNum);
+            redirectStrategy.sendRedirect(request, response, "/login?error=" + errorNum);
         } else if (encodeId.equals(tempPw)) {
             errorNum = 6;
             request.setAttribute("error", errorNum);
@@ -98,14 +90,11 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                     targetUrl = defaultUrl;
                 }
 
-                redirectStratgy.sendRedirect(request, response, targetUrl);
+                redirectStrategy.sendRedirect(request, response, targetUrl);
             } else {
-                redirectStratgy.sendRedirect(request, response, defaultUrl);
+                redirectStrategy.sendRedirect(request, response, defaultUrl);
             }
-
-
         }
-
     }
 
     public void logout(HttpServletRequest request, HttpServletResponse response) {
@@ -114,5 +103,4 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             new SecurityContextLogoutHandler().logout(request, response, auth);
         }
     }
-
 }
