@@ -26,7 +26,7 @@ public class GroupMappingHistory {
     private LocalDateTime regDt;
     private Integer regEmpNo;
     private String regIp;
-    private Integer cmpnyNo;
+    private Integer clientId;
 
     public void of(GroupMapping groupMapping){
         this.mapNo = groupMapping.getMapNo();

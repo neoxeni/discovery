@@ -6,7 +6,7 @@ import org.apache.ibatis.type.Alias;
 import java.io.Serializable;
 
 /**
- * tb_cmm_code_div
+ * cmm_code_div
  */
 
 @Alias("CodeDiv")
@@ -18,6 +18,6 @@ public class CodeDiv implements Serializable {
     private String divNm;
     private String divService;
     private String updEnableYn;
-    private Integer cmpnyNo;
+    private Integer clientId;
     private String userDefineCol;
 }

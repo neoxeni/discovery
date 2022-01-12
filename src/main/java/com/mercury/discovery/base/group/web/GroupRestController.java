@@ -4,7 +4,7 @@ import com.github.pagehelper.Page;
 import com.mercury.discovery.base.group.model.*;
 import com.mercury.discovery.base.group.service.GroupService;
 import com.mercury.discovery.base.users.model.AppUser;
-import com.mercury.discovery.common.SimpleResponseModel;
+import com.mercury.discovery.common.web.SimpleResponseModel;
 import com.mercury.discovery.common.excel.ExcelUtils;
 import com.mercury.discovery.common.excel.ResultExcelDataHandler;
 import com.mercury.discovery.common.excel.model.ExcelColumn;
@@ -31,14 +31,14 @@ public class GroupRestController {
 
     @GetMapping("/base/groups")
     public ResponseEntity<?> getGroups(AppUser appUser, @RequestParam(required = false) Integer cateId) {
-        return ResponseEntity.ok(groupService.findGroupAll(appUser.getCmpnyNo(), cateId));
+        return ResponseEntity.ok(groupService.findGroupAll(appUser.getClientId(), cateId));
     }
 
     @PostMapping("/base/groups")
     public ResponseEntity<?> postGroups(AppUser appUser, @RequestBody Group group) {
         group.setRegDt(LocalDateTime.now());
-        group.setRegUserNo(appUser.getEmpNo());
-        group.setCmpnyNo(appUser.getCmpnyNo());
+        group.setRegUserNo(appUser.getId());
+        group.setClientId(appUser.getClientId());
 
         if(StringUtils.isEmpty(group.getUpdEnableYn())) {
             group.setUpdEnableYn("Y");
@@ -53,34 +53,34 @@ public class GroupRestController {
     @PatchMapping("/base/groups")
     public ResponseEntity<?> patchGroups(AppUser appUser, @RequestBody Group group) {
         group.setUpdDt(LocalDateTime.now());
-        group.setUpdUserNo(appUser.getEmpNo());
-        group.setCmpnyNo(appUser.getCmpnyNo());
+        group.setUpdUserNo(appUser.getId());
+        group.setClientId(appUser.getClientId());
         int affected = groupService.updateGroup(group);
         return ResponseEntity.ok(new SimpleResponseModel(affected, MessagesUtils.getMessage("sentence.update")));
     }
 
     @DeleteMapping("/base/groups/{grpNo}")
     public ResponseEntity<?> deleteGroups(AppUser appUser, @PathVariable Integer grpNo) {
-        int affected = groupService.deleteGroup(appUser.getCmpnyNo(), grpNo);
+        int affected = groupService.deleteGroup(appUser.getClientId(), grpNo);
         return ResponseEntity.ok(new SimpleResponseModel(affected, MessagesUtils.getMessage("sentence.delete")));
     }
 
     @DeleteMapping("/base/groups")
     public ResponseEntity<?> deleteGroups(AppUser appUser, @RequestBody Group group) {
-        int affected = groupService.deleteGroup(appUser.getCmpnyNo(), group.getGrpNo());
+        int affected = groupService.deleteGroup(appUser.getClientId(), group.getGrpNo());
         return ResponseEntity.ok(new SimpleResponseModel(affected, MessagesUtils.getMessage("sentence.delete")));
     }
 
     @GetMapping("/base/groups/mappings")
     public ResponseEntity<?> getGroupsMappings(AppUser appUser, GroupMappingRequestDto groupMappingRequestDto, Pageable pageable) {
-        groupMappingRequestDto.setCmpnyNo(appUser.getCmpnyNo());
+        groupMappingRequestDto.setClientId(appUser.getClientId());
         Page<GroupMappingResponseDto> list = groupService.findGroupMappingsByGrpNo(groupMappingRequestDto, pageable);
         return ResponseEntity.ok(PagesUtils.of(list));
     }
 
     @GetMapping("/base/groups/mappings/excel")
     public void getGroupsMappingsExcel(AppUser appUser, GroupMappingRequestDto groupMappingRequestDto, Pageable pageable) {
-        groupMappingRequestDto.setCmpnyNo(appUser.getCmpnyNo());
+        groupMappingRequestDto.setClientId(appUser.getClientId());
 
         List<ExcelColumn> columns = new ArrayList<>();
 
@@ -88,7 +88,7 @@ public class GroupRestController {
         columns.add(ExcelUtils.column("dataNm", "이름", 150));
         columns.add(ExcelUtils.column("useYn", "사용여부", 100));
 
-        Group group = groupService.findGroup(appUser.getCmpnyNo(), groupMappingRequestDto.getGrpNo());
+        Group group = groupService.findGroup(appUser.getClientId(), groupMappingRequestDto.getGrpNo());
 
         ResultExcelDataHandler<?> resultExcelDataHandler = ExcelUtils.getResultExcelDataHandler(group.getGrpNm() + " 그룹 구성원", columns);
         groupService.downloadExcelGroupMappingsByGrpNo(groupMappingRequestDto, pageable, resultExcelDataHandler);
@@ -105,9 +105,9 @@ public class GroupRestController {
             int idx = 1;
             for (GroupMapping groupMapping : groupMappings) {
                 groupMapping.setRegDt(now);
-                groupMapping.setRegEmpNo(appUser.getEmpNo());
+                groupMapping.setRegEmpNo(appUser.getId());
                 groupMapping.setUseYn("Y");
-                groupMapping.setSortNo(idx++);
+                groupMapping.setSort(idx++);
             }
 
             affected = groupService.insertGroupMappings(groupMappings);
@@ -142,16 +142,16 @@ public class GroupRestController {
             } else {
                 if (groupMapping.getMapNo() == null) {
                     groupMapping.setRegDt(now);
-                    groupMapping.setRegEmpNo(appUser.getEmpNo());
+                    groupMapping.setRegEmpNo(appUser.getId());
                     groupMapping.setUseYn("Y");
-                    groupMapping.setSortNo(index++);
+                    groupMapping.setSort(index++);
 
                     mergeMappings.add(groupMapping);
                 }
             }
         }
 
-        int affected = groupService.mergeGroupMappings(appUser.getCmpnyNo(), mergeMappings, deleteMappings);
+        int affected = groupService.mergeGroupMappings(appUser.getClientId(), mergeMappings, deleteMappings);
 
         List<GroupMappingHistory> groupMappingHistories = new ArrayList<>();
         groupMappingHistories.addAll(groupService.genGroupMappingHistories(appUser, mergeMappings, "C"));
@@ -167,7 +167,7 @@ public class GroupRestController {
     @DeleteMapping("/base/groups/mappings")
     public ResponseEntity<?> deleteGroupsMappings(AppUser appUser, @RequestBody List<GroupMapping> groupMappings) {
 
-        int affected = groupService.deleteGroupMappings(appUser.getCmpnyNo(), groupMappings);
+        int affected = groupService.deleteGroupMappings(appUser.getClientId(), groupMappings);
 
         List<GroupMappingHistory> groupMappingHistories = groupService.genGroupMappingHistories(appUser, groupMappings, "D");
         groupService.insertGroupMappingsHistory(groupMappingHistories);
@@ -178,7 +178,7 @@ public class GroupRestController {
     @DeleteMapping("/base/appGroup/mapping")
     public ResponseEntity<?> deleteAppGroupsMappings(AppUser appUser, @RequestBody List<AppGroupMapping> groupMappings) {
 
-        int affected = groupService.deleteAppGroupMappings(appUser.getCmpnyNo(), groupMappings);
+        int affected = groupService.deleteAppGroupMappings(appUser.getClientId(), groupMappings);
 
         List<GroupMappingHistory> groupMappingHistories = groupService.genAppGroupMappingHistories(appUser, groupMappings, "D");
         groupService.insertGroupMappingsHistory(groupMappingHistories);
@@ -188,7 +188,7 @@ public class GroupRestController {
 
     @GetMapping("/base/groups/mappings/histories")
     public ResponseEntity<?> getGroupsMappingsHistories(AppUser appUser, DateRange dateRange, GroupMappingHistoryRequestDto groupMappingHistoryRequestDto, Pageable pageable) {
-        groupMappingHistoryRequestDto.setCmpnyNo(appUser.getCmpnyNo());
+        groupMappingHistoryRequestDto.setClientId(appUser.getClientId());
         groupMappingHistoryRequestDto.setStartedAt(dateRange.getStart());
         groupMappingHistoryRequestDto.setEndedAt(dateRange.getEnd());
 
@@ -199,7 +199,7 @@ public class GroupRestController {
 
     @GetMapping("/base/groups/mappings/histories/excel")
     public void getGroupsMappingsHistoriesExcel(AppUser appUser, DateRange dateRange, GroupMappingHistoryRequestDto groupMappingHistoryRequestDto, Pageable pageable) {
-        groupMappingHistoryRequestDto.setCmpnyNo(appUser.getCmpnyNo());
+        groupMappingHistoryRequestDto.setClientId(appUser.getClientId());
         groupMappingHistoryRequestDto.setStartedAt(dateRange.getStart());
         groupMappingHistoryRequestDto.setEndedAt(dateRange.getEnd());
 
@@ -230,7 +230,7 @@ public class GroupRestController {
     public ResponseEntity<?> getAppGroup(AppUser appUser,
                                           @RequestParam Integer cateId) {
 
-        List<AppGroup> appGroups = groupService.selectAppGroup(appUser.getCmpnyNo(), cateId);
+        List<AppGroup> appGroups = groupService.selectAppGroup(appUser.getClientId(), cateId);
         return ResponseEntity.ok(appGroups);
     }
 
@@ -254,7 +254,7 @@ public class GroupRestController {
 
     @GetMapping("/base/appGroup/mapping")
     public ResponseEntity<?> getAppGroupMapping(AppUser appUser, @RequestParam Integer appGrpNo) {
-        List<AppGroupMapping> list = groupService.selectAppGroupMapping(appUser.getCmpnyNo(), appGrpNo);
+        List<AppGroupMapping> list = groupService.selectAppGroupMapping(appUser.getClientId(), appGrpNo);
         return ResponseEntity.ok(list);
     }
 
@@ -282,7 +282,7 @@ public class GroupRestController {
     public ResponseEntity<?> getMenuGroups(AppUser appUser,
                                           @RequestParam Integer cateId) {
 
-        List<AppGroup> appGroups = groupService.selectAppGroup(appUser.getCmpnyNo(), cateId);
+        List<AppGroup> appGroups = groupService.selectAppGroup(appUser.getClientId(), cateId);
         return ResponseEntity.ok(appGroups);
     }
 
@@ -306,7 +306,7 @@ public class GroupRestController {
 
     @GetMapping("/base/menuGroup/mapping")
     public ResponseEntity<?> getMenuGroupMapping(AppUser appUser, @RequestParam Integer appGrpNo) {
-        List<AppGroupMapping> list = groupService.selectAppGroupMapping(appUser.getCmpnyNo(), appGrpNo);
+        List<AppGroupMapping> list = groupService.selectAppGroupMapping(appUser.getClientId(), appGrpNo);
         return ResponseEntity.ok(list);
     }
 

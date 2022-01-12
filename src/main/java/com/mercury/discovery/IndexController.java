@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 public class IndexController {
 
-    @Value("${apps.index:redirect:/index.html}")
+    @Value("${apps.index:thymeleaf/index}")
     private String appIndex;
 
     @GetMapping({"", "/"})

@@ -15,7 +15,7 @@ public class PagesUtils {
 
     public static void setPageableIfNotNull(Pageable pageable) {
         if (pageable != null) {
-            PageHelper.startPage(pageable.getPageNumber() + 1, pageable.getPageSize());
+            PageHelper.startPage(pageable.getPageNumber(), pageable.getPageSize());
         }
     }
 

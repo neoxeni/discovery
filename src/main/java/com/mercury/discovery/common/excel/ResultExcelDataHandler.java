@@ -720,15 +720,15 @@ public class ResultExcelDataHandler<T> implements ResultHandler<T> {
             workbook.write(response.getOutputStream());
 
         } catch (Exception e) {
-            log.error("Exception: {}", e);
+            log.error("Exception", e);
 
             response.setContentType("application/vnd.ms-excel; charset=utf-8");
 
             try {
                 OutputStream out = response.getOutputStream();
-                StreamUtils.copy("excel Download Fail.".getBytes(Charset.forName("UTF-8")), out);
+                StreamUtils.copy("excel Download Fail.".getBytes(StandardCharsets.UTF_8), out);
             } catch (Exception ex) {
-                log.error("Exception: {}", ex);
+                log.error("Exception", ex);
             }
 
         } finally {
@@ -744,7 +744,7 @@ public class ResultExcelDataHandler<T> implements ResultHandler<T> {
             try {
                 workbook.close();
             } catch (IOException e) {
-                log.error("Exception: {}", e);
+                log.error("Exception", e);
             }
         }
     }
@@ -763,7 +763,7 @@ public class ResultExcelDataHandler<T> implements ResultHandler<T> {
             }
             return getter.invoke(object);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | IntrospectionException e) {
-            log.error("Exception: {}", e);
+            log.error("Exception: invokeGetter {}", propertyName, e);
         }
 
         return null;
@@ -807,8 +807,7 @@ public class ResultExcelDataHandler<T> implements ResultHandler<T> {
         try {
             if (!userAgent.contains("MSIE") && !userAgent.contains("Trident")) {
                 if (userAgent.contains("Chrome")) {
-                    StringBuffer sb = new StringBuffer();
-
+                    StringBuilder sb = new StringBuilder();
                     for (int i = 0; i < fileName.length(); ++i) {
                         char c = fileName.charAt(i);
                         if (c > '~') {
@@ -818,7 +817,7 @@ public class ResultExcelDataHandler<T> implements ResultHandler<T> {
                         }
                     }
 
-                    disposition = disposition + sb.toString();
+                    disposition = disposition + sb;
                 } else {
                     disposition = disposition + "\"" + new String(fileName.getBytes(StandardCharsets.UTF_8), "8859_1") + "\"";
                 }
@@ -835,13 +834,12 @@ public class ResultExcelDataHandler<T> implements ResultHandler<T> {
     @Getter
     @Setter
     @AllArgsConstructor
-    private class SheetColumnInfo {
+    private static class SheetColumnInfo {
         private Sheet sheet;
         private List<ExcelColumn> flatColumns;
         private List<ExcelColumn> pivotColumns;
         boolean hasPivot;
         boolean completePivotHeader;
     }
-
 }
 

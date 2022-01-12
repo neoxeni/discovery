@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 
 /**
- * tb_cmm_code
+ * cmm_code
  */
 
 @Alias("Code")
@@ -18,29 +18,33 @@ import java.time.LocalDateTime;
 public class Code implements Serializable {
     private static final long serialVersionUID = 5435721294464776663L;
 
-    private String cd;
     private String divCd;
-    private String prntCd;
+    private String cd;
+    private String parentCd;
     private String cdNm;
-    private Integer sortNo;
-    private String dtl;
+    private Integer sort;
     private String useYn;
-
-    private Integer regEmpNo;
-
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime regDt;
-    private Integer updEmpNo;
-
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime updDt;
-
     private String etc1;
     private String etc2;
     private String etc3;
     private String etc4;
-    private Integer cmpnyNo;
-    private Integer lvl;
+    private String description;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime startApplyAt;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime endApplyAt;
+
+    private Integer createdBy;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createdAt;
+    private Integer updatedBy;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime updatedAt;
+    private Integer clientId;
 }

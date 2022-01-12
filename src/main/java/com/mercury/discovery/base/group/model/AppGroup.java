@@ -26,6 +26,6 @@ public class AppGroup {
     private LocalDateTime updDt;
     private Integer regUserNo;
     private Integer updUserNo;
-    private Integer cmpnyNo;
+    private Integer clientId;
     private String updEnableYn;
 }

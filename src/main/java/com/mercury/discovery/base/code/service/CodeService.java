@@ -65,8 +65,8 @@ public class CodeService {
             List<Class> enumClassList = new ArrayList<>();
 
             String[] packagesArr = packages.split(",");
-            for(String packageStr : packagesArr){
-                if(StringUtils.hasLength(packageStr)){
+            for (String packageStr : packagesArr) {
+                if (StringUtils.hasLength(packageStr)) {
                     Class[] classes = ObjectUtils.getClasses(packageStr.trim(), Enum.class);
                     for (Class clazz : classes) {
                         enumClassList.add(clazz);
@@ -82,7 +82,7 @@ public class CodeService {
                 List<Code> codesKo = new ArrayList<>();
                 List<Code> codesEn = new ArrayList<>();
                 Object[] enumConstants = clazz.getEnumConstants();
-                int sortNo = 1;
+                int sort = 1;
                 for (Object e : enumConstants) {
                     Enum<?> enumObject = (Enum<?>) e;
 
@@ -110,19 +110,19 @@ public class CodeService {
                         en = ko;
                     }
 
-                    String etc1 = getEnumInvokeMethod(enumObject,"getEtc1");
-                    String etc2 = getEnumInvokeMethod(enumObject,"getEtc2");
-                    String etc3 = getEnumInvokeMethod(enumObject,"getEtc3");
-                    String etc4 = getEnumInvokeMethod(enumObject,"getEtc4");
-                    String useYn = getEnumInvokeMethod(enumObject,"getUseYn");
-                    String prntCd = getEnumInvokeMethod(enumObject,"getPrntCd");
+                    String etc1 = getEnumInvokeMethod(enumObject, "getEtc1");
+                    String etc2 = getEnumInvokeMethod(enumObject, "getEtc2");
+                    String etc3 = getEnumInvokeMethod(enumObject, "getEtc3");
+                    String etc4 = getEnumInvokeMethod(enumObject, "getEtc4");
+                    String useYn = getEnumInvokeMethod(enumObject, "getUseYn");
+                    String parentCd = getEnumInvokeMethod(enumObject, "getParentCd");
 
 
                     sb.append("[").append(cd).append(":").append(ko).append(":").append(en).append("]");
 
 
-                    codesKo.add(makeEnumCode(name, cd, ko, etc1, etc2, etc3, etc4, sortNo, useYn, prntCd, now));
-                    codesEn.add(makeEnumCode(name, cd, en, etc1, etc2, etc3, etc4, sortNo, useYn, prntCd, now));
+                    codesKo.add(makeEnumCode(name, cd, ko, etc1, etc2, etc3, etc4, sort, useYn, parentCd, now));
+                    codesEn.add(makeEnumCode(name, cd, en, etc1, etc2, etc3, etc4, sort, useYn, parentCd, now));
                 }
                 sb.append("\n");
                 enumCodeMapKo.put(name, codesKo);
@@ -152,7 +152,7 @@ public class CodeService {
     }
 
     private Code makeEnumCode(String divCd, String cd, String cdNm, String etc1, String etc2, String etc3, String etc4,
-                              int sortNo, String useYn, String prntCd ,LocalDateTime now){
+                              int sort, String useYn, String parentCd, LocalDateTime now) {
         Code code = new Code();
         code.setDivCd(divCd);
         code.setCd(cd);
@@ -161,18 +161,18 @@ public class CodeService {
         code.setEtc2(etc2 == null ? "" : etc2);
         code.setEtc3(etc3 == null ? "" : etc3);
         code.setEtc4(etc4 == null ? "" : etc4);
-        code.setUseYn(useYn == null? "Y" : useYn);//null 인경우 Y
-        code.setSortNo(sortNo);
-        code.setPrntCd(prntCd == null ? "ROOT" : prntCd);
+        code.setUseYn(useYn == null ? "Y" : useYn);//null 인경우 Y
+        code.setSort(sort);
+        code.setParentCd(parentCd == null ? "ROOT" : parentCd);
 
-        code.setRegDt(now);
-        code.setRegEmpNo(-1);
-        code.setCmpnyNo(-1);
+        code.setCreatedAt(now);
+        code.setCreatedBy(-1);
+        code.setClientId(-1);
 
         return code;
     }
 
-    private String getEnumInvokeMethod(Enum<?> enumObject, String methodName){
+    private String getEnumInvokeMethod(Enum<?> enumObject, String methodName) {
         try {
             Method method = enumObject.getDeclaringClass().getDeclaredMethod(methodName);
             return (String) method.invoke(enumObject);
@@ -182,15 +182,15 @@ public class CodeService {
     }
 
     private List<Code> getData(Code code) {
-        int cmpnyNo = code.getCmpnyNo();
+        int clientId = code.getClientId();
 
         List<Code> items = new ArrayList<>();
         Cache cache = cacheManager.getCache("code");
         if (cache != null) {
-            items = cache.get(cmpnyNo, List.class);
+            items = cache.get(clientId, List.class);
             if (items == null) {
                 items = findAll(code);
-                cache.put(cmpnyNo, items);
+                cache.put(clientId, items);
             }
         }
 
@@ -198,7 +198,7 @@ public class CodeService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(cacheNames = "code", key = "#code.cmpnyNo")
+    @Cacheable(cacheNames = "code", key = "#code.clientId")
     public List<Code> findAll(Code code) {
         return codeRepository.findAll(code);
     }
@@ -219,7 +219,7 @@ public class CodeService {
             jsTree.setText(item.getDivNm());
             jsTree.setData(item);
             jsTree.setDivCd(item.getDivCd());
-            jsTree.setCmpnyNo(item.getCmpnyNo());
+            jsTree.setClientId(item.getClientId());
 
             root.add(jsTree);
         });
@@ -229,17 +229,17 @@ public class CodeService {
             jsTree.setDataType("code");
             jsTree.setType("code");
 
-            if ("ROOT".equals(item.getPrntCd())) {
+            if ("ROOT".equals(item.getParentCd())) {
                 jsTree.setParent(item.getDivCd());
             } else {
-                jsTree.setParent(item.getDivCd() + "_" + item.getPrntCd());
+                jsTree.setParent(item.getDivCd() + "_" + item.getParentCd());
             }
 
             jsTree.setId(item.getDivCd() + "_" + item.getCd());
             jsTree.setText(item.getCdNm());
             jsTree.setData(item);
             jsTree.setDivCd(item.getDivCd());
-            jsTree.setCmpnyNo(item.getCmpnyNo());
+            jsTree.setClientId(item.getClientId());
 
             root.add(jsTree);
         });
@@ -248,13 +248,13 @@ public class CodeService {
     }
 
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    @Cacheable(cacheNames = "codeJs", key = "{#code.cmpnyNo, #locale.toString()}")
+    @Cacheable(cacheNames = "codeJs", key = "{#code.clientId, #locale.toString()}")
     public String findAllForScript(Code code, Locale locale) {
         List<Code> codes = getData(code);
 
         Map<String, List<Code>> childrenMap = new HashMap<>();
         for (Code lCode : codes) {
-            String pid = lCode.getPrntCd();
+            String pid = lCode.getParentCd();
             if ("ROOT".equals(pid)) {
                 pid = lCode.getDivCd();
             }
@@ -291,7 +291,7 @@ public class CodeService {
 
         StringBuilder sb = new StringBuilder();
 
-        sb.append("(function (mercury, $) {");
+        sb.append("(function (mercury) {");
         sb.append("    window.mercury = mercury;");
         sb.append("    mercury.base = mercury.base || {};");
         sb.append("    mercury.base.company = mercury.base.company || {};");
@@ -320,46 +320,46 @@ public class CodeService {
         sb.append("        }");// end of getCode
 
         sb.append("    };");
-        sb.append("})(window.mercury || {}, jQuery);");
+        sb.append("})(window.mercury || {});");
 
         return sb.toString();
     }
 
-    @CacheEvict(cacheNames = {"code", "codeJs"}, key = "#code.cmpnyNo", allEntries = true)
+    @CacheEvict(cacheNames = {"code", "codeJs"}, key = "#code.clientId", allEntries = true)
     public int insert(Code code) {
         return codeRepository.insert(code);
     }
 
-    @CacheEvict(cacheNames = {"code", "codeJs"}, key = "#code.cmpnyNo", allEntries = true)
+    @CacheEvict(cacheNames = {"code", "codeJs"}, key = "#code.clientId", allEntries = true)
     public int update(Code code) {
         return codeRepository.update(code);
     }
 
-    @CacheEvict(cacheNames = {"code", "codeJs"}, key = "#code.cmpnyNo", allEntries = true)
+    @CacheEvict(cacheNames = {"code", "codeJs"}, key = "#code.clientId", allEntries = true)
     public int delete(Code code) {
         return codeRepository.delete(code);
     }
 
-    @CacheEvict(cacheNames = {"code", "codeJs"}, key = "#cmpnyNo", allEntries = true)
-    public int deleteCodesByDivCd(Integer cmpnyNo, String divCd) {
+    @CacheEvict(cacheNames = {"code", "codeJs"}, key = "#clientId", allEntries = true)
+    public int deleteCodesByDivCd(Integer clientId, String divCd) {
         CodeDiv codeDiv = new CodeDiv();
-        codeDiv.setCmpnyNo(cmpnyNo);
+        codeDiv.setClientId(clientId);
         codeDiv.setDivCd(divCd);
         return codeRepository.deleteCodesByDivCd(codeDiv);
     }
 
-    @CacheEvict(cacheNames ={"code", "codeJs"}, key = "#codeDiv.cmpnyNo", allEntries = true)
+    @CacheEvict(cacheNames = {"code", "codeJs"}, key = "#codeDiv.clientId", allEntries = true)
     public int insertCodeDiv(CodeDiv codeDiv) {
         return codeRepository.insertCodeDiv(codeDiv);
     }
 
-    @CacheEvict(cacheNames = {"code", "codeJs"}, key = "#codeDiv.cmpnyNo", allEntries = true)
+    @CacheEvict(cacheNames = {"code", "codeJs"}, key = "#codeDiv.clientId", allEntries = true)
     public int updateCodeDiv(CodeDiv codeDiv) {
         return codeRepository.updateCodeDiv(codeDiv);
     }
 
 
-    @CacheEvict(cacheNames = {"code", "codeJs"}, key = "#codeDiv.cmpnyNo", allEntries = true)
+    @CacheEvict(cacheNames = {"code", "codeJs"}, key = "#codeDiv.clientId", allEntries = true)
     public int deleteCodeDiv(CodeDiv codeDiv) {
         int affected = codeRepository.deleteCodeDiv(codeDiv);
         if (affected > 0) {
@@ -369,23 +369,23 @@ public class CodeService {
         return affected;
     }
 
-    public void setDefault(String divCd, Integer cmpnyNo, Integer empNo, List<Code> codes) {
+    public void setDefault(String divCd, Integer clientId, Integer empNo, List<Code> codes) {
         LocalDateTime now = LocalDateTime.now();
         codes.forEach(post -> {
             post.setDivCd(divCd);
-            post.setCmpnyNo(cmpnyNo);
+            post.setClientId(clientId);
 
             if (post.getCd() == null) {
                 post.setCd(IDGenerator.getUUID());
-                post.setRegEmpNo(empNo);
-                post.setRegDt(now);
+                post.setCreatedBy(empNo);
+                post.setCreatedAt(now);
             } else {
-                post.setUpdEmpNo(empNo);
-                post.setUpdDt(now);
+                post.setUpdatedBy(empNo);
+                post.setUpdatedAt(now);
             }
 
-            if (post.getPrntCd() == null) {
-                post.setPrntCd("ROOT");
+            if (post.getParentCd() == null) {
+                post.setParentCd("ROOT");
             }
 
             if (post.getUseYn() == null) {
@@ -394,7 +394,7 @@ public class CodeService {
         });
     }
 
-    public List<Code> findByDiv(String divCd, Integer cmpnyNo) {
-        return codeRepository.findByDiv(divCd, cmpnyNo);
+    public List<Code> findByDiv(String divCd, Integer clientId) {
+        return codeRepository.findByDiv(divCd, clientId);
     }
 }

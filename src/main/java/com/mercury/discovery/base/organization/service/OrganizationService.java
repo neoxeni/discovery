@@ -38,8 +38,8 @@ public class OrganizationService {
     }
 
     @Transactional(readOnly = true)
-    public List<CamelMap> findEmpListAll(int cmpnyNo) {
-        List<CamelMap> employeeList = organizationRepository.findEmployeeAll(cmpnyNo);
+    public List<CamelMap> findEmpListAll(int clientId) {
+        List<CamelMap> employeeList = organizationRepository.findEmployeeAll(clientId);
         for (CamelMap employee : employeeList) {
             int empNo = employee.getInt("empNo");
             employee.put("type", "E");
@@ -52,8 +52,8 @@ public class OrganizationService {
     }
 
     @Transactional(readOnly = true)
-    public List<CamelMap> findDeptListAll(int cmpnyNo) {
-        List<CamelMap> departmentList = organizationRepository.findDepartmentAll(cmpnyNo);
+    public List<CamelMap> findDeptListAll(int clientId) {
+        List<CamelMap> departmentList = organizationRepository.findDepartmentAll(clientId);
         for (CamelMap dept : departmentList) {
             int deptNo = dept.getInt("deptNo");
             dept.put("type", "D");
@@ -66,13 +66,13 @@ public class OrganizationService {
 
 
     @Transactional(readOnly = true)
-    @Cacheable(cacheNames = "deptEmpListForTreeAll", key = "#cmpnyNo.toString()")
-    public CamelMap findDeptEmpListForTreeAll(Integer cmpnyNo) {
+    @Cacheable(cacheNames = "deptEmpListForTreeAll", key = "#clientId.toString()")
+    public CamelMap findDeptEmpListForTreeAll(Integer clientId) {
         CamelMap organization = new CamelMap();
 
 
         Map<Integer, List<CamelMap>> employeeByDeptCdMap = new HashMap<>();//<empNo, 직원>
-        List<CamelMap> employeeList = organizationRepository.findEmployeeAll(cmpnyNo);
+        List<CamelMap> employeeList = organizationRepository.findEmployeeAll(clientId);
         for (CamelMap employee : employeeList) {
             int empNo = employee.getInt("empNo");
             employee.put("type", "E");
@@ -85,7 +85,7 @@ public class OrganizationService {
         }
 
         Map<Integer, List<CamelMap>> departmentMap = new HashMap<>();//<pDeptNo, 부서>
-        List<CamelMap> departmentList = organizationRepository.findDepartmentAll(cmpnyNo);
+        List<CamelMap> departmentList = organizationRepository.findDepartmentAll(clientId);
         for (CamelMap dept : departmentList) {
             int parentDeptNo = dept.getInt("PDeptNo");
             int deptNo = dept.getInt("deptNo");
@@ -148,51 +148,51 @@ public class OrganizationService {
     }
 
     @Transactional(readOnly = true)
-    public Department findDepartment(Integer cmpnyNo, Integer deptNo) {
-        return organizationRepository.findDepartment(cmpnyNo, deptNo);
+    public Department findDepartment(Integer clientId, Integer deptNo) {
+        return organizationRepository.findDepartment(clientId, deptNo);
     }
 
-    @CacheEvict(cacheNames = "deptEmpListForTreeAll", key = "#department.cmpnyNo.toString()")
+    @CacheEvict(cacheNames = "deptEmpListForTreeAll", key = "#department.clientId.toString()")
     public int insertDepartment(Department department) {
         return organizationRepository.insertDepartment(department);
     }
 
-    @CacheEvict(cacheNames = "deptEmpListForTreeAll", key = "#department.cmpnyNo.toString()")
+    @CacheEvict(cacheNames = "deptEmpListForTreeAll", key = "#department.clientId.toString()")
     public int updateDepartment(Department department) {
         return organizationRepository.updateDepartment(department);
     }
 
-    @CacheEvict(cacheNames = "deptEmpListForTreeAll", key = "#changeDepartmentDto.cmpnyNo.toString()")
+    @CacheEvict(cacheNames = "deptEmpListForTreeAll", key = "#changeDepartmentDto.clientId.toString()")
     public int changeEmployeeDepartment(ChangeDepartmentDto changeDepartmentDto) {
         return organizationRepository.changeEmployeeDepartment(changeDepartmentDto);
     }
 
-    @CacheEvict(cacheNames = "deptEmpListForTreeAll", key = "#changeDepartmentDto.cmpnyNo.toString()")
+    @CacheEvict(cacheNames = "deptEmpListForTreeAll", key = "#changeDepartmentDto.clientId.toString()")
     public int changeDepartmentDepartment(ChangeDepartmentDto changeDepartmentDto) {
         return organizationRepository.changeDepartmentDepartment(changeDepartmentDto);
     }
 
     @Transactional(readOnly = true)
-    public List<UserRole> findDepartmentsRoles(Integer cmpnyNo, Integer deptNo) {
-        return organizationRepository.findDepartmentsRoles(cmpnyNo, deptNo);
+    public List<UserRole> findDepartmentsRoles(Integer clientId, Integer deptNo) {
+        return organizationRepository.findDepartmentsRoles(clientId, deptNo);
     }
 
     @Transactional(readOnly = true)
-    public List<CamelMap> findDepartmentsTree(Integer cmpnyNo) {
-        return organizationRepository.findDepartmentsTree(cmpnyNo);
+    public List<CamelMap> findDepartmentsTree(Integer clientId) {
+        return organizationRepository.findDepartmentsTree(clientId);
     }
 
     @Caching(evict = {
-        @CacheEvict(cacheNames = "deptEmpListForTreeAll", key = "#cmpnyNo")
+        @CacheEvict(cacheNames = "deptEmpListForTreeAll", key = "#clientId")
     })
-    public boolean clearCache(String cmpnyNo) {
-        log.debug("clearCache {}", cmpnyNo);
+    public boolean clearCache(String clientId) {
+        log.debug("clearCache {}", clientId);
         return true;
     }
 
     @Transactional(readOnly = true)
-    public List<CamelMap> findDepartmentByParent(int cmpnyNo, String useYn, int pDeptNo) {
-        List<CamelMap> departmentList = organizationRepository.findDepartmentByParent(cmpnyNo, useYn, pDeptNo);
+    public List<CamelMap> findDepartmentByParent(int clientId, String useYn, int pDeptNo) {
+        List<CamelMap> departmentList = organizationRepository.findDepartmentByParent(clientId, useYn, pDeptNo);
         for (CamelMap dept : departmentList) {
             int deptNo = dept.getInt("deptNo");
             dept.put("type", "D");
@@ -205,8 +205,8 @@ public class OrganizationService {
     }
 
     @Transactional(readOnly = true)
-    public List<CamelMap> findEmployeeByDepartment(int cmpnyNo, String useYn, String rtrmntYn, String rootYn, int deptNo) {
-        List<CamelMap> employeeList = organizationRepository.findEmployeeByDepartment(cmpnyNo, useYn, rtrmntYn, rootYn, deptNo);
+    public List<CamelMap> findEmployeeByDepartment(int clientId, String useYn, String rtrmntYn, String rootYn, int deptNo) {
+        List<CamelMap> employeeList = organizationRepository.findEmployeeByDepartment(clientId, useYn, rtrmntYn, rootYn, deptNo);
         for (CamelMap employee : employeeList) {
             int empNo = employee.getInt("empNo");
             employee.put("type", "E");

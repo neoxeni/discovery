@@ -3,25 +3,24 @@ package com.mercury.discovery.config.web.resolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
-import org.springframework.lang.Nullable;
 import org.springframework.web.servlet.resource.PathResourceResolver;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 public class UploadFileResourceResolver extends PathResourceResolver {
     private static final Logger LOGGER = LoggerFactory.getLogger(UploadFileResourceResolver.class);
 
-    @Nullable
-    private Set<String> allowedExtensionSet;
+    private final Set<String> allowedExtensionSet;
 
     private boolean isCheckAllowedExtension = false;
 
-
     public UploadFileResourceResolver(Set<String> allowedExtensionSet) {
-        this.allowedExtensionSet = allowedExtensionSet;
-        if (allowedExtensionSet.size() > 0) {
+
+        this.allowedExtensionSet = allowedExtensionSet != null ? allowedExtensionSet : new HashSet<>();
+        if (this.allowedExtensionSet.size() > 0) {
             isCheckAllowedExtension = true;
             LOGGER.info("allowedExtensionSet {}", allowedExtensionSet);
         }

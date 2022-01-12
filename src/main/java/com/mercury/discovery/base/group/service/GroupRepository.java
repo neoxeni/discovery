@@ -12,15 +12,15 @@ import java.util.List;
 @Mapper
 @Repository
 public interface GroupRepository {
-    List<Group> findGroupAll(int cmpnyNo, String useYn, Integer cateId);
+    List<Group> findGroupAll(int clientId, String useYn, Integer cateId);
 
-    Group findGroup(int cmpnyNo, int grpNo);
+    Group findGroup(int clientId, int grpNo);
 
     int insertGroup(Group group);
 
     int updateGroup(Group group);
 
-    int deleteGroup(Integer cmpnyNo, Integer grpNo);
+    int deleteGroup(Integer clientId, Integer grpNo);
 
     Page<GroupMappingResponseDto> findGroupMappingsByGrpNo(GroupMappingRequestDto groupMappingRequestDto, Pageable pageable);
 
@@ -28,11 +28,11 @@ public interface GroupRepository {
 
     int insertGroupMappings(List<GroupMapping> groupMappings);
 
-    int deleteGroupMappings(Integer cmpnyNo, List<Integer> groupMappingNos);
+    int deleteGroupMappings(Integer clientId, List<Integer> groupMappingNos);
 
-    int deleteAppGroupMappings(Integer cmpnyNo, List<Integer> groupMappingNos);
+    int deleteAppGroupMappings(Integer clientId, List<Integer> groupMappingNos);
 
-    void deleteGroupMappingsByGrpNo(Integer cmpnyNo, Integer grpNo);
+    void deleteGroupMappingsByGrpNo(Integer clientId, Integer grpNo);
 
     int insertGroupMappingsHistory(GroupMappingHistory groupMappingHistory);
 
@@ -42,12 +42,12 @@ public interface GroupRepository {
 
 
 
-    List<AppGroup> selectAppGroup(Integer cmpnyNo, Integer cateId);
+    List<AppGroup> selectAppGroup(Integer clientId, Integer cateId);
     int insertAppGroup(AppGroup appGroup);
     int updateAppGroup(AppGroup appGroup);
-    int deleteAppGroup(Integer cmpnyNo, Integer appGrpNo);
-    List<AppGroupMapping> selectAppGroupMapping(Integer cmpnyNo, Integer appGrpNo);
-    int selectUsedAppGroupMapping(Integer cmpnyNo, Integer appGrpNo);
+    int deleteAppGroup(Integer clientId, Integer appGrpNo);
+    List<AppGroupMapping> selectAppGroupMapping(Integer clientId, Integer appGrpNo);
+    int selectUsedAppGroupMapping(Integer clientId, Integer appGrpNo);
     int insertAppGroupMapping(AppGroupMapping appGroupMapping);
     int deleteAppGroupMapping(Integer appGrpNo);
 

@@ -6,7 +6,7 @@ package com.mercury.discovery.base;
 public enum BaseTopic {
     USER("/v2/users/{userKey}"),
     ACTIVE("/v2/active/{userKey}"),
-    USERS("/v2/monitor/{cmpnyNo}/users"),
+    USERS("/v2/monitor/{clientId}/users"),
     ;
     private final String topic;
 

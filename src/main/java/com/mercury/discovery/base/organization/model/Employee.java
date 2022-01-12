@@ -34,7 +34,7 @@ public class Employee {
 
     private String postnCd;
     private String dutyCd;
-    private Integer cmpnyNo;
+    private Integer clientId;
     private Integer empSort;
     private String email;
 

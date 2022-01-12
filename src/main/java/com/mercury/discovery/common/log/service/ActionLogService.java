@@ -1,11 +1,11 @@
 package com.mercury.discovery.common.log.service;
 
+import com.github.pagehelper.Page;
 import com.mercury.discovery.common.log.security.SecurityLog;
 import com.mercury.discovery.common.log.security.model.ActionLog;
 import com.mercury.discovery.common.log.security.model.ActionLogRequestDto;
 import com.mercury.discovery.common.log.security.model.ActionLogResponseDto;
 import com.mercury.discovery.utils.PagesUtils;
-import com.github.pagehelper.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.ResultHandler;
@@ -33,7 +33,7 @@ public class ActionLogService {
     }
 
     public int save(ActionLog actionLog) {
-        if (actionLog.getSeqNo() == null) {
+        if (actionLog.getId() == null) {
             return actionLogRepository.insert(actionLog);
         } else {
             return actionLogRepository.update(actionLog);
@@ -50,14 +50,14 @@ public class ActionLogService {
     }
 
 
-    private ActionLog transToActionLog(SecurityLog securityLog){
+    private ActionLog transToActionLog(SecurityLog securityLog) {
         ActionLog actionLog = new ActionLog();
 
-        actionLog.setSeqNo(securityLog.getSeqNo());
+        actionLog.setId(securityLog.getId());
 
-        actionLog.setUserNo(securityLog.getUserNo());
+        actionLog.setUserId(securityLog.getUserId());
         actionLog.setIp(securityLog.getIp());
-        actionLog.setRegDt(securityLog.getRegDt());
+        actionLog.setCreatedAt(securityLog.getCreatedAt());
 
         actionLog.setMenu(securityLog.getMenu());
         actionLog.setSubMenu(securityLog.getSubMenu());
@@ -65,14 +65,14 @@ public class ActionLogService {
         actionLog.setActionUrl(securityLog.getActionUrl());
         actionLog.setInputVal(securityLog.getInputVal());
 
-        actionLog.setRegNation(securityLog.getRegNation());
+        actionLog.setLanguage(securityLog.getLanguage());
         actionLog.setEtc1(securityLog.getEtc1());
         actionLog.setEtc2(securityLog.getEtc2());
         actionLog.setEtc3(securityLog.getEtc3());
         actionLog.setEtc4(securityLog.getEtc4());
         actionLog.setEtc5(securityLog.getEtc5());
         actionLog.setDivCd(securityLog.getDivCd());
-        actionLog.setCmpnyNo(securityLog.getCmpnyNo());
+        actionLog.setClientId(securityLog.getClientId());
 
         return actionLog;
     }

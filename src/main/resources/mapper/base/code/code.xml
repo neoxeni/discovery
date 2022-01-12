@@ -7,90 +7,85 @@
         SELECT
             cd,
             div_cd,
-            prnt_cd,
+            parent_cd,
             cd_nm,
-            sort_no,
-            dtl,
+            sort,
+            description,
             use_yn,
-            reg_emp_no,
-            reg_dt,
+            created_by,
+            created_at,
             upd_emp_no,
-            upd_dt,
-            cmpny_no,
-            lvl
-        FROM tb_cmm_code
-        WHERE div_cd = #{divCd} AND cmpny_no IN( -1, #{cmpnyNo})
-        ORDER BY prnt_cd, sort_no
+            updated_at,
+            client_id
+        FROM cmm_code
+        WHERE div_cd = #{divCd} AND client_id IN( -1, #{clientId})
+        ORDER BY parent_cd, sort
     </select>
 
     <select id="findAll" resultType="Code">
         SELECT
             cd,
             div_cd,
-            prnt_cd,
+            parent_cd,
             cd_nm,
-            sort_no,
-            dtl,
+            sort,
+            description,
             use_yn,
-            reg_emp_no,
-            reg_dt,
-            upd_emp_no,
-            upd_dt,
+            created_by,
+            created_at,
+            updated_by,
+            updated_at,
             CASE WHEN etc1 IS NULL THEN '' ELSE etc1 END as etc1,
             CASE WHEN etc2 IS NULL THEN '' ELSE etc2 END as etc2,
             CASE WHEN etc3 IS NULL THEN '' ELSE etc3 END as etc3,
             CASE WHEN etc4 IS NULL THEN '' ELSE etc4 END as etc4,
-            cmpny_no,
-            lvl
-        FROM tb_cmm_code
-        WHERE cmpny_no IN( -1, #{cmpnyNo})
-        ORDER BY div_cd, prnt_cd, sort_no
+            client_id
+        FROM cmm_code
+        WHERE client_id IN( -1, #{clientId})
+        ORDER BY div_cd, parent_cd, sort
     </select>
 
     <insert id="insert">
-        INSERT INTO tb_cmm_code(
-            cd, div_cd, prnt_cd, cd_nm, sort_no, dtl, use_yn, reg_emp_no, reg_dt, etc1, etc2, etc3, etc4, cmpny_no, lvl
+        INSERT INTO cmm_code(
+            cd, div_cd, parent_cd, cd_nm, sort, description, use_yn, etc1, etc2, etc3, etc4, created_by, created_at, updated_by, updated_at, client_id
         ) VALUES (
-            #{cd}, #{divCd}, #{prntCd}, #{cdNm}, #{sortNo}, #{dtl}, #{useYn}, #{regEmpNo}, #{regDt}, #{etc1}, #{etc2}, #{etc3}, #{etc4}, #{cmpnyNo}, #{lvl}
+            #{cd}, #{divCd}, #{parentCd}, #{cdNm}, #{sort}, #{description}, #{useYn}, #{etc1}, #{etc2}, #{etc3}, #{etc4}, #{createdBy}, #{createdAt}, #{createdBy}, #{createdAt}, #{clientId}
         )
     </insert>
 
     <update id="update">
-        UPDATE tb_cmm_code SET
+        UPDATE cmm_code SET
            cd = #{cd},
            div_cd = #{divCd},
-           prnt_cd = #{prntCd},
+           parent_cd = #{parentCd},
            cd_nm = #{cdNm},
-           sort_no = #{sortNo},
-           dtl = #{dtl},
+           sort = #{sort},
+           description = #{description},
            use_yn = #{useYn},
-           upd_emp_no = #{updEmpNo},
-           upd_dt = #{updDt},
+           updated_by = #{updatedBy},
+           updated_at = #{updatedAt},
            etc1 = #{etc1},
            etc2 = #{etc2},
            etc3 = #{etc3},
            etc4 = #{etc4},
-           cmpny_no = #{cmpnyNo},
-           lvl = #{lvl}
-        WHERE cmpny_no = #{cmpnyNo}
+           client_id = #{clientId}
+        WHERE client_id = #{clientId}
         AND cd = #{cd}
         AND div_cd = #{divCd}
     </update>
 
     <delete id="delete">
-
-
-        DELETE FROM tb_cmm_code
-        WHERE cmpny_no IN( -1, #{cmpnyNo})
+        DELETE FROM cmm_code
+        WHERE client_id IN( -1, #{clientId})
           AND div_cd =  #{divCd}
           AND cd IN (
-            <include refid="common.sql.with" /> cte(div_cd, cd, prnt_cd) AS (
+            <include refid="common.sql.with" /> cte(div_cd, cd, parent_cd) AS (
                 SELECT
                     a.div_cd,
                     a.cd,
-                    a.prnt_cd
-                FROM tb_cmm_code a
-                WHERE a.cmpny_no IN( -1, #{cmpnyNo})
+                    a.parent_cd
+                FROM cmm_code a
+                WHERE a.client_id IN( -1, #{clientId})
                   AND a.div_cd =  #{divCd}
                   AND a.cd = #{cd}
 
@@ -99,9 +94,9 @@
                 SELECT
                     a.div_cd,
                     a.cd,
-                    a.prnt_cd
-                FROM tb_cmm_code a JOIN cte b ON a.prnt_cd = b.cd
-                    AND a.cmpny_no IN( -1, #{cmpnyNo})
+                    a.parent_cd
+                FROM cmm_code a JOIN cte b ON a.parent_cd = b.cd
+                    AND a.client_id IN( -1, #{clientId})
             )
 
             SELECT cd from cte
@@ -109,8 +104,8 @@
     </delete>
 
     <delete id="deleteCodesByDivCd">
-        DELETE FROM tb_cmm_code
-        WHERE cmpny_no = #{cmpnyNo}
+        DELETE FROM cmm_code
+        WHERE client_id = #{clientId}
           AND div_cd = #{divCd}
     </delete>
 
@@ -120,10 +115,10 @@
             div_nm,
             div_service,
             upd_enable_yn,
-            cmpny_no,
+            client_id,
             user_define_col
-        FROM tb_cmm_code_div
-        WHERE cmpny_no IN( -1, #{cmpnyNo})
+        FROM cmm_code_div
+        WHERE client_id IN( -1, #{clientId})
         <choose>
             <when test=" divCd != null and divCd != '' ">
                 AND div_cd = #{divCd}
@@ -136,29 +131,29 @@
     </select>
 
     <insert id="insertCodeDiv">
-        INSERT INTO tb_cmm_code_div (
-            div_cd, div_nm, div_service, upd_enable_yn, cmpny_no, user_define_col
+        INSERT INTO cmm_code_div (
+            div_cd, div_nm, div_service, upd_enable_yn, client_id, user_define_col
         ) VALUES (
-            #{divCd}, #{divNm}, #{divService}, #{updEnableYn}, #{cmpnyNo}, #{userDefineCol}
+            #{divCd}, #{divNm}, #{divService}, #{updEnableYn}, #{clientId}, #{userDefineCol}
         )
     </insert>
 
     <update id="updateCodeDiv">
-        UPDATE tb_cmm_code_div SET
+        UPDATE cmm_code_div SET
            div_cd = #{divCd},
            div_nm = #{divNm},
            div_service = #{divService},
            upd_enable_yn = #{updEnableYn},
-           cmpny_no = #{cmpnyNo},
+           client_id = #{clientId},
            user_define_col = #{userDefineCol}
-        WHERE cmpny_no = #{cmpnyNo}
+        WHERE client_id = #{clientId}
           AND div_cd = #{divCd}
     </update>
 
     <delete id="deleteCodeDiv">
         DELETE
-        FROM tb_cmm_code_div
-        WHERE cmpny_no = #{cmpnyNo}
+        FROM cmm_code_div
+        WHERE client_id = #{clientId}
           AND div_cd = #{divCd}
     </delete>
 

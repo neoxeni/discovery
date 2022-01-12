@@ -37,7 +37,6 @@ import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.Locale;
@@ -54,7 +53,6 @@ public class SecurityLogAop {
     private final Environment environment;
     private final SecurityLogService securityLogService;
     private final ApplicationContext applicationContext;
-
 
 
     @Value("${apps.actionLogInfoFile:classpath:action-log.xml}")
@@ -76,22 +74,22 @@ public class SecurityLogAop {
                 physicalFile = ResourceUtils.getFile(actionLogInfoFile);
             }
 
-            if(physicalFile == null) {
+            if (physicalFile == null) {
                 Resource stateResource = applicationContext.getResource(actionLogInfoFile);
-                try(InputStream is = stateResource.getInputStream()) {
+                try (InputStream is = stateResource.getInputStream()) {
                     configuration = (Configuration) unmarshaller.unmarshal(is);
                 }
-            }else {
+            } else {
                 log.info("actionLogInfoFile = {}, isFile = {}", physicalFile, physicalFile.isFile());
-                if (physicalFile != null && physicalFile.exists() && physicalFile.isFile()) {
+                if (physicalFile.exists() && physicalFile.isFile()) {
                     configuration = (Configuration) unmarshaller.unmarshal(physicalFile);
                 }
             }
-            if(configuration != null && configuration.getRequestParam() != null) {
+            if (configuration != null && configuration.getRequestParam() != null) {
                 securityLogService.setInputValueSerializationInclusion(configuration.getRequestParam().getIncludeValue());
             }
 
-            log.info("[SecurityLogAop] Configuration\n{}",configuration);
+            log.info("[SecurityLogAop] Configuration\n{}", configuration);
 
         } catch (IOException | JAXBException ioe) {
             log.warn("actionLogInfoFile is invalid. file={}\nerror={}", actionLogInfoFile, ioe);
@@ -107,7 +105,7 @@ public class SecurityLogAop {
             "|| execution(@org.springframework.web.bind.annotation.PutMapping public * *(..))")
     public Object logPerf(ProceedingJoinPoint joinPoint) throws Throwable {
 
-        if(configuration == null) {
+        if (configuration == null) {
             return joinPoint.proceed();
         }
 
@@ -125,14 +123,14 @@ public class SecurityLogAop {
         }
 
         Action requestAction = getRequestAction(joinPoint, joinPoint.getTarget().getClass());
-        if(configuration.isExclude(antPathMatcher, requestAction)) {
+        if (configuration.isExclude(antPathMatcher, requestAction)) {
             return joinPoint.proceed();
         }
 
         requestAction.setMeta(configuration.getMeta(requestAction));
 
         SecurityLog securityLog = new SecurityLog();
-        securityLog.setRegDt(LocalDateTime.now());
+        securityLog.setCreatedAt(LocalDateTime.now());
 
         Object retVal = null;
         try {
@@ -175,12 +173,13 @@ public class SecurityLogAop {
             securityLog.setIp(remoteAddr);
 
             Locale loc = LocaleContextHolder.getLocale();
-            securityLog.setRegNation(loc.getLanguage());
+            securityLog.setLanguage(loc.getLanguage());
 
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if ((principal instanceof UserDetails)) {
                 AppUser appUser = (AppUser) principal;
-                securityLog.setUserNo(appUser.getUserNo());
+                securityLog.setUserId(appUser.getId());
+                securityLog.setClientId(appUser.getClientId());
             }
         }
     }

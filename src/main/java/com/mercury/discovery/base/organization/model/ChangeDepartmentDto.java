@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class ChangeDepartmentDto {
     private String moveType;    //E: 직원, D:부서
 
-    private Integer cmpnyNo;
+    private Integer clientId;
 
     private Integer empNo;
 

@@ -26,7 +26,7 @@ public class AppGroupMapping {
     private LocalDateTime regDt;
     private Integer regUserNo;
     private String useYn;
-    private Integer sortNo;
+    private Integer sort;
     private String updEnableYn;
 
 }

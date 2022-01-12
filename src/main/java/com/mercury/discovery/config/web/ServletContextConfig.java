@@ -1,11 +1,12 @@
 package com.mercury.discovery.config.web;
 
-import com.mercury.discovery.base.users.service.handler.UserArgumentResolver;
+import com.mercury.discovery.config.web.resolver.UserArgumentResolver;
 import com.mercury.discovery.common.excel.model.mapper.ExcelModelArgumentResolver;
 import com.mercury.discovery.common.model.date.DateRangeMethodArgumentResolver;
-import com.mercury.discovery.config.web.gzip.GZIPFilter;
-import com.mercury.discovery.config.web.gzip.GZIPProperties;
+import com.mercury.discovery.common.web.gzip.GZIPFilter;
+import com.mercury.discovery.common.web.gzip.GZIPProperties;
 import com.mercury.discovery.config.web.resolver.UploadFileResourceResolver;
+import com.ubicus.sitemenu.configuration.EnableSitemenu;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +25,7 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
+import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 import org.springframework.web.servlet.resource.VersionResourceResolver;
 import org.springframework.web.servlet.view.BeanNameViewResolver;
 
@@ -36,6 +38,7 @@ import java.util.Set;
 
 @Configuration
 @EnableWebMvc
+@EnableSitemenu
 @EnableConfigurationProperties(GZIPProperties.class)
 public class ServletContextConfig implements WebMvcConfigurer {
     @Autowired
@@ -169,5 +172,13 @@ public class ServletContextConfig implements WebMvcConfigurer {
         registrationBean.addUrlPatterns(urlPatterns.toArray(new String[0]));
 
         return registrationBean;
+    }
+
+    /**
+     * <script th:src="@{/static/lib/mercury/mercury.base.util.js}" defer></script>
+     * */
+    @Bean
+    public ResourceUrlEncodingFilter resourceUrlEncodingFilter() {
+        return new ResourceUrlEncodingFilter();
     }
 }

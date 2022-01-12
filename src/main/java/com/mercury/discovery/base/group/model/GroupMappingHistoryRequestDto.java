@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class GroupMappingHistoryRequestDto {
-    private Integer cmpnyNo;
+    private Integer clientId;
     private LocalDateTime startedAt;
     private LocalDateTime endedAt;
 

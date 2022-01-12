@@ -6,6 +6,7 @@
 (function (Vue) {
     Vue.prototype.moment = moment;   //vue에서 {{moment()}} 처럼 사용하기 위해
     Vue.prototype.mercury = mercury;   //vue에서 mercury를 전역으로 접근하기 위해
+    Vue.prototype._ = _;
     Vue.prototype.xAjax = xAjax;
     Vue.prototype.xAjaxJson = xAjaxJson;
     Vue.prototype.xAjaxMultipart = xAjaxMultipart;
@@ -173,13 +174,15 @@
             <div :class="classes">
                 <v-md-date-range-picker
                         :label="label"
-                        max-year="2030"
-                        min-year="2010"
+                        :max-year="maxYear"
+                        :min-year="minYear"
                         show-year-select
                         v-model="dModel"
                         :presets="presets"
                         :type="type"
                         language="ko"
+                        show-total-range-label
+                        :custom-locale="locale"
                 >
                     <template v-slot:picker-input="{label, value}">
                         <slot name="input" v-bind:label="label" v-bind:value="value">
@@ -213,6 +216,14 @@
             },
             end: {
                 type: String    //2020-01-02
+            },
+            minYear: {
+                type: String,
+                default: '2010'
+            },
+            maxYear: {
+                type: String,
+                default: '2030'
             },
             label: {
                 type: String,
@@ -277,14 +288,19 @@
         data: function () {
             return {
                 dModel: {
-                    start: undefined,
-                    end: undefined
+                    start: null,
+                    end: null
+                },
+                locale: {
+                    customRangeLabel: '직접선택',
+                    totalRangeLabel: '전체',
+                    format: 'YYYY-MM-DD'
                 }
             }
         },
         created() {
-            const start = this.start || moment().format('YYYY-MM-DD')
-            const end = this.end || moment().format('YYYY-MM-DD')
+            const start = this.start || moment({year: this.minYear}).startOf('year').format(this.locale.format)
+            const end = this.end || moment({year: this.maxYear}).endOf('year').format(this.locale.format)
 
             Object.assign(this.dModel, {
                 start: start,
@@ -292,8 +308,8 @@
             });
 
             if(this.format === 'datetime'){
-                this.$emit("update:start", moment(start, 'YYYY-MM-DD').format('YYYY-MM-DD 00:00:00'));
-                this.$emit("update:end", moment(end,'YYYY-MM-DD').format('YYYY-MM-DD 23:59:59.999999'));
+                this.$emit("update:start", moment(start, this.locale.format).format('YYYY-MM-DD 00:00:00'));
+                this.$emit("update:end", moment(end,this.locale.format).format('YYYY-MM-DD 23:59:59'));
             }
         },
         watch: {
@@ -301,10 +317,10 @@
                 handler: function (data) {
                     if(this.format === 'datetime'){
                         this.$emit("update:start", moment(data.start).format('YYYY-MM-DD 00:00:00'));
-                        this.$emit("update:end", moment(data.end).format('YYYY-MM-DD 23:59:59.999999'));
+                        this.$emit("update:end", moment(data.end).format('YYYY-MM-DD 23:59:59'));
                     }else{
-                        this.$emit("update:start", moment(data.start).format('YYYY-MM-DD'));
-                        this.$emit("update:end", moment(data.end).format('YYYY-MM-DD'));
+                        this.$emit("update:start", moment(data.start).format(this.locale.format));
+                        this.$emit("update:end", moment(data.end).format(this.locale.format));
                     }
                 },
                 deep: true
@@ -312,7 +328,7 @@
             "start":{
                 handler: function (date) {
                     this.$nextTick(()=>{
-                        this.dModel.start = moment(date, 'YYYY-MM-DD').toDate();
+                        this.dModel.start = moment(date, this.locale.format).toDate();
                         if(this.format === 'datetime'){
                             this.$emit("update:start", moment(date).format('YYYY-MM-DD 00:00:00'));
                         }else{
@@ -324,9 +340,9 @@
             "end":{
                 handler: function (date) {
                     this.$nextTick(()=>{
-                        this.dModel.end = moment(date, 'YYYY-MM-DD').toDate();
+                        this.dModel.end = moment(date, this.locale.format).toDate();
                         if(this.format === 'datetime'){
-                            this.$emit("update:end", moment(date).format('YYYY-MM-DD 23:59:59.999999'));
+                            this.$emit("update:end", moment(date).format('YYYY-MM-DD 23:59:59'));
                         }else{
                             this.$emit("update:end", date);
                         }
@@ -679,7 +695,27 @@
     window.mercury = mercury;
     mercury.base = mercury.base || {};
 
-    mercury.base.vue = {
-
+    const self = mercury.base.vue = {
+        menuToRoutes: function(menu, routes) {
+            if (menu.children && menu.children.length > 0) {
+                menu.children.forEach(childMenu => {
+                    self.menuToRoutes(childMenu, routes);
+                });
+            } else {
+                if (menu.path) {
+                    const name = menu.path.substring(menu.path.lastIndexOf('/') + 1);
+                    routes.push({
+                        name: name,
+                        label: menu.name,
+                        path: menu.path,
+                        component: () => import(`/static/apps/views${menu.path}.js`),
+                        meta: {
+                            title: menu.name,
+                            menu: menu
+                        }
+                    });
+                }
+            }
+        }
     };
 })(window.mercury || {});

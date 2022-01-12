@@ -21,8 +21,6 @@ public class DiscoveryApplication extends SpringBootServletInitializer {
 
     public DiscoveryApplication() {
         super();
-
-
         // Cannot forward to error page for request [/base/menu/index] as the response has already been committed.
         // As a result, the response may have the wrong status code.
         // If your application is running on WebSphere Application Server you may be able to resolve

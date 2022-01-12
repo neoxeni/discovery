@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 import org.apache.ibatis.type.Alias;
 
 /**
- * tb_cmm_admin_log
+ * cmm_action_log
  */
 
 @EqualsAndHashCode(callSuper = true)
