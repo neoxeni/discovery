@@ -67,7 +67,7 @@ create table client_user_login(
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='로그인';
 
 create table client_user_login_hist(
-    id                          INT       auto_increment COMMENT 'ID' PRIMARY KEY,
+    id                          INT       AUTO_INCREMENT COMMENT 'ID' PRIMARY KEY,
     user_id                     INT                 null comment '아이디',
     login_at                    datetime            null comment '로그인일시',
     last_ip_address             varchar(40)         null comment '로그인IP',
@@ -75,43 +75,18 @@ create table client_user_login_hist(
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='로그인이력';
 
 
-CREATE TABLE tb_cmm_code_div (
-    div_cd                      VARCHAR(36)     NOT NULL COMMENT '분류코드',
-    div_nm                      VARCHAR(100)    NOT NULL COMMENT '분류명',
-    div_service                 VARCHAR(10)         NULL COMMENT '서비스구분',
-    upd_enable_yn               char(1)         NOT NULL COMMENT '수정가능여부',
-    cmpny_no                    INT(11)         NOT NULL COMMENT '회사번호'
-    PRIMARY KEY (div_cd,cmpny_no)
+CREATE TABLE cmm_code_div (
+    div_cd              varchar(20)         NOT NULL COMMENT '분류코드',
+    div_nm              varchar(100)        NOT NULL COMMENT '분류명',
+    div_service         varchar(10)             NULL COMMENT '서비스구분',
+    upd_enable_yn       char(1)             NOT NULL COMMENT '수정가능여부',
+    client_id           int(11)             NOT NULL COMMENT '회사번호',
+    user_define_col     varchar(50)             NULL COMMENT '유저정의 컬럼',
+
+    UNIQUE UK1_CMM_CODE_DIV (div_cd,client_id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='코드분류';
 
-
-CREATE TABLE tb_cmm_code (
-    cd                          VARCHAR(36)     NOT NULL COMMENT '코드',
-    div_cd                      VARCHAR(20)     NOT NULL COMMENT '분류코드',
-    prnt_cd                     VARCHAR(36)     NOT NULL DEFAULT '0' COMMENT '상위코드',
-    cd_nm                       VARCHAR(100)    NOT NULL COMMENT '코드명',
-    sort_no                     INT(11)         NOT NULL DEFAULT 0 COMMENT '정렬번호',
-    dtl                         VARCHAR(200)        NULL COMMENT '코드상세',
-    use_yn                      char(1)         NOT NULL DEFAULT 'Y' COMMENT '사용여부',
-    reg_emp_no                  INT(11)         NOT NULL COMMENT '등록자',
-    reg_dt                      DATETIME        NOT NULL COMMENT '등록일시',
-    upd_emp_no                  INT(11)             NULL COMMENT '수정자',
-    upd_dt                      DATETIME            NULL COMMENT '수정일시',
-    etc1                        VARCHAR(100)        NULL COMMENT 'etc1',
-    etc2                        VARCHAR(100)        NULL COMMENT 'etc2',
-    etc3                        VARCHAR(100)        NULL COMMENT 'etc3',
-    etc4                        VARCHAR(100)        NULL COMMENT 'etc4',
-    cmpny_no                    INT(11)         NOT NULL COMMENT '회사번호',
-    lvl                         INT(11)             NULL COMMENT '레벨',
-    adpt_fr_dt 			        VARCHAR(8)      NOT NULL DEFAULT DATE_FORMAT(now(),'%Y%m%d')  COMMENT '적용시작일',
-    adpt_to_dt 			        VARCHAR(8)      NOT NULL DEFAULT '20991231'  COMMENT '적용종료일',
-    PRIMARY KEY (cd,div_cd,cmpny_no),
-    INDEX IX1_TB_CODE (div_cd,prnt_cd,sort_no),
-    INDEX IX2_TB_CODE (prnt_cd)
-)ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='코드';
-
-
-CREATE TABLE tb_cmm_code (
+CREATE TABLE cmm_code (
     cd                  varchar(36)         NOT NULL COMMENT '코드',
     div_cd              varchar(20)         NOT NULL COMMENT '분류코드',
     prnt_cd             varchar(36)         DEFAULT '0' COMMENT '상위코드',
@@ -119,39 +94,31 @@ CREATE TABLE tb_cmm_code (
     sort_no             int(11)             DEFAULT 0 COMMENT '정렬번호',
     dtl                 varchar(200)            NULL COMMENT '코드상세',
     use_yn              char(1)             DEFAULT 'Y' COMMENT '사용여부',
-    reg_emp_no          int(11)             NOT NULL COMMENT '등록자',
-    reg_dt              datetime default current_timestamp() COMMENT '등록일시',
-    upd_emp_no          int(11)                 NULL COMMENT '수정자',
-    upd_dt              datetime                NULL COMMENT '수정일시',
+
     etc1                varchar(100)            NULL COMMENT 'etc1',
     etc2                varchar(100)            NULL COMMENT 'etc2',
     etc3                varchar(100)            NULL COMMENT 'etc3',
     etc4                varchar(100)            NULL COMMENT 'etc4',
-    cmpny_no            int(11)             NOT NULL COMMENT '회사번호',
-    lvl                 int(11)                 NULL COMMENT '레벨',
-    adpt_fr_dt 			varchar(8)             NOT NULL DEFAULT '20210101'  COMMENT '적용시작일',
-    adpt_to_dt 			varchar(8)             NOT NULL DEFAULT '20991231' COMMENT '적용종료일',
-    PRIMARY KEY (cd,div_cd,cmpny_no),
-    INDEX IX1_TB_CODE (div_cd,prnt_cd,sort_no),
-    INDEX IX2_TB_CODE (prnt_cd)
+
+    start_apply_at 			    DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP  COMMENT '적용시작일',
+    end_apply_at 			    DATETIME        NOT NULL DEFAULT '2099-12-31T23:59:59.999'  COMMENT '적용종료일',
+    created_by                  INT             NOT NULL COMMENT '생성자',
+    created_at                  DATETIME        NOT NULL COMMENT '생성일',
+    updated_by                  INT                 NULL COMMENT '수정자',
+    updated_at                  DATETIME            NULL COMMENT '수정일',
+    client_id                   INT             NOT NULL comment '회사아이디',
+
+    UNIQUE UK1_CMM_CODE (cd,div_cd,client_id),
+    INDEX IX1_CMM_CODE (div_cd,prnt_cd,sort_no),
+    INDEX IX2_CMM_CODE (prnt_cd)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='코드';
 
 
-CREATE TABLE tb_cmm_code_div (
-    div_cd              varchar(20)         NOT NULL COMMENT '분류코드',
-    div_nm              varchar(100)        NOT NULL COMMENT '분류명',
-    div_service         varchar(10)             NULL COMMENT '서비스구분',
-    upd_enable_yn       char(1)             NOT NULL COMMENT '수정가능여부',
-    cmpny_no            int(11)             NOT NULL COMMENT '회사번호',
-    user_define_col     varchar(50)             NULL COMMENT '유저정의 컬럼',
-
-    PRIMARY KEY (div_cd,cmpny_no)
-)ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='코드분류';
 
 
 
 create table cmm_action_log(
-    id                  bigint        auto_increment comment '시퀀스' primary key,
+    id                  bigint        auto_increment comment 'ID' primary key,
     user_id             int                     null comment '사번',
     ip                  varchar(40)             null comment '접속아이피',
     created_at          datetime default current_timestamp() comment '등록일시',
@@ -170,3 +137,7 @@ create table cmm_action_log(
     client_id                   INT             NULL COMMENT '회사 아이디',
     INDEX IX1_TB_ADMIN_LOG (created_at, client_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='관리자 로그 히스토리';
+
+
+
+

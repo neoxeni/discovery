@@ -252,7 +252,7 @@ const MpBaseCode = {
             const codeAll = this.$refs['codeTree'].instance.element.jstree(true).get_json('#', {flat: true});
             const existCode = codeAll.find(e => e.id === `${this.form.data.divCd}_${this.form.data.cd}`);
             if(existCode) {
-                this.ubicus.base.lib.alert(`중복된 코드입니다. [${this.form.data.cd}]`);
+                this.mercury.base.lib.alert(`중복된 코드입니다. [${this.form.data.cd}]`);
                 return;
             }
 
@@ -261,7 +261,7 @@ const MpBaseCode = {
                 method: this.form.edit ? 'PATCH' : 'POST',
                 data: this.form.data
             }).then(resp => {
-                this.ubicus.base.lib.notify(resp['message']);
+                this.mercury.base.lib.notify(resp['message']);
                 this.fetchData();
             });
         },
@@ -272,14 +272,14 @@ const MpBaseCode = {
             if (dataType === 'codeDiv') {
                 confirmMsg = '코드분류[' + data['divNm'] + '] 및 모든 하위 코드를 삭제 하시겠습니까?';
             }
-            this.ubicus.base.lib.confirm(confirmMsg).then(result => {
+            this.mercury.base.lib.confirm(confirmMsg).then(result => {
                 if (result.isConfirmed) {
                     this.xAjax({
                         url: dataType === 'code' ? '/base/codes' : '/base/codeDivs',
                         method: 'DELETE',
                         data: data
                     }).then(resp => {
-                        this.ubicus.base.lib.notify(resp['message']);
+                        this.mercury.base.lib.notify(resp['message']);
                         this.fetchData();
                     });
                 }

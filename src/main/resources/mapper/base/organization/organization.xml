@@ -61,7 +61,7 @@
                 'default' rel, 'N' as is_exsit_sub, emp_no id, CONCAT(a.emp_nm,' ',IFNULL(duty.cd_nm, ''),' / ',IFNULL(a.email, '')) data,
                 CONCAT(a.emp_nm,' ',IFNULL(duty.cd_nm, ''),' / ',IFNULL(a.email, '')) tool_tip
             FROM tb_cmm_emp a
-                     LEFT OUTER JOIN tb_cmm_code duty ON a.duty_cd = duty.cd AND duty.cmpny_no IN (#{clientId},-1)
+                     LEFT OUTER JOIN cmm_code duty ON a.duty_cd = duty.cd AND duty.cmpny_no IN (#{clientId},-1)
             WHERE a.dept_no = #{pDeptNo}
               AND a.cmpny_no = #{clientId}
               AND a.rtrmnt_yn = 'N'
@@ -138,7 +138,7 @@
             emp.emp_nm AS emp_nm
         FROM tb_cmm_emp emp
         INNER JOIN cte_parent2 b on emp.dept_no = b.dept_no
-        LEFT OUTER JOIN tb_cmm_code duty ON emp.duty_cd = duty.cd AND emp.dept_no = b.dept_no AND duty.cmpny_no IN (#{clientId},-1)
+        LEFT OUTER JOIN cmm_code duty ON emp.duty_cd = duty.cd AND emp.dept_no = b.dept_no AND duty.cmpny_no IN (#{clientId},-1)
         INNER JOIN tb_cmm_login login ON emp.emp_no = login.emp_no
         WHERE emp.emp_nm like CONCAT(CONCAT('%', #{str}), '%')
     </select>

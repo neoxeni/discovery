@@ -67,8 +67,8 @@
         FROM tb_cmm_emp e
             JOIN tb_cmm_login l ON e.emp_no = l.emp_no
             LEFT OUTER JOIN tb_cmm_dept dept ON e.dept_no = dept.dept_no
-            LEFT OUTER JOIN tb_cmm_code postn ON e.postn_cd = postn.cd AND postn.cmpny_no = e.cmpny_no  AND postn.div_cd = 'OR02'
-            LEFT OUTER JOIN tb_cmm_code duty ON e.duty_cd = duty.cd  AND duty.cmpny_no = e.cmpny_no AND duty.div_cd = 'OR01'
+            LEFT OUTER JOIN cmm_code postn ON e.postn_cd = postn.cd AND postn.cmpny_no = e.cmpny_no  AND postn.div_cd = 'OR02'
+            LEFT OUTER JOIN cmm_code duty ON e.duty_cd = duty.cd  AND duty.cmpny_no = e.cmpny_no AND duty.div_cd = 'OR01'
         WHERE e.user_key = #{userKey}
     </select>
 
@@ -83,8 +83,8 @@
         FROM tb_cmm_emp e
             JOIN tb_cmm_login l ON e.emp_no = l.emp_no
             LEFT OUTER JOIN tb_cmm_dept dept ON e.dept_no = dept.dept_no
-            LEFT OUTER JOIN tb_cmm_code postn ON e.postn_cd = postn.cd AND postn.cmpny_no = e.cmpny_no  AND postn.div_cd = 'OR02'
-            LEFT OUTER JOIN tb_cmm_code duty ON e.duty_cd = duty.cd AND duty.cmpny_no = e.cmpny_no AND duty.div_cd = 'OR01'
+            LEFT OUTER JOIN cmm_code postn ON e.postn_cd = postn.cd AND postn.cmpny_no = e.cmpny_no  AND postn.div_cd = 'OR02'
+            LEFT OUTER JOIN cmm_code duty ON e.duty_cd = duty.cd AND duty.cmpny_no = e.cmpny_no AND duty.div_cd = 'OR01'
         WHERE e.cmpny_no = #{clientId}
         <choose>
             <when test="empNo != null">

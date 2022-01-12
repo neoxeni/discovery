@@ -604,7 +604,7 @@ const MpBaseMenu = {
         uploadXml($event) {
             const value = $event.target.value;
             if (value.substring(value.lastIndexOf('.') + 1) !== 'xml') {
-                this.ubicus.base.lib.notify('upload file must be xml', 'danger');
+                this.mercury.base.lib.notify('upload file must be xml', 'danger');
                 return;
             }
 
@@ -660,7 +660,7 @@ const MpBaseMenu = {
                 data: 'xml=' + encodeURIComponent(this.makeSitemenuXml()),
                 type: 'post',
                 success: resp => {
-                    this.ubicus.base.lib.notify('메뉴가 저장되었습니다.');
+                    this.mercury.base.lib.notify('메뉴가 저장되었습니다.');
                     this.reloadMenuManageInfo();
                 }
             });
@@ -743,7 +743,7 @@ const MpBaseMenu = {
                         this.application.id = '';
                         this.application.name = '';
                     } else {
-                        this.ubicus.base.lib.notify('sitemenu reload fail..', 'danger');
+                        this.mercury.base.lib.notify('sitemenu reload fail..', 'danger');
                     }
 
                     this.dialog = false;
@@ -761,7 +761,7 @@ const MpBaseMenu = {
         },
         copyRoles(targetRoles) {
             if (_.isEmpty(targetRoles)) {
-                this.ubicus.base.lib.notify('설정된 값이 없습니다.', 'warning');
+                this.mercury.base.lib.notify('설정된 값이 없습니다.', 'warning');
                 return;
             }
 
@@ -769,14 +769,14 @@ const MpBaseMenu = {
             copyText.textContent = JSON.stringify(targetRoles);
             copyText.select();
             if (document.execCommand('copy')) {
-                this.ubicus.base.lib.notify('복사되었습니다.');
+                this.mercury.base.lib.notify('복사되었습니다.');
             }
         },
         pasteRoles(type, target) {
             const pasteText = document.querySelector('#output');
 
             if (_.isEmpty(pasteText.textContent)) {
-                this.ubicus.base.lib.notify('설정된 값이 없습니다.', 'warning');
+                this.mercury.base.lib.notify('설정된 값이 없습니다.', 'warning');
                 return;
             }
 

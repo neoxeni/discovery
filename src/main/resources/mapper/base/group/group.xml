@@ -84,8 +84,8 @@
         CONCAT(CONCAT((CASE WHEN dept.dept_nm IS NULL THEN '' ELSE dept.dept_nm END),' '), (CASE WHEN duty.cd_nm IS NULL THEN '' ELSE duty.cd_nm END)) as tooltip,
         e.cmpny_emp_cd AS data_cd
         FROM wd JOIN tb_cmm_emp e ON wd.data_no = e.emp_no AND wd.data_gbn = 'E'
-        LEFT OUTER JOIN tb_cmm_code postn ON e.postn_cd = postn.cd  AND postn.div_cd = 'OR02'
-        LEFT OUTER JOIN tb_cmm_code duty ON e.duty_cd = duty.cd  AND duty.div_cd = 'OR01'
+        LEFT OUTER JOIN cmm_code postn ON e.postn_cd = postn.cd  AND postn.div_cd = 'OR02'
+        LEFT OUTER JOIN cmm_code duty ON e.duty_cd = duty.cd  AND duty.div_cd = 'OR01'
         LEFT OUTER JOIN tb_cmm_dept dept ON e.dept_no = dept.dept_no
         WHERE e.cmpny_no =  #{groupMappingRequestDto.clientId}
         UNION

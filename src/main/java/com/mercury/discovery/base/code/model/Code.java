@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 
 /**
- * tb_cmm_code
+ * cmm_code
  */
 
 @Alias("Code")

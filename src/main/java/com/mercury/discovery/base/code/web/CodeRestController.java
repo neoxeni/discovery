@@ -77,9 +77,12 @@ public class CodeRestController {
 
     @PostMapping("/base/codes")
     public ResponseEntity<?> postCodes(AppUser appUser, @RequestBody Code code) {
+        LocalDateTime now = LocalDateTime.now();
         code.setClientId(appUser.getClientId());
         code.setRegEmpNo(appUser.getId());
-        code.setRegDt(LocalDateTime.now());
+        code.setRegDt(now);
+        code.setUpdEmpNo(appUser.getId());
+        code.setUpdDt(now);
         int affected = codeService.insert(code);
         return ResponseEntity.ok(new SimpleResponseModel(affected, MessagesUtils.getMessage("sentence.insert")));
     }
@@ -87,10 +90,13 @@ public class CodeRestController {
 
     @PostMapping("/base/codes/{divCd}")
     public ResponseEntity<?> postCodes(AppUser appUser, @RequestBody Code code, @PathVariable String divCd) {
+        LocalDateTime now = LocalDateTime.now();
         code.setCd(IDGenerator.getUUID());
         code.setClientId(appUser.getClientId());
         code.setRegEmpNo(appUser.getId());
         code.setRegDt(LocalDateTime.now());
+        code.setUpdEmpNo(appUser.getId());
+        code.setUpdDt(now);
         code.setDivCd(divCd);
         int affected = codeService.insert(code);
         return ResponseEntity.ok(new SimpleResponseModel(affected, MessagesUtils.getMessage("sentence.insert")));

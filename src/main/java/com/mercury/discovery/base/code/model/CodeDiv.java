@@ -6,7 +6,7 @@ import org.apache.ibatis.type.Alias;
 import java.io.Serializable;
 
 /**
- * tb_cmm_code_div
+ * cmm_code_div
  */
 
 @Alias("CodeDiv")
