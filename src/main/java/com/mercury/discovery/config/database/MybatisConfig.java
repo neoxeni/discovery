@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.mapping.VendorDatabaseIdProvider;
-import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.type.Alias;
 import org.apache.ibatis.type.JdbcType;
@@ -16,8 +15,8 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -35,40 +34,18 @@ import java.util.Properties;
 import java.util.Set;
 
 @Slf4j
-@org.springframework.context.annotation.Configuration
+@Configuration
 @MapperScan(annotationClass = Mapper.class,
         basePackages = "${spring.datasource.default.mapper-base-packages:com.mercury.discovery.**}",
         sqlSessionFactoryRef = "sqlSessionFactory")
-public class MybatisConfig extends Configuration {
+public class MybatisConfig extends org.apache.ibatis.session.Configuration {
     private static final ResourcePatternResolver RESOURCE_PATTERN_RESOLVER = new PathMatchingResourcePatternResolver();
     private static final MetadataReaderFactory METADATA_READER_FACTORY = new CachingMetadataReaderFactory();
 
     @Value("${apps.packages}")
     private String packages;
 
-    @Primary
-    @Bean(name="sqlSessionFactory")
-    public SqlSessionFactory sqlSessionFactory(DataSource datasource, ApplicationContext applicationContext,
-                                               VendorDatabaseIdProvider vendorDatabaseIdProvider) throws Exception {
-        //원래 MybatisConfig 생성자 안에서 호출되고 있었으나 packages를 받아오기 위해 여기서 처리
-        this.typeAliasesScan(packages, null); // @Alias 설정된 클래스들을 typeAlias로 등록함
-
-
-        SqlSessionFactoryBean sqlSessionFactory = new SqlSessionFactoryBean();
-        sqlSessionFactory.setDataSource(datasource);
-        sqlSessionFactory.setConfiguration(this);
-        sqlSessionFactory.setDatabaseIdProvider(vendorDatabaseIdProvider);
-        sqlSessionFactory.setMapperLocations(applicationContext.getResources("classpath*:/mapper/**/*.xml"));
-
-        return sqlSessionFactory.getObject();
-    }
-
-    @Bean
-    public SqlSessionTemplate sqlSession(SqlSessionFactory sqlSessionFactory) {
-        return new SqlSessionTemplate(sqlSessionFactory);
-    }
-
-    public MybatisConfig() throws IOException {
+    public MybatisConfig() {
         /*
         this.setCacheEnabled(true); // mybatis cache 사용여부
         this.setLazyLoadingEnabled(true); // 지연로딩 사용여부
@@ -88,9 +65,27 @@ public class MybatisConfig extends Configuration {
         this.setMapUnderscoreToCamelCase(true); // 전통적 DB 컴럼명을 JAVA의 Camel표기법으로 자동 매핑 설정
         this.setJdbcTypeForNull(JdbcType.NULL);
         this.typeAliasRegistry.registerAlias("CamelMap", CamelMap.class);
+    }
 
-        //pps.packages 로 받아서 처리 할수 있도록 sqlSessionFactory 에서 처리
-        //this.typeAliasesScan("com.mercury.discovery", null); // @Alias 설정된 클래스들을 typeAlias로 등록함
+    @Primary
+    @Bean(name = "sqlSessionFactory")
+    public SqlSessionFactory sqlSessionFactory(DataSource datasource, ApplicationContext applicationContext,
+                                               VendorDatabaseIdProvider vendorDatabaseIdProvider) throws Exception {
+        //원래 MybatisConfig 생성자 안에서 호출되고 있었으나 packages를 받아오기 위해 여기서 처리
+        this.typeAliasesScan(packages, null); // @Alias 설정된 클래스들을 typeAlias로 등록함
+
+        SqlSessionFactoryBean sqlSessionFactory = new SqlSessionFactoryBean();
+        sqlSessionFactory.setDataSource(datasource);
+        sqlSessionFactory.setConfiguration(this);
+        sqlSessionFactory.setDatabaseIdProvider(vendorDatabaseIdProvider);
+        sqlSessionFactory.setMapperLocations(applicationContext.getResources("classpath*:/mapper/**/*.xml"));
+
+        return sqlSessionFactory.getObject();
+    }
+
+    @Bean
+    public SqlSessionTemplate sqlSession(SqlSessionFactory sqlSessionFactory) {
+        return new SqlSessionTemplate(sqlSessionFactory);
     }
 
     public void typeAliasesScan(String typeAliasesPackage, Class<?> typeAliasesSuperType) throws IOException {
@@ -131,13 +126,13 @@ public class MybatisConfig extends Configuration {
     }
 
     @Bean
-    public VendorDatabaseIdProvider  vendorDatabaseIdProvider() {
+    public VendorDatabaseIdProvider vendorDatabaseIdProvider() {
         VendorDatabaseIdProvider databaseIdProvider = new VendorDatabaseIdProvider();
         Properties properties = new Properties();
-        properties.put("Oracle","oracle");
-        properties.put("MySQL","mysql");
-        properties.put("MariaDB","mysql");
-        properties.put("SQL Server","sqlserver");
+        properties.put("Oracle", "oracle");
+        properties.put("MySQL", "mysql");
+        properties.put("MariaDB", "mysql");
+        properties.put("SQL Server", "sqlserver");
         databaseIdProvider.setProperties(properties);
         return databaseIdProvider;
     }

@@ -8,7 +8,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -16,7 +15,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
-@Profile("!jndi")
 @Configuration
 @Slf4j
 public class DatabaseConfig {
