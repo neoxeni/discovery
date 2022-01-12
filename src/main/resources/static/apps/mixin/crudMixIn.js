@@ -3,6 +3,7 @@ const baseHelper = Vuex.createNamespacedHelpers('base');
 const crudMixIn = {
     data: () => ({
         url: '[crudMixIn] please set crud url',
+        pk: 'id',
         search: {},
         view: {
             mode: 'sheet',  //sheet || dialog

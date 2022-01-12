@@ -1,7 +1,5 @@
-
 import crudMixIn from "/static/apps/mixin/crudMixIn.js";
-
-const MpBaseLog = {
+export default {
     name: 'mp-base-log',
     mixins: [crudMixIn],
     template: `
@@ -33,7 +31,7 @@ const MpBaseLog = {
                 <div class="ellipsis" :title="item.username">{{item.name}}</div>
             </template>
             <template v-slot:item.action_url="{ item }">
-                <div class="ellipsis"><a :href="item.actionUrl" class="ellipsis">{{item.actionUrl}}</a></div>
+                <div class="ellipsis"><a :href="item.actionUrl" class="ellipsis" :title="item.actionUrl">{{item.actionUrl}}</a></div>
             </template>
             <template v-slot:item.actions="{ item }">
                 <mp-button mode="icon" color="info" label="상세" icon="mdi-eye" @click="selectItem(item)"></mp-button>
@@ -43,82 +41,59 @@ const MpBaseLog = {
         <mp-view :view.sync="view">
             <template v-slot:body="{edit}">
                 <v-form class="input-form" ref="form" v-model="form.valid">
-                    <div class="ubcs-detail-view type-1">
-                        <div class="ubcs-response-div">
-                            <div class="label-cont">
-                                <label>사용자</label>
-                                <div>{{form.data.name}} ({{form.data.username}})</div>
-                            </div>
-                            <div class="label-cont">
-                                <label>접속아이피</label>
-                                <div>{{form.data.ip}}</div>
-                            </div>
-                            <div class="label-cont">
-                                <label>등록일시</label>
-                                <div>{{form.data.createdAt}}</div>
-                            </div>
-                        </div>
-                        <div class="ubcs-response-div">
-                            <div class="label-cont">
-                                <label>구분</label>
-                                <div>{{form.data.divCd}}</div>
-                            </div>
-                            <div class="label-cont">
-                                <label>메뉴</label>
-                                <div>{{form.data.menu}}</div>
-                            </div>
-                            <div class="label-cont">
-                                <label>서브메뉴</label>
-                                <div>{{form.data.subMenu}}</div>
-                            </div>
-                        </div>
-
-                        <div class="ubcs-response-div">
-                            <div class="label-cont">
-                                <label>국가</label>
-                                <div>{{form.data.language}}</div>
-                            </div>
-                            <div class="label-cont">
-                                <label>행위</label>
-                                <div>{{form.data.action}}</div>
-                            </div>
-                            <div class="label-cont">
-                                <label>경로</label>
-                                <div>{{form.data.actionUrl}}</div>
-                            </div>
-                        </div>
-
-                        <div class="ubcs-response-div">
-                            <div class="label-cont">
-                                <label>기타1</label>
-                                <div>{{form.data.etc1}}</div>
-                            </div>
-                            <div class="label-cont">
-                                <label>기타2</label>
-                                <div>{{form.data.etc2}}</div>
-                            </div>
-                            <div class="label-cont">
-                                <label>기타3</label>
-                                <div>{{form.data.etc3}}</div>
-                            </div>
-                            <div class="label-cont">
-                                <label>기타4</label>
-                                <div>{{form.data.etc4}}</div>
-                            </div>
-                            <div class="label-cont">
-                                <label>기타5</label>
-                                <div>{{form.data.etc5}}</div>
-                            </div>
-                        </div>
-                        <div class="ubcs-response-div">
-                            <div class="label-cont">
-                                <label>입력값</label>
-                                <div>
-                                    <pre>{{form.data.inputVal}}</pre>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <v-row>
+                        <v-col cols="12" md="3">
+                            <v-text-field label="아이디" v-model="form.data.username" readonly></v-text-field>
+                        </v-col>
+                        <v-col cols="12" md="3">
+                            <v-text-field label="사용자" v-model="form.data.name" readonly></v-text-field>
+                        </v-col>
+                        <v-col cols="12" md="3">
+                            <v-text-field label="접속아이피" v-model="form.data.ip" readonly></v-text-field>
+                        </v-col>
+                        <v-col cols="12" md="3">
+                            <v-text-field label="국가" v-model="form.data.language" readonly></v-text-field>
+                        </v-col>
+                        
+                        <v-col cols="12" md="3">
+                            <v-text-field label="등록일시" v-model="form.data.createdAt" readonly></v-text-field>
+                        </v-col>
+                        <v-col cols="12" md="3">
+                            <v-text-field label="구분" v-model="form.data.divCd" readonly></v-text-field>
+                        </v-col>
+                        <v-col cols="12" md="3">
+                            <v-text-field label="메뉴" v-model="form.data.menu" readonly></v-text-field>
+                        </v-col>
+                        <v-col cols="12" md="3">
+                            <v-text-field label="서브메뉴" v-model="form.data.subMenu" readonly></v-text-field>
+                        </v-col>
+                        
+                        <v-col cols="12" md="3">
+                            <v-text-field label="행위" v-model="form.data.action" readonly></v-text-field>
+                        </v-col>
+                        <v-col cols="12" md="9">
+                            <v-text-field label="경로" v-model="form.data.actionUrl" readonly></v-text-field>
+                        </v-col>
+                        
+                        <v-col cols="12" md="3">
+                            <v-text-field label="기타1" v-model="form.data.etc1" readonly></v-text-field>
+                        </v-col>
+                        <v-col cols="12" md="3">
+                            <v-text-field label="기타2" v-model="form.data.etc2" readonly></v-text-field>
+                        </v-col>
+                        <v-col cols="12" md="2">
+                            <v-text-field label="기타3" v-model="form.data.etc3" readonly></v-text-field>
+                        </v-col>
+                        <v-col cols="12" md="2">
+                            <v-text-field label="기타4" v-model="form.data.etc4" readonly></v-text-field>
+                        </v-col>
+                        <v-col cols="12" md="2">
+                            <v-text-field label="기타5" v-model="form.data.etc5" readonly></v-text-field>
+                        </v-col>
+                        <v-col cols="12" md="12">
+                            <pre>{{form.data.inputVal}}</pre>
+                        </v-col>
+                    </v-row>
                 </v-form>
             </template>
         </mp-view>
@@ -145,7 +120,7 @@ const MpBaseLog = {
             },
             tbl: {
                 headers: [
-                    {text: 'SEQ', value: 'id', width: 60},
+                    {text: 'SEQ', value: 'id', width: 80, align: 'right'},
                     {text: '등록일시', value: 'createdAt', width: 165, align: 'center' },
                     {text: '사용자', value: 'name', width: 100 },
                     {text: '접속아이피', value: 'ip', width: 130},
@@ -158,10 +133,5 @@ const MpBaseLog = {
                 ]
             }
         };
-    },
-    methods: {
-
     }
 };
-
-export default MpBaseLog;
