@@ -81,7 +81,6 @@ public class SecurityContextConfig extends WebSecurityConfigurerAdapter {
         http.formLogin()// 권한없이 페이지 접근하면 로그인 페이지로 이동한다.
                 .permitAll()
                 .loginPage("/login")    // 로그인 페이지 url
-                .usernameParameter("userId")
                 .successHandler(customAuthenticationSuccessHandler())
                 .failureHandler(customAuthenticationFailureHandler())
         ;

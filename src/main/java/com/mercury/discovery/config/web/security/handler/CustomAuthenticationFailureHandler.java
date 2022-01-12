@@ -30,23 +30,21 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException, ServletException {
         log.error("onAuthenticationFailure", e);
-        String userId = request.getParameter("userId");
+        String username = request.getParameter("username");
 
         int errorNum;
         if (e instanceof BadCredentialsException) {//자격 증명에 실패하였습니다. (패스워드 틀림, 해당 아이디 없음)
             errorNum = 1;
-            userDetailsService.plusPasswordErrorCount(userId);
+            userDetailsService.plusPasswordErrorCount(username);
         } else if (e instanceof LockedException) { //사용자 계정이 잠겨 있습니다. (비밀번호 여러번 틀림)
             errorNum = 2;
         } else if (e instanceof CredentialsExpiredException) {//자격 증명 유효 기간이 만료되었습니다. (비밀번호 변경일자 지남)
             errorNum = 3;
             request.setAttribute("error", errorNum);
-            request.setAttribute("userId", userId);
-            request.setAttribute("username", userId);
+            request.setAttribute("username", username);
 
             request.getRequestDispatcher("/changePassword").forward(request, response);
             return;
-
         } else if (e instanceof DisabledException) {//유효하지 않은 사용자입니다. (퇴사 했음)
             errorNum = 4;
         } else if (e instanceof AccountExpiredException) {//사용자 계정의 유효 기간이 만료 되었습니다.(한시적 기간 사용자 종료)

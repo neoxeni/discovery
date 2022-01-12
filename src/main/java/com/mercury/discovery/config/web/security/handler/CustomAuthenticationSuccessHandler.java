@@ -28,7 +28,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     @Autowired
     PasswordEncoder passwordEncoder;
 
-    private final String defaultUrl;
+    private String defaultUrl = "/";
     private final RequestCache requestCache = new HttpSessionRequestCache();
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 

@@ -22,7 +22,7 @@ create table client_department(
 create table client_user(
     id                          INT       AUTO_INCREMENT COMMENT 'ID' PRIMARY KEY,
     name                        VARCHAR(100)    NOT NULL COMMENT '이름',
-    nickname                    VARCHAR(100)    NOT NULL COMMENT '예명',
+    nickname                    VARCHAR(100)    NOT NULL COMMENT '별명',
     phone                       VARCHAR(15)         NULL COMMENT '전화번호',
     email                       VARCHAR(50)         NULL COMMENT '이메일',
 
@@ -47,8 +47,7 @@ create table client_user(
 
     CONSTRAINT FK1_CLIENT_CLIENT_ID FOREIGN KEY (client_id) REFERENCES client (id),
     CONSTRAINT FK2_DEPARTMENT_DEPARTMENT_ID FOREIGN KEY (department_id) REFERENCES client_department (id),
-    UNIQUE KEY UK1_CLIENT_USER_KEY(user_key),
-    INDEX IX1_TB_CMM_EMP (dept_no),
+    UNIQUE KEY UK1_CLIENT_USER_KEY(user_key)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='사용자';
 
 
