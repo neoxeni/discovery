@@ -4,14 +4,14 @@ export default {
     template: `
     <v-combobox v-model="selectedItemsInner" :items="items" :label="label" item-text="grpNm" item-value="grpCd" multiple :clearable="!readonly" :readonly="readonly" return-object @change="changeItems">
         <template v-slot:item="data">
-            <v-chip class="ma-2" x-small label>{{ data.item.grpCd }}</v-chip> {{ data.item.cateNm }} > {{ data.item.grpNm }}
+            <v-chip class="ma-2" x-small label>{{ data.item.grpCd }}</v-chip> {{ data.item.grpNm }}
         </template>
         <template v-slot:selection="data">
             <v-menu bottom right transition="scale-transition" origin="top left">
                 <template v-slot:activator="{ on }">
                     <v-chip v-bind="data.attrs" v-on="on" pill :close="!readonly" @click:close="removeItem(data.item)">
                         <v-avatar class="accent white--text" left v-text="data.item.grpCd.slice(0, 1).toUpperCase()"></v-avatar>
-                        {{ data.item.cateNm }} > {{ data.item.grpNm }}
+                        {{ data.item.grpNm }}
                     </v-chip>
                 </template>
                 <v-card width="300">
@@ -21,7 +21,7 @@ export default {
 
                             </v-list-item-avatar>
                             <v-list-item-content>
-                                <v-list-item-title>{{ data.item.cateNm }} > {{ data.item.grpNm }}</v-list-item-title>
+                                <v-list-item-title>{{ data.item.grpNm }}</v-list-item-title>
                                 <v-list-item-subtitle>{{ data.item.grpCd }}</v-list-item-subtitle>
                             </v-list-item-content>
                             <v-list-item-action>

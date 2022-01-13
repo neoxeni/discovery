@@ -70,8 +70,8 @@ public class AppUser extends TokenUser implements UserDetails {
     private String positionName;
     private String dutyName;
 
-    private List<UserRole> roles;
-    private List<UserAppRole> appRoles;
+    private List<UserRole> roles = new ArrayList<>();
+    private List<UserAppRole> appRoles = new ArrayList<>();
     private Set<String> rolesSet;
 
     public boolean hasAnyRole(String... roles) {
