@@ -9,7 +9,6 @@ import com.mercury.discovery.config.websocket.message.MessagePublisher;
 import com.mercury.discovery.utils.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
@@ -45,7 +44,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public AppUser getUserForLogin(String username, String clientId) {
-        return userRepository.findByUserIdForLogin(username, clientId);
+        return userRepository.findByUsernameForLogin(username, clientId);
     }
 
     @Nullable

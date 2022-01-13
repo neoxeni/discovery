@@ -65,6 +65,11 @@ public class AppUser extends TokenUser implements UserDetails {
 
     private Long departmentId;
 
+
+    private String departmentName;
+    private String positionName;
+    private String dutyName;
+
     private List<UserRole> roles;
     private List<UserAppRole> appRoles;
     private Set<String> rolesSet;

@@ -1,10 +1,6 @@
 import MpBaseOrganizationTreeCard from "./MpBaseOrganizationTreeCard.js";
 import MpBaseGroupCombo from "../group/MpBaseGroupCombo.js";
 
-
-
-
-
 export default {
     name: 'mp-base-organization',
     components: {

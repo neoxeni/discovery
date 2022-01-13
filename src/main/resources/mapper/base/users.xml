@@ -28,7 +28,11 @@
         ${e}.user_key,
 
         ${e}.client_id,
-        ${e}.department_id
+        ${e}.department_id,
+
+        ${d}.name as department_name,
+        ${position}.name as position_name,
+        ${duty}.name as duty_name
     </sql>
 
     <sql id="get_user">
@@ -36,15 +40,18 @@
         <include refid="user_all">
             <property name="e" value="e"/>
             <property name="l" value="l"/>
+            <property name="d" value="d"/>
+            <property name="position" value="position"/>
+            <property name="duty" value="duty"/>
         </include>
         FROM client_user e JOIN client_user_login l ON e.id = l.user_id
-        LEFT OUTER JOIN client_department dept ON e.department_id = dept.id
-        LEFT OUTER JOIN cmm_code postn ON e.position_cd = postn.code AND postn.client_id = e.client_id  AND postn.div_cd = 'OR02'
+        LEFT OUTER JOIN client_department d ON e.department_id = d.id
+        LEFT OUTER JOIN cmm_code position ON e.position_cd = position.code AND position.client_id = e.client_id  AND position.div_cd = 'OR02'
         LEFT OUTER JOIN cmm_code duty ON e.duty_cd = duty.code  AND duty.client_id = e.client_id AND duty.div_cd = 'OR01'
     </sql>
 
     <!--로그인 전용-->
-    <select id="findByUserIdForLogin" resultType="AppUser">
+    <select id="findByUsernameForLogin" resultType="AppUser">
         <include refid="get_user"/>
         WHERE l.username = #{username}
     </select>

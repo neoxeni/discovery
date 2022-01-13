@@ -13,7 +13,7 @@ import java.util.List;
 @Repository
 public interface UserRepository {
     //로그인 전용으로 password 정보를 포함한다.
-    AppUser findByUserIdForLogin(String username, String clientId);
+    AppUser findByUsernameForLogin(String username, String clientId);
 
     List<UserRole> findRolesByUserId(Integer userId);
 
