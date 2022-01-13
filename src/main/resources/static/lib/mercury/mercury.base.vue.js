@@ -688,6 +688,182 @@
     Vue.component('mp-prevent-submit-input', {
         template: `<input type="text" style="position:absolute;width:0 !important;height:0 !important;line-height: 0 !important;"/>`,
     });
+
+    Vue.component('mp-base-org', {
+        template: `
+            <div ref="org-jstree" style="background: #fff;"></div>
+        `,
+        props: {
+            changed: Function,
+            created: Function,
+            renamed: Function,
+            deleted: Function,
+            moved: Function,
+            multiple: {
+                type: Boolean,
+                default: false
+            },
+            dnd: {
+                type: Boolean,
+                default: false
+            }
+        },
+        data: function () {
+            return {
+                instance: undefined
+            }
+        },
+        async mounted() {
+            const options = {
+                multiple: this.multiple,
+                dnd: this.dnd
+            }
+
+            const plugins = ["themes", "json_data", "ui", "crrm", "types", "search"/*, "wholerow"*//*, "contextmenu"*/];
+            if (options['dnd']) {
+                plugins.push("dnd");
+            }
+
+            const convertJsTreeData = function (data, root) {
+                data.text = data.name;
+                data.gubun = data.type;
+                data.id = data.type + data.no;
+
+                if (root) {
+                    data.icon = 'mdi mdi-office-building-outline mdi-18px';
+                } else {
+                    if (data.gubun === 'D') {
+                        data.icon = 'mdi mdi-microsoft-teams mdi-18px text-primary';
+                    } else {
+                        data.icon = 'mdi mdi-account mdi-18px text-secondary'
+                    }
+                }
+
+                if (data.children && data.children.length > 0) {
+                    data.children.forEach(child => convertJsTreeData(child, false));
+                }
+            }
+
+            const treeData = await xAjax({url: '/base/organizations/tree'})
+
+            convertJsTreeData(treeData, true);
+
+            const _this = this;
+            const $refTree = $(this.$refs['org-jstree']);
+            const instance = this.instance = $refTree.jstree({
+                "plugins": plugins,
+                "themes": {
+                    "responsive": false
+                },
+                core: {
+                    multiple: options.multiple,
+                    data: treeData,
+                    check_callback: function (operation, node, node_parent, node_position, more) {
+                        /*
+                        * operation : 동작 상태('create_node', 'rename_node', 'delete_node', 'move_node', 'copy_node' or 'edit')
+                        * node : 선택된 노드 정
+                        * node_parent : Drop 된 트리의 부모 노드 정보
+                        * node_position : Drop 된 위치
+                        * more : 기타 정보
+                        */
+
+                        const parentData = node_parent.original;
+                        const currentData = node.original;
+
+                        //console.log(parentData, currentData);
+
+                        if (operation === "move_node") {
+                            if (parentData !== undefined) {
+                                if (parentData.gubun === 'E') {
+                                    return false;//직원 위로 옮기려 한 경우
+                                }
+                            }
+                        }
+
+                        return true;
+                    },
+                },
+                "state": {
+                    "key": "ubicus-base-organization"
+                },
+                "types": {
+                    "default": {
+                        "icon": "fa fa-folder text-primary"
+                    },
+                    "file": {
+                        "icon": "fa fa-file  text-primary"
+                    }
+                },
+                search: {
+                    case_insensitive: true,
+                    show_only_matches: true,
+                    search_callback: function (str, node) {
+                        console.log(str, node);
+
+                        if (str === "") {
+                            return true;
+                        }
+
+                        if (str.indexOf('/') === 0) {//경로 검색
+                            const path = node.data.path + node.data.paths;
+                            return path.includes(str);
+                        }
+
+                        const text = node.text.toLowerCase();
+                        return text.includes(str.toLowerCase());
+                    }
+                }
+            }).on("loaded.jstree", function (e, data) {
+                _this.$emit('loaded', e, data, $refTree);
+            }).on("changed.jstree", function (e, data) {
+                _this.$emit('changed', e, data, $refTree);
+            }).on('create_node.jstree', function (e, data) {
+                _this.$emit('created', e, data, $refTree);
+            }).on('rename_node.jstree', function (e, data) {
+                _this.$emit('renamed', e, data, $refTree);
+            }).on('delete_node.jstree', function (e, data) {
+                _this.$emit('deleted', e, data, $refTree);
+            }).on("move_node.jstree", function (e, data) {
+                _this.$emit('moved', e, data, $refTree);
+            });
+        },
+        computed: {},
+        watch: {},
+        methods: {
+            refresh(nodeId) {
+                if (nodeId !== undefined) {
+                    $(this.$refs['org-jstree']).jstree(true).refresh_node(nodeId);
+                } else {
+                    $(this.$refs['org-jstree']).jstree(true).refresh();
+                }
+            },
+            search(searchText) {
+                $(this.$refs['org-jstree']).jstree(true).search(searchText);
+            },
+            open_node(node) {
+                $(this.$refs['org-jstree']).jstree(true).open_node(node);
+            },
+            openAll() {
+                $(this.$refs['org-jstree']).jstree(true).open_all();
+            },
+            closeAll() {
+                $(this.$refs['org-jstree']).jstree(true).close_all();
+            },
+            showAll() {
+                $(this.$refs['org-jstree']).jstree(true).show_all();
+            },
+            renameNode(node, text) {
+                $(this.$refs['org-jstree']).jstree(true).rename_node(node, text);
+            },
+            rename_node(node, text) {
+                $(this.$refs['org-jstree']).jstree(true).rename_node(node, text);
+            },
+            selectNode(nodeId) {
+                $(this.$refs['org-jstree']).jstree(true).deselect_all();
+                $(this.$refs['org-jstree']).jstree(true).select_node(nodeId);
+            }
+        }
+    });
 })(window.Vue);
 
 

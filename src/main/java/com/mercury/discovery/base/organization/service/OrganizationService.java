@@ -2,13 +2,12 @@ package com.mercury.discovery.base.organization.service;
 
 import com.mercury.discovery.base.organization.model.ChangeDepartmentDto;
 import com.mercury.discovery.base.organization.model.Department;
-import com.mercury.discovery.base.organization.model.OrganizationSearchDto;
 import com.mercury.discovery.base.users.model.UserRole;
 import com.mercury.discovery.common.model.CamelMap;
+import com.mercury.discovery.common.model.JsTree;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,126 +25,78 @@ public class OrganizationService {
 
     private final OrganizationRepository organizationRepository;
 
+    public List<JsTree> findAllForTree(Integer clientId) {
+        String rootId = "C_" + clientId;
 
-    @Transactional(readOnly = true)
-    public List<CamelMap> findDeptEmpListForTree(OrganizationSearchDto organizationSearchDto) {
-        return organizationRepository.findDeptEmpListForTree(organizationSearchDto);
-    }
+        JsTree clientTree = new JsTree();
+        clientTree.setDataType("C");
+        clientTree.setType("C");
+        clientTree.setParent("#");
+        clientTree.setId(rootId);
+        clientTree.setText("머큐리프로젝트");
+        clientTree.setData(new CamelMap());
+        clientTree.setDivCd("C");
+        clientTree.setClientId(clientId);
 
-    @Transactional(readOnly = true)
-    public List<CamelMap> findDeptEmpListForTreeSearch(OrganizationSearchDto organizationSearchDto) {
-        return organizationRepository.findDeptEmpListForTreeSearch(organizationSearchDto);
-    }
 
-    @Transactional(readOnly = true)
-    public List<CamelMap> findEmpListAll(int clientId) {
-        List<CamelMap> employeeList = organizationRepository.findEmployeeAll(clientId);
-        for (CamelMap employee : employeeList) {
-            int empNo = employee.getInt("empNo");
-            employee.put("type", "E");
-            employee.put("no", empNo);
-            employee.put("id", "E" + empNo);
-            employee.put("name", employee.getString("empNm"));
-        }
+        List<JsTree> root = new ArrayList<>();
+        root.add(clientTree);
 
-        return employeeList;
-    }
-
-    @Transactional(readOnly = true)
-    public List<CamelMap> findDeptListAll(int clientId) {
         List<CamelMap> departmentList = organizationRepository.findDepartmentAll(clientId);
-        for (CamelMap dept : departmentList) {
-            int deptNo = dept.getInt("deptNo");
-            dept.put("type", "D");
-            dept.put("no", deptNo);
-            dept.put("id", "D" + deptNo);
-            dept.put("name", dept.getString("deptNm"));
-        }
-        return departmentList;
-    }
+        Map<Integer, String> departmentKeyMap = new HashMap<>();
+        String departmentType = "D";
+        departmentList.forEach(item -> {
+            JsTree jsTree = new JsTree();
+            jsTree.setDataType(departmentType);
+            jsTree.setType(departmentType);
 
+            if ("ROOT".equals(item.get("parentDepartmentKey"))) {
+                jsTree.setParent(clientTree.getId());
+            } else {
+                jsTree.setParent("D" + "_" + item.get("parentDepartmentKey"));
+            }
 
-    @Transactional(readOnly = true)
-    @Cacheable(cacheNames = "deptEmpListForTreeAll", key = "#clientId.toString()")
-    public CamelMap findDeptEmpListForTreeAll(Integer clientId) {
-        CamelMap organization = new CamelMap();
+            jsTree.setId(departmentType + "_" + item.get("departmentKey"));
+            jsTree.setText(item.getString("name"));
+            jsTree.setData(item);
+            jsTree.setDivCd(departmentType);
+            jsTree.setClientId(clientId);
 
+            root.add(jsTree);
 
-        Map<Integer, List<CamelMap>> employeeByDeptCdMap = new HashMap<>();//<empNo, 직원>
+            departmentKeyMap.put(item.getInt("id"), item.getString("departmentKey"));
+        });
+
         List<CamelMap> employeeList = organizationRepository.findEmployeeAll(clientId);
-        for (CamelMap employee : employeeList) {
-            int empNo = employee.getInt("empNo");
-            employee.put("type", "E");
-            employee.put("no", empNo);
-            employee.put("id", "E" + empNo);
-            employee.put("name", employee.getString("empNm"));
+        String employeeType = "E";
+        employeeList.forEach(item -> {
+            JsTree jsTree = new JsTree();
+            jsTree.setDataType(employeeType);
+            jsTree.setType(employeeType);
 
-            List<CamelMap> childrenList = employeeByDeptCdMap.computeIfAbsent(employee.getInt("deptNo", -1), k -> new ArrayList<>());
-            childrenList.add(employee);
-        }
-
-        Map<Integer, List<CamelMap>> departmentMap = new HashMap<>();//<pDeptNo, 부서>
-        List<CamelMap> departmentList = organizationRepository.findDepartmentAll(clientId);
-        for (CamelMap dept : departmentList) {
-            int parentDeptNo = dept.getInt("PDeptNo");
-            int deptNo = dept.getInt("deptNo");
-            dept.put("type", "D");
-            dept.put("no", deptNo);
-            dept.put("id", "D" + deptNo);
-            dept.put("name", dept.getString("deptNm"));
-
-            if (dept.getInt("PDeptNo") == 0) {
-                organization = dept;
+            if (item.get("department_id") != null) {
+                String departmentKey = departmentKeyMap.get(item.getInt("department_id"));
+                if (departmentKey != null) {
+                    jsTree.setParent(departmentType + "_" + departmentKey);
+                } else {
+                    jsTree.setParent(rootId);
+                }
+            } else {
+                jsTree.setParent(rootId);
             }
 
-            List<CamelMap> childrenList = departmentMap.computeIfAbsent(parentDeptNo, k -> new ArrayList<>());
-            childrenList.add(dept);
-        }
+            jsTree.setId(employeeType + "_" + item.get("userKey"));
+            jsTree.setText(item.getString("name"));
+            jsTree.setData(item);
+            jsTree.setDivCd(employeeType);
+            jsTree.setClientId(clientId);
 
-        List<CamelMap> menuList = departmentMap.get(organization.getInt("deptNo"));
-        if (menuList != null) {
-            organization.put("children", menuList);
-            for (CamelMap menu : menuList) {
-                makeMenuTree(departmentMap, menu, 1, employeeByDeptCdMap);
-            }
-        }
+            root.add(jsTree);
+        });
 
-        //부서가 없거나 분류되지 못한 사람은 전부 루트에 추가
-        List<CamelMap> orgChildren = (List<CamelMap>) organization.get("children");
-        if(orgChildren == null){
-            orgChildren = new ArrayList<>();
-            organization.put("children", orgChildren);
-        }
-        for (Map.Entry<Integer, List<CamelMap>> elem : employeeByDeptCdMap.entrySet()) {
-            orgChildren.addAll(elem.getValue());
-        }
-        
-
-        return organization;
+        return root;
     }
 
-    private void makeMenuTree(Map<Integer, List<CamelMap>> childrenDepartmentsMap, CamelMap department, int depth, Map<Integer, List<CamelMap>> employeeByDeptCdMap) {
-        Integer deptNo = department.getInt("deptNo", null);
-        List<CamelMap> employeeList = employeeByDeptCdMap.remove(deptNo);
-        List<CamelMap> childrenDepartments = childrenDepartmentsMap.get(deptNo);
-        if (childrenDepartments != null) {
-            //부서가 있고
-            department.put("children", childrenDepartments);
-            for (CamelMap child : childrenDepartments) {
-                makeMenuTree(childrenDepartmentsMap, child, depth + 1, employeeByDeptCdMap);
-            }
-
-            //직원만 있는 경우
-            if (employeeList != null) {
-                childrenDepartments.addAll(employeeList);
-            }
-        } else {
-            //부서는 없고 직원만 있는 경우
-            if (employeeList != null) {
-                department.put("children", employeeList);
-            }
-        }
-    }
 
     @Transactional(readOnly = true)
     public Department findDepartment(Integer clientId, Integer deptNo) {
@@ -173,48 +124,15 @@ public class OrganizationService {
     }
 
     @Transactional(readOnly = true)
-    public List<UserRole> findDepartmentsRoles(Integer clientId, Integer deptNo) {
-        return organizationRepository.findDepartmentsRoles(clientId, deptNo);
-    }
-
-    @Transactional(readOnly = true)
-    public List<CamelMap> findDepartmentsTree(Integer clientId) {
-        return organizationRepository.findDepartmentsTree(clientId);
+    public List<UserRole> findDepartmentsRoles(Integer clientId, Long id) {
+        return organizationRepository.findDepartmentsRoles(clientId, id);
     }
 
     @Caching(evict = {
-        @CacheEvict(cacheNames = "deptEmpListForTreeAll", key = "#clientId")
+            @CacheEvict(cacheNames = "deptEmpListForTreeAll", key = "#clientId")
     })
     public boolean clearCache(String clientId) {
         log.debug("clearCache {}", clientId);
         return true;
-    }
-
-    @Transactional(readOnly = true)
-    public List<CamelMap> findDepartmentByParent(int clientId, String useYn, int pDeptNo) {
-        List<CamelMap> departmentList = organizationRepository.findDepartmentByParent(clientId, useYn, pDeptNo);
-        for (CamelMap dept : departmentList) {
-            int deptNo = dept.getInt("deptNo");
-            dept.put("type", "D");
-            dept.put("no", deptNo);
-            dept.put("id", "D" + deptNo);
-            dept.put("name", dept.getString("deptNm"));
-        }
-
-        return departmentList;
-    }
-
-    @Transactional(readOnly = true)
-    public List<CamelMap> findEmployeeByDepartment(int clientId, String useYn, String rtrmntYn, String rootYn, int deptNo) {
-        List<CamelMap> employeeList = organizationRepository.findEmployeeByDepartment(clientId, useYn, rtrmntYn, rootYn, deptNo);
-        for (CamelMap employee : employeeList) {
-            int empNo = employee.getInt("empNo");
-            employee.put("type", "E");
-            employee.put("no", empNo);
-            employee.put("id", "E" + empNo);
-            employee.put("name", employee.getString("empNm"));
-        }
-
-        return employeeList;
     }
 }

@@ -16,31 +16,25 @@ import java.util.Set;
 @Repository
 public interface OrganizationRepository {
 
-    List<CamelMap> findDeptEmpListForTree(OrganizationSearchDto organizationSearchDto);
-
-    List<CamelMap> findDeptEmpListForTreeSearch(OrganizationSearchDto organizationSearchDto);
-
     List<CamelMap> findDepartmentAll(int clientId);
 
     List<CamelMap> findEmployeeAll(int clientId);
-
-    Department findDepartment(Integer clientId, Integer deptNo);
 
     int insertDepartment(Department department);
 
     int updateDepartment(Department department);
 
+    List<CamelMap> findDeptEmpListForTree(OrganizationSearchDto organizationSearchDto);
+
+    List<CamelMap> findDeptEmpListForTreeSearch(OrganizationSearchDto organizationSearchDto);
+
+    Department findDepartment(Integer clientId, Integer deptNo);
+
     int changeEmployeeDepartment(ChangeDepartmentDto changeDepartmentDto);
 
     int changeDepartmentDepartment(ChangeDepartmentDto changeDepartmentDto);
 
-    List<UserRole> findDepartmentsRoles(Integer clientId, Integer deptNo);
+    List<UserRole> findDepartmentsRoles(Integer clientId, Long id);
 
-    Set<UserAppRole> findDepartmentsAppRoles(Integer clientId, Integer deptNo);
-
-    List<CamelMap> findDepartmentsTree(Integer clientId);
-
-    List<CamelMap> findDepartmentByParent(int clientId, String useYn, int pDeptNo);
-
-    List<CamelMap> findEmployeeByDepartment(int clientId, String useYn, String rtrmntYn, String rootYn, int deptNo);
+    Set<UserAppRole> findDepartmentsAppRoles(Integer clientId, Long deptNo);
 }

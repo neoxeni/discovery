@@ -1,9 +1,5 @@
-import MpBaseOrganizationTree from "./MpBaseOrganizationTree.js";
 export default {
     name: 'mp-base-organization-tree-card',
-    components: {
-        MpBaseOrganizationTree
-    },
     template :`
     <v-card>
         <v-card-title>
@@ -29,7 +25,7 @@ export default {
             </v-menu>
         </v-card-title>
         <v-card-text class="div-scroll-y">
-            <mp-base-organization-tree @changed="changed" @moved="treeMoved" @loaded="treeLoaded" ref="jstree" multiple :dnd="dnd"></mp-base-organization-tree>
+            <mp-base-tree url="/base/organizations/tree" ref="codeTree" @changed="treeChanged" state></mp-base-tree>
         </v-card-text>
     </v-card>
     `,

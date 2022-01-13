@@ -11,43 +11,32 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * cmm_dept
+ * client_department
  */
 
 @Alias("Department")
 @Data
 public class Department {
-    private Integer deptNo;
-    private Integer clientId;
-    private String deptCd;
-    private String deptNm;
-    private Integer dpth;
-    private Integer sort;
-    private String useYn;
-    private Integer pDeptNo;
+    private Long id;
 
+    private String parentDepartmentKey;
+    private String departmentKey;
+    private String name;
+    private int sort;
+    private String useYn;
 
     private Integer createdBy;
-
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
-    private Integer updatedBy;
 
+    private Integer updatedBy;
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
 
+    private Integer clientId;
+
     private List<UserRole> roles;
     private List<UserRole> parentsRoles;
-
-    public void setpDeptNo(Integer pDeptNo) {
-        this.pDeptNo = pDeptNo;
-    }
-
-    public Integer getpDeptNo() {
-        return pDeptNo;
-    }
-
-
 }

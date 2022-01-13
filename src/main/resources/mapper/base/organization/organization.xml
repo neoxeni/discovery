@@ -147,52 +147,43 @@
 
     <select id="findDepartmentAll" resultType="CamelMap">
         SELECT *
-        FROM cmm_dept
+        FROM client_department
         WHERE client_id = #{clientId}
         -- AND use_yn = 'Y'
-        ORDER BY p_dept_no desc , sort
+        ORDER BY sort
     </select>
 
     <select id="findEmployeeAll" resultType="CamelMap">
         SELECT e.*
-        FROM cmm_emp e, cmm_dept d
-        WHERE e.dept_no = d.dept_no
---         AND d.use_yn = 'Y'
-        AND e.client_id = #{clientId}
---         AND e.rtrmnt_yn = 'N'
-        ORDER BY e.emp_sort
+        FROM client_user e LEFT JOIN client_department d ON e.department_id = d.id
+        WHERE e.client_id = #{clientId}
+        ORDER BY e.sort
     </select>
 
     <select id="findDepartment" resultType="Department">
         SELECT *
-        FROM cmm_dept
-        WHERE dept_no = #{deptNo}
+        FROM client_department
+        WHERE id = #{id}
           AND client_id = #{clientId}
     </select>
 
-    <insert id="insertDepartment" useGeneratedKeys="true" keyProperty="deptNo">
-        <selectKey keyProperty="deptNo" resultType="int" order="BEFORE" databaseId="oracle">
-            select sq_cmm_dept.NEXTVAL FROM DUAL
-        </selectKey>
-
-        INSERT INTO cmm_dept (dept_no,
-        client_id, dept_cd, dept_nm, dpth, sort, use_yn, p_dept_no, created_by , created_at
-        ) VALUES (#{deptNo},
-        #{clientId}, #{deptCd}, #{deptNm}, #{dpth}, #{sort}, #{useYn}, #{pDeptNo}, #{createdBy}, #{createdAt}
+    <insert id="insertDepartment" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO client_department (
+            parent_department_key, department_key, name, sort, use_yn, created_by, created_at, updated_by , updated_at, client_id
+        ) VALUES (
+            #{parentDepartmentKey}, #{departmentKey}, #{name}, #{sort}, #{useYn}, #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}, #{client_id}
         )
     </insert>
 
     <update id="updateDepartment">
-        UPDATE cmm_dept SET
-            dept_cd = #{deptCd}
-            , dept_nm = #{deptNm}
-            , dpth = #{dpth}
+        UPDATE client_department SET
+            parent_department_key = #{parentDepartmentKey}
+            , name = #{name}
             , sort = #{sort}
             , use_yn = #{useYn}
-            , p_dept_no = #{pDeptNo}
-            , upd_emp_no = #{updEmpNo}
+            , updated_by = #{updEmpNo}
             , updated_at = #{updatedAt}
-        WHERE dept_no = #{deptNo}
+        WHERE id = #{id}
           AND client_id = #{clientId}
     </update>
 
@@ -216,8 +207,8 @@
         a.dept_no,
         a.p_dept_no,
         a.dept_nm
-        FROM cmm_dept a
-        WHERE a.dept_no = #{deptNo}
+        FROM client_department a
+        WHERE a.id = #{id}
         AND a.client_id = #{clientId}
 
         UNION ALL
@@ -285,110 +276,10 @@
 
     </select>
 
-    <select id="findDepartmentsTree" resultType="CamelMap" databaseId="mysql">
-            WITH recursive cte AS
-                (
-                    SELECT
-                        1 AS LEVEL, a.dept_cd, a.dept_no, a.p_dept_no, a.dept_nm, a.use_yn,
-                        CONVERT( a.dept_nm, CHAR(255)) depth_fullname
-                    FROM cmm_dept a
-                    WHERE a.p_dept_no = 0 AND a.client_id = #{clientId}
 
-                    UNION ALL
 
-                    SELECT
-                        b.level+1 AS level, a.dept_cd, a.dept_no,a.p_dept_no, a.dept_nm, a.use_yn,
-                        CAST( CONCAT(CONVERT(b.depth_fullname, CHAR(255)) , ' > ' ,  CONVERT(a.dept_nm, CHAR(255))) AS CHAR(255)) depth_fullname
-                    FROM cmm_dept a
-                    INNER JOIN cte b
-                    ON a.p_dept_no = b.dept_no
-                    WHERE  a.client_id = #{clientId}
-                )
-                SELECT
-                    CONCAT('D', dept_no) id,
-                    depth_fullname,
-                    (
-		                SELECT COUNT(1) FROM cmm_emp emp WHERE emp.dept_no = x.dept_no
-                    ) emp_count
-                FROM cte x
-                WHERE use_yn = 'Y' ORDER BY depth_fullname
-    </select>
 
-    <select id="findDepartmentsTree" resultType="CamelMap" databaseId="oracle">
-        WITH cte (dept_cd,dept_no, p_dept_no, dept_nm, use_yn, depth_fullname) AS
-                (
-                    SELECT
-                        a.dept_cd, a.dept_no, a.p_dept_no, a.dept_nm, a.use_yn, a.dept_nm depth_fullname
-                    FROM cmm_dept a
-                    WHERE a.p_dept_no = 0 AND a.client_id = #{clientId}
 
-                    UNION ALL
 
-                    SELECT
-                        a.dept_cd, a.dept_no,a.p_dept_no, a.dept_nm, a.use_yn,
-                        CONCAT(CONCAT(b.depth_fullname, ' > '), a.dept_nm) depth_fullname
-                    FROM cmm_dept a
-                    INNER JOIN cte b
-                    ON a.p_dept_no = b.dept_no
-                    WHERE  a.client_id = #{clientId}
-                )
-                SELECT
-                    CONCAT('D', dept_no) id, depth_fullname,
-                    (
-		                SELECT COUNT(1) FROM cmm_emp emp WHERE emp.dept_no = x.dept_no
-                    ) emp_count
-                FROM cte x
-                WHERE use_yn = 'Y' ORDER BY depth_fullname
-    </select>
-
-    <select id="findDepartmentByParent" resultType="CamelMap">
-        SELECT *
-        FROM cmm_dept
-        WHERE client_id = #{clientId}
-        <if test="useYn != null and useYn != ''">
-            AND use_yn = #{useYn}
-        </if>
-        AND p_dept_no = #{pDeptNo}
-        ORDER BY sort
-    </select>
-
-    <select id="findEmployeeByDepartment" resultType="CamelMap">
-        <include refid="common.sql.withChildDeptList">
-            <property name="clientId" value="#{clientId}"/>
-            <property name="deptNo" value="#{deptNo}"/>
-        </include>
-        , cte_parent (lvl, dept_no, p_dept_no, dept_nm, sort, dept_cd, use_yn, org_path_nm) AS (
-            SELECT
-                1 as lvl, a.dept_no, a.p_dept_no, a.dept_nm, a.sort, a.dept_cd, a.use_yn,
-                a.dept_nm AS org_path_nm
-            FROM cmm_dept a
-            WHERE client_id = #{clientId}
-            <choose>
-                <when test='rootYn == "Y"'>
-                AND a.p_dept_no = 0
-                </when>
-                <otherwise>
-                AND a.p_dept_no = 1
-                </otherwise>
-            </choose>
-            UNION ALL
-            SELECT
-                lvl+1 AS lvl, a.dept_no, a.p_dept_no, a.dept_nm, a.sort, a.dept_cd, a.use_yn,
-                CONCAT(b.org_path_nm, CONCAT(' > ' ,  a.dept_nm)) AS org_path_nm
-            FROM cmm_dept a INNER JOIN cte_parent b ON a.p_dept_no = b.dept_no
-            WHERE a.client_id = #{clientId}
-        )
-        SELECT e.*, d.dept_cd, d.dept_nm, d.p_dept_no, d.use_yn, c.org_path_nm
-        FROM cmm_emp e, cmm_dept d, cte_parent c
-        WHERE e.dept_no = d.dept_no AND c.dept_no = e.dept_no
-        <if test='useYn == "Y"'>
-            AND d.use_yn = 'Y'
-        </if>
-        AND e.client_id = #{clientId}
-        <if test='rtrmntYn == "N"'>
-            AND e.rtrmnt_yn = 'N'
-        </if>
-        AND d.dept_no IN ( select dept_no from CTE )
-    </select>
 
 </mapper>

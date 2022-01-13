@@ -68,7 +68,7 @@ public class AppUser extends TokenUser implements UserDetails {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
 
-    private Integer departmentId;
+    private Long departmentId;
 
     private List<UserRole> roles;
     private List<UserAppRole> appRoles;

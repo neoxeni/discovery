@@ -1,21 +1,20 @@
 create table client_department(
-    id                          INT       AUTO_INCREMENT COMMENT 'ID' PRIMARY KEY,
-    parent_id                   INT             NOT NULL DEFAULT 0 COMMENT '상위부서 아이디',
+    id                          BIGINT     AUTO_INCREMENT COMMENT 'ID' PRIMARY KEY,
+    parent_department_key       VARCHAR(36)         NULL COMMENT '상위부서키(유니크)',
+    department_key              VARCHAR(36)         NULL COMMENT '부서키(유니크)',
     name                        VARCHAR(100)        NULL COMMENT '부서명',
     sort                        INT             NOT NULL DEFAULT 0 COMMENT '정렬순서',
-
-    is_use                      TINYINT(1)      NOT NULL DEFAULT 1 COMMENT '사용여부',
+    use_yn                      CHAR(1)             NOT NULL DEFAULT 'Y' COMMENT '사용여부',
     created_by                  INT             NOT NULL COMMENT '생성자',
-    created_at                  DATETIME        NOT NULL COMMENT '생성일',
-    received_by                 INT             NOT NULL COMMENT '수정자',
-    received_at                 DATETIME        NOT NULL COMMENT '수정일',
-    department_key              VARCHAR(36)         NULL COMMENT '부서키(유니크)',
+    created_at                  DATETIME        NOT NULL default CURRENT_TIMESTAMP COMMENT '생성일',
+    updated_by                  INT             NOT NULL COMMENT '수정자',
+    updated_at                  DATETIME        NOT NULL default CURRENT_TIMESTAMP COMMENT '수정일',
 
     client_id                   INT             NOT NULL COMMENT '회사 아이디',
 
     CONSTRAINT FK1_CLIENT_CLIENT_ID FOREIGN KEY (client_id) REFERENCES client (id),
     UNIQUE KEY UK1_CLIENT_DEPARTMENT_KEY(department_key),
-    INDEX IX1_CLIENT_DEPARTMENT (parent_id, sort)
+    INDEX IX1_CLIENT_DEPARTMENT (parent_department_key, sort)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='부서';
 
 
