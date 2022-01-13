@@ -90,12 +90,12 @@
         g.code,
         g.name,
         cgm.map_no,
-        'D' as data_gbn,
-        cgm.data_no,
+        'D' as target,
+        cgm.target_id,
         g.client_id
         FROM cmm_group_map cgm JOIN cmm_group g ON cgm.grp_no = g.grp_no
-        WHERE data_gbn='D'
-        AND data_no IN (
+        WHERE target='D'
+        AND target_id IN (
         SELECT dept_no
         FROM cte
         )
@@ -128,12 +128,12 @@
         g.app_code,
         g.app_name,
         cgm.map_no,
-        'D' as data_gbn,
-        cgm.data_no,
+        'D' as target,
+        cgm.target_id,
         g.client_id
         FROM cmm_app_group_map cgm JOIN cmm_app_group g ON cgm.app_grp_no = g.app_grp_no
-        WHERE data_gbn='D'
-        AND data_no IN (
+        WHERE target='D'
+        AND target_id IN (
         SELECT dept_no
         FROM cte
         )

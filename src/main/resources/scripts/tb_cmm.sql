@@ -149,17 +149,17 @@ create table cmm_group (
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='그룹';
 
 create table cmm_group_mapping(
-    id                          bigint         auto_increment comment 'ID' primary key,
+    id                          bigint        auto_increment comment 'ID' primary key,
 
-    data_gbn                    char(1)             not null comment 'E:직원,D:부서',
-    data_no                     int                 not null comment '직원,부서번호',
+    target                      varchar(10)         not null comment 'E:직원,D:부서',
+    target_id                   bigint              not null comment '직원,부서번호',
     use_yn                      char(1) default 'Y' not null comment '사용여부',
     sort                        int     default 0   not null comment '정렬순서',
     created_by                  INT                 NOT NULL COMMENT '생성자',
     created_at                  DATETIME            default current_timestamp COMMENT '등록일시',
     group_id                    bigint              not null comment '그룹번호',
     CONSTRAINT FK1_CMM_GROUP FOREIGN KEY (group_id) REFERENCES cmm_group (id),
-    UNIQUE KEY UK1_cmm_GROUP_MAP(group_id, data_gbn, data_no)
+    UNIQUE KEY UK1_cmm_GROUP_MAP(group_id, target, target_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='그룹맵핑';
 
 create table cmm_group_mapping_history(
@@ -168,8 +168,8 @@ create table cmm_group_mapping_history(
     group_id                    bigint                 not null comment '그룹번호',
     group_mapping_id            int                 not null comment '매핑번호',
 
-    data_gbn                    char(1)             not null comment 'E:직원,D:부서',
-    data_no                     int                 not null comment '직원,부서번호',
+    target                      varchar(10)         not null comment 'E:직원,D:부서',
+    target_id                   bigint              not null comment '직원,부서번호',
     action                      char                not null comment '액션CRUD',
     reg_ip                      varchar(100)            null comment '등록자IP',
 

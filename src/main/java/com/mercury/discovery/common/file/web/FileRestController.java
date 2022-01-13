@@ -37,8 +37,8 @@ public class FileRestController {
     private final FileService fileService;
 
     @GetMapping("/base/files")
-    public ResponseEntity<?> getFiles(AttachDivCd attachDivCd, String dataNo) {
-        List<AttachFile> attachFile = fileService.findFiles(attachDivCd, dataNo);
+    public ResponseEntity<?> getFiles(AttachDivCd attachDivCd, String targetId) {
+        List<AttachFile> attachFile = fileService.findFiles(attachDivCd, targetId);
         return ResponseEntity.ok(attachFile);
     }
 
@@ -106,7 +106,7 @@ public class FileRestController {
 
             if (attachDivCd == AttachDivCd.EDITOR) {
                 // 에디터 이미지 첨부일때만 save 처리
-                fileService.save(attachDivCd, request.getParameter("dataNo"), fileList, true);
+                fileService.save(attachDivCd, request.getParameter("targetId"), fileList, true);
             }
 
             index++;
@@ -118,10 +118,10 @@ public class FileRestController {
     @GetMapping("/base/files/delete")
     public ResponseEntity<?> deleteFiles(@RequestParam(required = false) String fileKey,
                                          @RequestParam(required = false) AttachDivCd attachDivCd,
-                                         @RequestParam(required = false) String dataNo
+                                         @RequestParam(required = false) String targetId
     ) {
 
-        log.debug("delete request for fileKey={}, attachDivCd={}, dataNo={}", fileKey, attachDivCd, dataNo);
+        log.debug("delete request for fileKey={}, attachDivCd={}, targetId={}", fileKey, attachDivCd, targetId);
 
         List<AttachFile> attachFiles;
         if (fileKey != null) {
@@ -131,7 +131,7 @@ public class FileRestController {
                 attachFiles.add(attachFile);
             }
         } else {
-            attachFiles = fileService.findFiles(attachDivCd, dataNo);
+            attachFiles = fileService.findFiles(attachDivCd, targetId);
         }
 
         if (attachFiles != null) {

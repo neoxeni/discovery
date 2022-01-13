@@ -17,8 +17,8 @@ public class GroupMappingHistory {
     private Long groupId;
     private Long groupMappingId;
 
-    private String dataGbn;
-    private Integer dataNo;
+    private String target;
+    private Long targetId;
     private String action;
     private String regIp;
 
@@ -32,7 +32,7 @@ public class GroupMappingHistory {
     public void of(GroupMapping groupMapping) {
         this.groupMappingId = groupMapping.getGroupId();
         this.groupId = groupMapping.getGroupId();
-        this.dataGbn = groupMapping.getDataGbn();
-        this.dataNo = groupMapping.getDataNo();
+        this.target = groupMapping.getTarget();
+        this.targetId = groupMapping.getTargetId();
     }
 }

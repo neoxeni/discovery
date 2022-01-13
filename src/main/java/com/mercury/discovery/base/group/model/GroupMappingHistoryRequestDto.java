@@ -12,7 +12,7 @@ public class GroupMappingHistoryRequestDto {
 
     private String action;
     private Integer grpNo;
-    private String dataGbn;
+    private String target;
     private String dataNm;
     private String regEmpNm;
 }

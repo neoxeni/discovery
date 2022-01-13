@@ -4,7 +4,7 @@ export default {
         <div>
             <mp-search>
                 <div>
-                    <v-select label="구분" v-model="tbl.search.dataGbn" dense hide-details="auto" class="mr-2" :items="[{text:'전체',value:''},{text:'직원',value:'E'},{text:'부서',value:'D'}]" outlined dense hide-detail></v-select>
+                    <v-select label="구분" v-model="tbl.search.target" dense hide-details="auto" class="mr-2" :items="[{text:'전체',value:''},{text:'직원',value:'E'},{text:'부서',value:'D'}]" outlined dense hide-detail></v-select>
                 </div>
                 <div>
                     <v-text-field label="이름" v-model="tbl.search.dataNm" @keyup.enter="fetchData(true)" outlined dense hide-details></v-text-field>
@@ -18,9 +18,9 @@ export default {
             </mp-search>
             <v-data-table dense fixed-header item-key="mapNo" :height="$settings.datatable.rows5" :footer-props="$settings.datatable.footer5" :headers="tbl.headers" :items="filteredItems" :items-per-page="5" show-select v-model="tbl.selectedItems">
         
-                <template v-slot:item.data_gbn="{ item }">
-                    <span v-if="item.dataGbn === 'D'"><i class="mdi mdi-microsoft-teams primary--text"></i></span>
-                    <span v-else-if="item.dataGbn === 'E'"><i class="mdi mdi-account secondary--text"></i></span>
+                <template v-slot:item.target="{ item }">
+                    <span v-if="item.target === 'D'"><i class="mdi mdi-microsoft-teams primary--text"></i></span>
+                    <span v-else-if="item.target === 'E'"><i class="mdi mdi-account secondary--text"></i></span>
                     {{item.tooltip}}
                 </template>
             </v-data-table>
@@ -43,7 +43,7 @@ export default {
         return {
             tbl: {
                 headers: [
-                    {text: '구분', value: 'data_gbn'},
+                    {text: '구분', value: 'target'},
                     {text: '이름', value: 'dataNm'},
                     {text: '사용여부',value: 'useYn',align: 'center',width: '90px'}
                 ],
@@ -53,7 +53,7 @@ export default {
                 item: {},
                 selectedItems: [],
                 search: {
-                    dataGbn: '',
+                    target: '',
                     dataNm: ''
                 }
             },
@@ -70,8 +70,8 @@ export default {
         filteredItems: function() {
             return this.tbl.items.filter(item => {
                 let match = true;
-                if (this.tbl.search.dataGbn !== '') {
-                    match = item.dataGbn === this.tbl.search.dataGbn;
+                if (this.tbl.search.target !== '') {
+                    match = item.target === this.tbl.search.target;
                 }
                 if (this.tbl.search.dataNm !== '') {
                     match = item.dataNm.indexOf(this.tbl.search.dataNm) > -1;
@@ -97,7 +97,7 @@ export default {
     methods: {
         fetchData(isSearchFirst) {
             const grpNo = this.grpNo;
-            this.tbl.search.dataGbn = '';
+            this.tbl.search.target = '';
             this.tbl.search.dataNm = '';
             if (grpNo === undefined) {
                 this.tbl.items = [];
@@ -123,7 +123,7 @@ export default {
         },
         excelData() {
             const param = {
-                dataGbn: this.tbl.search.dataGbn,
+                target: this.tbl.search.target,
                 dataNm: this.tbl.search.dataNm,
                 grpNo: this.grpNo
             }
@@ -160,15 +160,15 @@ export default {
             const mappings = [];
             const existMap = {};
             this.tbl.items.forEach(item => {
-                existMap[item.dataGbn + '_' + item.dataNo] = item;
+                existMap[item.target + '_' + item.targetId] = item;
             });
             let sortNo = 1;
             this.mappings.forEach((mapping, index) => {
                 if (existMap[mapping.type + '_' + mapping.no] === undefined) {
                     mappings.push({
                         grpNo: this.grpNo,
-                        dataGbn: mapping.type,
-                        dataNo: mapping.no,
+                        target: mapping.type,
+                        targetId: mapping.no,
                         useYn: 'Y',
                         sortNo: sortNo++
                     });

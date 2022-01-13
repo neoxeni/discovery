@@ -11,7 +11,7 @@ import java.util.List;
 @Mapper
 @Repository
 public interface FileRepository {
-    List<AttachFile> findFiles(AttachDivCd attachDivCd, String dataNo);
+    List<AttachFile> findFiles(AttachDivCd attachDivCd, String targetId);
 
     AttachFile findOne(String fileKey);
 

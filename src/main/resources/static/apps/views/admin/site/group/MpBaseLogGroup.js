@@ -18,7 +18,7 @@ export default {
                     <v-select v-model="search.action" label="행위" @change="fetchData(true)" :items="[{text:'전체',value:''},{text:'추가',value:'C'},{text:'삭제',value:'D'}]" outlined dense hide-details></v-select>
                 </div>
                 <div>
-                    <v-select v-model="search.dataGbn" label="대상구분" @change="fetchData(true)" :items="[{text:'전체',value:''},{text:'부서',value:'D'},{text:'직원',value:'E'}]" outlined dense hide-details></v-select>
+                    <v-select v-model="search.target" label="대상구분" @change="fetchData(true)" :items="[{text:'전체',value:''},{text:'부서',value:'D'},{text:'직원',value:'E'}]" outlined dense hide-details></v-select>
                 </div>
                 <div>
                     <v-text-field v-model="search.dataNm" label="대상" @keyup.enter="fetchData(true)" outlined dense hide-details></v-text-field>
@@ -48,7 +48,7 @@ export default {
             search: {
                 grpNo: undefined,
                 action: undefined,
-                dataGbn: undefined,
+                target: undefined,
                 dataNm: undefined,
                 regEmpNm: undefined,
                 range: {

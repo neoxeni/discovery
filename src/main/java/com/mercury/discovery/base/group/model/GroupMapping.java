@@ -20,8 +20,8 @@ public class GroupMapping {
 
     private Long groupId;
 
-    private String dataGbn;
-    private Integer dataNo;
+    private String target;
+    private Long targetId;
 
     private String useYn;
     private Integer sort;

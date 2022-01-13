@@ -19,8 +19,8 @@ public class UserRole implements Serializable {
 
     //GroupMapping 객체와 동일한 이름:S
     private Integer mapNo;  //시퀀스
-    private String dataGbn; //부서:D, 사원:E
-    private Integer dataNo; //부서:deptNo, 사원:empNo
+    private String target; //부서:D, 사원:E
+    private Integer targetId; //부서:deptNo, 사원:empNo
     //GroupMapping 객체와 동일한 이름:E
 
     private Integer clientId;

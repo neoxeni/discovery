@@ -33,7 +33,7 @@ public class AttachFile implements Serializable {
     private LocalDateTime updatedAt;
 
     private AttachDivCd attachDivCd;
-    private String dataNo;
+    private String targetId;
 
     private String meta;
     private String workType;//INSERT, DELETE

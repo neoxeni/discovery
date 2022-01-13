@@ -569,41 +569,41 @@ export default {
             });
         },
         saveGroupItem() {
-            let dataGbn = '';
-            let dataNo = '';
-            let target = [];
+            let target = '';
+            let targetId = '';
+            let targets = [];
             const originGroupMapByGrpNo = {}; // grpNo: {data}
             // grpNo: {data}
             if (this.type === 'employee') {
-                dataGbn = 'E';
-                dataNo = this.employee.empNo;
+                target = 'E';
+                targetId = this.employee.empNo;
                 this.employee.roles.forEach(role => {
-                    if (role.dataGbn === 'E') {
+                    if (role.target === 'E') {
                         originGroupMapByGrpNo[role.grpNo] = role;
                     }
                 });
-                target = this.employeeRoles;
+                targets = this.employeeRoles;
             } else if (this.type === 'department') {
-                dataGbn = 'D';
-                dataNo = this.department.deptNo;
+                target = 'D';
+                targetId = this.department.deptNo;
                 this.department.roles.forEach(role => {
                     originGroupMapByGrpNo[role.grpNo] = role;
                 });
-                target = this.departmentRoles;
+                targets = this.departmentRoles;
             } else if (this.type === 'company') {
-                dataGbn = 'D';
-                dataNo = this.company.rootDepartment.deptNo;
+                target = 'D';
+                targetId = this.company.rootDepartment.deptNo;
                 this.company.rootDepartment.roles.forEach(role => {
                     originGroupMapByGrpNo[role.grpNo] = role;
                 });
-                target = this.companyRoles;
+                targets = this.companyRoles;
             }
             const groupMappings = []; //삭제할 목록을 찾는다.
             //삭제할 목록을 찾는다.
             for (let grpNo in originGroupMapByGrpNo) {
                 if (originGroupMapByGrpNo.hasOwnProperty(grpNo)) {
                     const oriItem = originGroupMapByGrpNo[grpNo];
-                    const oriItemInTarget = target.find(item => {
+                    const oriItemInTarget = targets.find(item => {
                         return item.grpNo === oriItem['grpNo'];
                     });
                     if (oriItemInTarget === undefined) {
@@ -613,13 +613,13 @@ export default {
                     }
                 }
             } //추가할 항목을 찾는다.
-            target.forEach(item => {
+            targets.forEach(item => {
                 const mapNo = item.mapNo;
                 const oriItem = originGroupMapByGrpNo[item.grpNo];
                 if (oriItem === undefined) {
                     groupMappings.push({
-                        dataGbn: dataGbn,
-                        dataNo: dataNo,
+                        target: target,
+                        targetId: targetId,
                         code: item.code,
                         name: item.name,
                         grpNo: item.grpNo,
@@ -745,8 +745,8 @@ export default {
                     }).then(resp => {
                         this.employee = resp;
                         if (resp.roles !== null) {
-                            this.employeeRoles = resp.roles.filter(role => role.dataGbn === 'E');
-                            this.employeeDepartmentRoles = resp.roles.filter(role => role.dataGbn === 'D');
+                            this.employeeRoles = resp.roles.filter(role => role.target === 'E');
+                            this.employeeDepartmentRoles = resp.roles.filter(role => role.target === 'D');
                         } else {
                             this.employeeRoles = [];
                             this.employeeDepartmentRoles = [];

@@ -13,7 +13,7 @@
              ,created_at
              ,user_file_nm
              ,updated_at
-             ,data_no
+             ,target_id
              ,attach_div_cd
              ,meta
              ,reg_mngr_no
@@ -22,11 +22,11 @@
 
     <insert id="insert" parameterType="AttachFile" useGeneratedKeys="true" keyProperty="fileNo">
         INSERT INTO cmm_attach_file(
-            file_no, file_key, file_nm, file_path, file_size, file_dsc, ext_nm, created_at, user_file_nm, updated_at, data_no, attach_div_cd, meta, reg_mngr_no
+            file_no, file_key, file_nm, file_path, file_size, file_dsc, ext_nm, created_at, user_file_nm, updated_at, target_id, attach_div_cd, meta, reg_mngr_no
         )VALUES
         <foreach collection="collection" item="item" index="index" separator=",">
             (#{item.fileNo}, #{item.fileKey}, #{ item.fileNm}, #{ item.filePath}, #{ item.fileSize}, #{item.fileDsc}, #{ item.extNm}, #{ item.createdAt},
-            #{ item.userFileNm}, #{ item.updatedBy}, #{ item.dataNo}, #{ item.attachDivCd}, #{item.meta}, #{item.regMngrNo})
+            #{ item.userFileNm}, #{ item.updatedBy}, #{ item.targetId}, #{ item.attachDivCd}, #{item.meta}, #{item.regMngrNo})
         </foreach>
     </insert>
 
@@ -42,7 +42,7 @@
     <select id="findFiles" resultType="AttachFile">
         <include refid="selectFileSql"/>
         WHERE attach_div_cd = #{attachDivCd}
-        AND data_no = #{dataNo}
+        AND target_id = #{targetId}
     </select>
 
     <select id="findOne" resultType="AttachFile">

@@ -135,8 +135,8 @@ public class GroupService {
                 .stream().map(e -> {
                     GroupMapping _groupMapping = new GroupMapping();
                     _groupMapping.setGroupId(e.getGroupId());
-                    _groupMapping.setDataGbn(e.getDataGbn());
-                    _groupMapping.setDataNo(e.getDataNo());
+                    _groupMapping.setTarget(e.getTarget());
+                    _groupMapping.setTargetId(e.getTargetId());
                     return _groupMapping;
                 }).collect(Collectors.toList());
 

@@ -10,7 +10,7 @@ public class GroupMappingRequestDto {
 
     private String code;
 
-    private String dataGbn;
+    private String target;
 
     private String dataNm;
 

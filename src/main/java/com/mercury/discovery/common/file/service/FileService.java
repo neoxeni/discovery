@@ -1,5 +1,8 @@
 package com.mercury.discovery.common.file.service;
 
+import com.github.vfss3.operations.Acl;
+import com.github.vfss3.operations.IAclGetter;
+import com.github.vfss3.operations.IAclSetter;
 import com.mercury.discovery.common.error.exception.FileOperationException;
 import com.mercury.discovery.common.file.model.AttachDivCd;
 import com.mercury.discovery.common.file.model.AttachFile;
@@ -7,9 +10,6 @@ import com.mercury.discovery.common.file.model.FileSystemScheme;
 import com.mercury.discovery.utils.DateTimeUtils;
 import com.mercury.discovery.utils.FileSystemUtils;
 import com.mercury.discovery.utils.IDGenerator;
-import com.github.vfss3.operations.Acl;
-import com.github.vfss3.operations.IAclGetter;
-import com.github.vfss3.operations.IAclSetter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -144,8 +144,8 @@ public class FileService {
     }
 
     @Transactional(readOnly = true)
-    public List<AttachFile> findFiles(AttachDivCd attachDivCd, String dataNo) {
-        return fileRepository.findFiles(attachDivCd, dataNo);
+    public List<AttachFile> findFiles(AttachDivCd attachDivCd, String targetId) {
+        return fileRepository.findFiles(attachDivCd, targetId);
     }
 
     @Transactional(readOnly = true)
@@ -182,9 +182,9 @@ public class FileService {
         return new DefaultResourceLoader().getResource(uploadRoot + path);
     }
 
-    public int save(AttachDivCd attachDivCd, String dataNo, List<AttachFile> attachFileList, boolean isInTempDirectory) {
+    public int save(AttachDivCd attachDivCd, String targetId, List<AttachFile> attachFileList, boolean isInTempDirectory) {
         attachFileList.forEach((attachFile) -> {
-            attachFile.setDataNo(dataNo);
+            attachFile.setTargetId(targetId);
             attachFile.setAttachDivCd(attachDivCd);
         });
 
@@ -202,8 +202,8 @@ public class FileService {
         return this.save(attachFileList, false);
     }
 
-    public int delete(AttachDivCd attachDivCd, String dataNo) {
-        List<AttachFile> attachFileList = this.findFiles(attachDivCd, dataNo);
+    public int delete(AttachDivCd attachDivCd, String targetId) {
+        List<AttachFile> attachFileList = this.findFiles(attachDivCd, targetId);
 
         if (attachFileList.size() == 0) {
             return 0;

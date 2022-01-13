@@ -49,34 +49,34 @@
 
     <select id="findGroupMappingsByGrpNo" resultType="GroupMappingResponseDto">
         WITH wd AS(
-        SELECT map_no, grp_no, data_gbn, data_no, created_by, created_at, use_yn, sort
+        SELECT map_no, grp_no, target, target_id, created_by, created_at, use_yn, sort
         FROM cmm_group_map
         WHERE grp_no = #{groupMappingRequestDto.grpNo}
-        ORDER BY data_gbn
+        ORDER BY target
         )
 
-        SELECT map_no, grp_no, data_gbn, data_no, created_at, created_by, use_yn, sort, data_nm, tooltip, data_cd
+        SELECT map_no, grp_no, target, target_id, created_at, created_by, use_yn, sort, data_nm, tooltip, data_cd
         FROM (
-        SELECT wd.map_no, wd.grp_no, wd.data_gbn, wd.created_at, wd.created_by, wd.use_yn, wd.sort, e.emp_no AS data_no,
+        SELECT wd.map_no, wd.grp_no, wd.target, wd.created_at, wd.created_by, wd.use_yn, wd.sort, e.emp_no AS target_id,
         CONCAT(CONCAT(e.emp_nm,' '),(CASE WHEN postn.name IS NULL THEN '' ELSE postn.name END)) AS data_nm,
         CONCAT(CONCAT((CASE WHEN dept.dept_nm IS NULL THEN '' ELSE dept.dept_nm END),' '), (CASE WHEN duty.name IS NULL THEN '' ELSE duty.name END)) as tooltip,
         e.cmpny_emp_cd AS data_cd
-        FROM wd JOIN cmm_emp e ON wd.data_no = e.emp_no AND wd.data_gbn = 'E'
+        FROM wd JOIN cmm_emp e ON wd.target_id = e.emp_no AND wd.target = 'E'
         LEFT OUTER JOIN cmm_code postn ON e.postn_cd = postn.code  AND postn.div_cd = 'OR02'
         LEFT OUTER JOIN cmm_code duty ON e.duty_cd = duty.code  AND duty.div_cd = 'OR01'
         LEFT OUTER JOIN cmm_dept dept ON e.dept_no = dept.dept_no
         WHERE e.client_id =  #{groupMappingRequestDto.clientId}
         UNION
-        SELECT wd.map_no, wd.grp_no, wd.data_gbn, wd.created_at, wd.created_by, wd.use_yn, wd.sort, d.dept_no AS data_no, d.dept_nm AS data_nm,
+        SELECT wd.map_no, wd.grp_no, wd.target, wd.created_at, wd.created_by, wd.use_yn, wd.sort, d.dept_no AS target_id, d.dept_nm AS data_nm,
         (CASE WHEN parent.dept_nm IS NULL THEN '' ELSE parent.dept_nm END) AS tooltip,
         d.dept_cd AS data_cd
-        FROM wd JOIN cmm_dept d on  wd.data_no = d.dept_no AND wd.data_gbn = 'D'
+        FROM wd JOIN cmm_dept d on  wd.target_id = d.dept_no AND wd.target = 'D'
         LEFT OUTER JOIN cmm_dept parent ON parent.dept_no = d.p_dept_no
         WHERE d.client_id = #{groupMappingRequestDto.clientId}
         )x
         <trim prefix="WHERE" prefixOverrides="AND|OR">
-            <if test='groupMappingRequestDto.dataGbn != null and groupMappingRequestDto.dataGbn != ""'>
-                AND data_gbn = #{groupMappingRequestDto.dataGbn}
+            <if test='groupMappingRequestDto.target != null and groupMappingRequestDto.target != ""'>
+                AND target = #{groupMappingRequestDto.target}
             </if>
             <if test='groupMappingRequestDto.dataNm != null and groupMappingRequestDto.dataNm != ""'>
                 AND data_nm LIKE  CONCAT(CONCAT('%',#{groupMappingRequestDto.dataNm}),'%')
@@ -90,14 +90,14 @@
 
     <update id="insertGroupMappings" databaseId="oracle">
         INSERT INTO cmm_group_map (
-        map_no, grp_no, data_gbn, data_no, created_by, created_at, use_yn, sort
+        map_no, grp_no, target, target_id, created_by, created_at, use_yn, sort
         )
         SELECT sq_cmm_group_map.NEXTVAL AS map_no , T.* FROM (
         <foreach collection="collection" item="item" index="index" separator="union all">
             SELECT
             #{item.grpNo} as grp_no ,
-            #{item.dataGbn} as data_gbn ,
-            #{item.dataNo} as data_no ,
+            #{item.target} as target ,
+            #{item.targetId} as target_id ,
             #{item.createdBy} as created_by ,
             #{item.createdAt} as created_at ,
             #{item.useYn} as use_yn ,
@@ -109,10 +109,10 @@
 
     <insert id="insertGroupMappings" useGeneratedKeys="true" keyProperty="mapNo" databaseId="mysql">
         INSERT INTO cmm_group_map
-        (grp_no, data_gbn, data_no, created_by, created_at, use_yn, sort)
+        (grp_no, target, target_id, created_by, created_at, use_yn, sort)
         VALUES
         <foreach collection="collection" item="item" index="index" separator=",">
-            (#{item.grpNo}, #{item.dataGbn}, #{item.dataNo}, #{item.createdBy}, #{item.createdAt}, #{item.useYn}, #{item.sort})
+            (#{item.grpNo}, #{item.target}, #{item.targetId}, #{item.createdBy}, #{item.createdAt}, #{item.useYn}, #{item.sort})
         </foreach>
     </insert>
 
@@ -147,8 +147,8 @@
         a.seq_no,
         a.map_no,
         a.grp_no,
-        a.data_gbn,
-        a.data_no,
+        a.target,
+        a.target_id,
         a.action,
         a.created_by,
         a.created_at,
@@ -158,9 +158,9 @@
         CASE WHEN e.emp_nm IS NULL THEN d.dept_nm ELSE e.emp_nm END as data_nm,
         e2.emp_nm as reg_emp_nm
         FROM cmm_group_map_hst a
-        LEFT OUTER JOIN cmm_emp e ON a.data_gbn = 'E' AND a.data_no = e.emp_no
+        LEFT OUTER JOIN cmm_emp e ON a.target = 'E' AND a.target_id = e.emp_no
 
-        LEFT OUTER JOIN cmm_dept d ON a.data_gbn = 'D' AND a.data_no = d.dept_no
+        LEFT OUTER JOIN cmm_dept d ON a.target = 'D' AND a.target_id = d.dept_no
         LEFT OUTER JOIN cmm_emp e2 ON a.created_by = e2.emp_no
         LEFT OUTER JOIN cmm_group g ON a.grp_no = g.grp_no
         LEFT OUTER JOIN cmm_app_group ag ON a.grp_no = ag.app_grp_no
@@ -177,8 +177,8 @@
             <if test='groupMappingHistoryRequestDto.action != null and groupMappingHistoryRequestDto.action != ""'>
                 AND action = #{groupMappingHistoryRequestDto.action}
             </if>
-            <if test='groupMappingHistoryRequestDto.dataGbn != null and groupMappingHistoryRequestDto.dataGbn != ""'>
-                AND data_gbn = #{groupMappingHistoryRequestDto.dataGbn}
+            <if test='groupMappingHistoryRequestDto.target != null and groupMappingHistoryRequestDto.target != ""'>
+                AND target = #{groupMappingHistoryRequestDto.target}
             </if>
 
             <if test='groupMappingHistoryRequestDto.dataNm != null and groupMappingHistoryRequestDto.dataNm != ""'>
@@ -202,9 +202,9 @@
 
     <insert id="insertGroupMappingsHistory" >
         INSERT INTO cmm_group_map_hst(seq_no,
-        map_no, grp_no, data_gbn, data_no, action, created_by, created_at, reg_ip, client_id
+        map_no, grp_no, target, target_id, action, created_by, created_at, reg_ip, client_id
         ) VALUES (<include refid="common.sql.seq"><property name="t" value="sq_cmm_group_map_hst"/></include>,
-        #{mapNo}, #{grpNo}, #{dataGbn}, #{dataNo}, #{action}, #{createdBy}, #{createdAt}, #{regIp}, #{clientId}
+        #{mapNo}, #{grpNo}, #{target}, #{targetId}, #{action}, #{createdBy}, #{createdAt}, #{regIp}, #{clientId}
         )
     </insert>
 </mapper>
