@@ -1,6 +1,10 @@
 import MpBaseOrganizationTreeCard from "./MpBaseOrganizationTreeCard.js";
 import MpBaseGroupCombo from "../group/MpBaseGroupCombo.js";
 
+
+
+
+
 export default {
     name: 'mp-base-organization',
     components: {
@@ -18,7 +22,7 @@ export default {
                     <v-card-title>
                         <span v-html="paths"></span>
                         <template v-if="mode === 'organization'">
-                            <span class="position-right" v-show="item.gubun === 'D'">
+                            <span class="position-right" v-show="item.dataType === 'D'">
                                 <v-tooltip bottom><template v-slot:activator="{ on, attrs }">
                                         <v-btn color="success" small v-bind="attrs" v-on="on" @click="newDepartment()">
                                             <v-icon>mdi-microsoft-teams</v-icon>
@@ -150,10 +154,10 @@ export default {
                                             <v-text-field label="부서코드*" v-model="department.deptCd" :rules="[v => (v && v.length > 0) || 'Required field']"></v-text-field>
                                         </v-col>-->
                                     <v-col cols="12" md="12">
-                                        <v-text-field label="부서명*" v-model="department.deptNm" :rules="[v => (v && v.length > 0) || 'Required field']"></v-text-field>
+                                        <v-text-field label="부서명*" v-model="department.name" :rules="[v => (v && v.length > 0) || 'Required field']"></v-text-field>
                                     </v-col>
                                     <v-col cols="12" md="6">
-                                        <v-text-field label="정렬번호*" v-model="department.sortNo" type="number" :rules="[v => (v !== '' && !isNaN(v)) || 'Required field']"></v-text-field>
+                                        <v-text-field label="정렬번호*" v-model="department.sort" type="number" :rules="[v => (v !== '' && !isNaN(v)) || 'Required field']"></v-text-field>
                                     </v-col>
                                     <v-col cols="12" md="6">
                                         <v-select label="사용여부" v-model="department.useYn" :items="[{text:'사용',value:'Y'},{text:'미사용',value:'N'}]"></v-select>
@@ -187,24 +191,20 @@ export default {
                         <template v-else-if="type === 'employee'">
                             <v-card-text>
                                 <v-row>
-                                    <!--<v-col cols="12" md="4">
-                                            <v-text-field label="사번" v-model="employee.cmpnyEmpCd" :readonly="edit"></v-text-field>
-                                        </v-col>-->
-        
                                     <v-col cols="12" md="4">
-                                        <v-text-field label="ID" v-model="employee.id" :readonly="edit" :rules="[v => (v && v.length > 0) || 'Required field']"></v-text-field>
+                                        <v-text-field label="ID" v-model="employee.username" :readonly="edit" :rules="[v => (v && v.length > 0) || 'Required field']"></v-text-field>
                                     </v-col>
                                     <v-col cols="12" md="4">
-                                        <v-text-field label="이름" v-model="employee.empNm" :rules="[v => (v && v.length > 0) || 'Required field']"></v-text-field>
+                                        <v-text-field label="이름" v-model="employee.name" :rules="[v => (v && v.length > 0) || 'Required field']"></v-text-field>
                                     </v-col>
                                     <v-col cols="12" md="4">
-                                        <v-select label="퇴사여부" v-model="employee.rtrmntYn" :items="[{text:'재직',value:'N'},{text:'퇴사',value:'Y'}]"></v-select>
+                                        <v-text-field label="별명" v-model="employee.nickname" :rules="[v => (v && v.length > 0) || 'Required field']"></v-text-field>
                                     </v-col>
                                     <v-col cols="12" md="4">
-                                        <v-text-field label="부서" v-model="employee.deptNm" readonly></v-text-field>
+                                        <v-text-field label="부서" v-model="employee.departmentName" readonly></v-text-field>
                                     </v-col>
                                     <v-col cols="12" md="4">
-                                        <v-select label="직위" v-model="employee.postnCd" :items="codes.postnCd">
+                                        <v-select label="직위" v-model="employee.positionCd" :items="codes.postnCd">
                                             <v-tooltip bottom slot="append-outer">
                                                 <template v-slot:activator="{ on, attrs }">
                                                     <v-icon color="info" v-if="control.employee" v-bind="attrs" v-on="on" @click="viewPostn.show = true">mdi-pencil</v-icon>
@@ -224,22 +224,22 @@ export default {
                                         </v-select>
                                     </v-col>
                                     <v-col cols="12" md="4">
-                                        <v-text-field label="IPCC ID" v-model="employee.phoneUserId"></v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" md="4">
-                                        <v-text-field label="IPCC 식별번호" v-model="employee.phoneUserTel"></v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" md="4">
-                                        <v-text-field label="IPCC 내선번호" v-model="employee.phoneExtensionNo"></v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" md="4">
                                         <v-text-field label="이메일" v-model="employee.email"></v-text-field>
                                     </v-col>
                                     <v-col cols="12" md="4">
-                                        <v-text-field label="내선번호" v-model="employee.extTelNo"></v-text-field>
+                                        <v-text-field label="전화번호" v-model="employee.phone"></v-text-field>
                                     </v-col>
                                     <v-col cols="12" md="4">
-                                        <v-text-field label="입사일" v-model="employee.hireDd"></v-text-field>
+                                        <v-text-field label="내선번호" v-model="employee.extensionNo"></v-text-field>
+                                    </v-col>
+                                    <v-col cols="12" md="4">
+                                        <v-text-field label="생성일" v-model="employee.createdAt" readonly></v-text-field>
+                                    </v-col>
+                                    <v-col cols="12" md="4">
+                                        <v-text-field label="수정일" v-model="employee.updatedAt" readonly></v-text-field>
+                                    </v-col>
+                                    <v-col cols="12" md="4">
+                                        <v-select label="상태" v-model="employee.status" :items="codes.userStatus"></v-select>
                                     </v-col>
         
                                     <v-col cols="12" md="12">
@@ -365,6 +365,9 @@ export default {
                 }),
                 dutyCd: mercury.base.lib.code('OR01', {
                     type: 'v-object'
+                }),
+                userStatus: mercury.base.lib.code('UserStatus', {
+                    type: 'v-object'
                 })
             },
             roles: [],
@@ -447,14 +450,11 @@ export default {
             this.edit = false;
             this.type = 'department';
             this.department = {
-                //deptNo:'controller',
-                //clientId:'controller',
-                deptCd: '',
-                deptNm: '',
-                dpth: this.item.dpth,
-                sortNo: 0,
-                useYn: 'Y',
-                pDeptNo: this.item.no
+                parentDepartmentKey: this.item.departmentKey,
+                departmentKey: '',
+                name: '',
+                sort: 0,
+                useYn: 'Y'
             };
             this.departmentRoles = [];
         },
@@ -462,23 +462,22 @@ export default {
             this.edit = false;
             this.type = 'employee';
             this.employee = {
-                //empNo:'controller',
-                cmpnyEmpCd: '',
+                name: '',
+                nickname: '',
+                phone: '',
+                email: '',
                 username: '',
-                deptNo: this.item.no,
-                deptNm: this.item.text,
-                empNm: '',
-                extTelNo: '',
-                //hireDd:'',
-                rtrmntYn: 'N',
-                //rtrmntDd:'',
-                phoneUserId: '',
-                phoneUserTel: '',
-                phoneExtensionNo: '',
-                postnCd: '',
-                dutyCd: '',
-                empSort: 0,
-                email: ''
+
+                identification: undefined,
+                extensionNo: undefined,
+                positionCd: undefined,
+                dutyCd: undefined,
+                sort: 0,
+                status: undefined,
+
+                userKey: '',
+                departmentId: this.item.id,
+                departmentName: this.item.text
             };
             this.employeeRoles = [];
             this.employeeDepartmentRoles = [];
@@ -731,7 +730,6 @@ export default {
                 this.paths = '<i>' + prePath + '</i>' + '<i class="text-danger"> > </i>' + '<i class="text-primary">' + node.text + '</i>';
                 const dataType = node.original['dataType'];
                 if (dataType === 'D') {
-                    //const deptCd = node.original.deptCd;deptNo
                     xAjax({
                         url: mercury.base.util.bindPath('/base/organizations/departments/{departmentKey}',{departmentKey:this.item.departmentKey})
                     }).then(resp => {
@@ -746,7 +744,6 @@ export default {
                         this.type = 'department';
                     });
                 } else if (dataType === 'E') {
-                    //const userKey = node.original.userKey;
                     xAjax({
                         url: mercury.base.util.bindPath('/base/organizations/employees/{userKey}',{userKey:this.item.userKey})
                     }).then(resp => {

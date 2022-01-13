@@ -20,9 +20,7 @@
         ${e}.position_cd,
         ${e}.duty_cd,
         ${e}.sort,
-        ${e}.join_date,
-        ${e}.is_retire,
-        ${e}.retire_date,
+        ${e}.status,
 
         ${e}.created_by,
         ${e}.created_at,
@@ -60,14 +58,10 @@
         <include refid="user_all">
             <property name="e" value="e"/>
             <property name="l" value="l"/>
-            <property name="dept" value="dept"/>
-            <property name="postn" value="postn"/>
-            <property name="duty" value="duty"/>
         </include>
-        FROM cmm_emp e
-            JOIN cmm_login l ON e.emp_no = l.emp_no
-            LEFT OUTER JOIN cmm_dept dept ON e.dept_no = dept.dept_no
-            LEFT OUTER JOIN cmm_code postn ON e.postn_cd = postn.code AND postn.client_id = e.client_id  AND postn.div_cd = 'OR02'
+        FROM client_user e JOIN client_user_login l ON e.id = l.user_id
+            LEFT OUTER JOIN client_department dept ON e.department_id = dept.id
+            LEFT OUTER JOIN cmm_code postn ON e.position_cd = postn.code AND postn.client_id = e.client_id  AND postn.div_cd = 'OR02'
             LEFT OUTER JOIN cmm_code duty ON e.duty_cd = duty.code  AND duty.client_id = e.client_id AND duty.div_cd = 'OR01'
         WHERE e.user_key = #{userKey}
     </select>
@@ -162,7 +156,7 @@
         , hire_dd = #{hireDd}
         , rtrmnt_yn = #{rtrmntYn}
         , rtrmnt_dd = #{rtrmntDd}
-        , upd_emp_no = #{updEmpNo}
+        , upd_emp_no = #{updatedBy}
         , updated_at  = #{updatedAt}
         , phone_user_id = #{phoneUserId}
         , phone_user_tel = #{phoneUserTel}

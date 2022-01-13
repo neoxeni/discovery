@@ -48,7 +48,6 @@ public class OrganizationRestController {
     public ResponseEntity<?> getDepartment(AppUser appUser, @PathVariable String departmentKey) {
         Department department = organizationService.findDepartmentByDepartmentKey(appUser.getClientId(), departmentKey);
 
-
         List<UserRole> roles = new ArrayList<>();
         List<UserRole> parentsRoles = new ArrayList<>();
 
@@ -84,7 +83,7 @@ public class OrganizationRestController {
 
         if (!StringUtils.hasLength(department.getParentDepartmentKey())) {
             department.setParentDepartmentKey("ROOT");
-            ;
+
         }
 
         int affected = organizationService.insertDepartment(department);

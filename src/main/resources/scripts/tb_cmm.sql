@@ -31,9 +31,6 @@ create table client_user(
     duty_cd                     VARCHAR(36)         NULL COMMENT '직책코드',
     sort                        INT             NOT NULL DEFAULT 0 COMMENT '표시순서',
     status                      VARCHAR(10)         NULL COMMENT '사원상태',
-    join_date                   DATE            NOT NULL COMMENT '입사일',
-    is_retire                   TINYINT(1)      NOT NULL DEFAULT 0 COMMENT '퇴사여부',
-    retire_date                 DATE                NULL COMMENT '퇴사일',
 
     created_by                  INT             NOT NULL COMMENT '생성자',
     created_at                  DATETIME        NOT NULL COMMENT '생성일',

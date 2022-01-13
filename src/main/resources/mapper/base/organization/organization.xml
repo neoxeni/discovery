@@ -2,149 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.mercury.discovery.base.organization.service.OrganizationRepository">
-
-    <select id="findDeptEmpListForTree" resultType="CamelMap">
-        WITH RECURSIVE cte_parent AS(
-            SELECT
-                1 as level, a.dept_no, a.p_dept_no, a.dept_nm, a.sort, a.dept_cd, a.use_yn,
-                CONVERT(a.dept_nm, CHAR(255)) depth_fullname
-            FROM cmm_dept a
-            WHERE client_id = #{clientId}
-              AND a.p_dept_no = #{pDeptNo}
-            UNION ALL
-            SELECT
-                level+1 AS level, a.dept_no, a.p_dept_no, a.dept_nm, a.sort, a.dept_cd, a.use_yn,
-                CAST( CONCAT(CONVERT(b.depth_fullname, CHAR(255)) , '>' ,  CONVERT(a.dept_nm, CHAR(255))) AS CHAR(255)) depth_fullname
-            FROM cmm_dept a INNER JOIN cte_parent b ON a.p_dept_no = b.dept_no
-            WHERE a.client_id = #{clientId}
-        )
-        SELECT
-            dept_no AS id,
-            dept_cd AS code,
-            dept_nm AS text,
-            CONCAT(p_dept_no,'') as parent,
-            'D' as gubun,
-            lev,
-            rel,
-            is_exsit_sub,
-            tool_tip
-        FROM(
-            SELECT
-                dept_no, dept_cd, dept_nm, p_dept_no, #{level}+level as lev,
-                CASE p_dept_no
-                    WHEN '0' THEN 'drive'
-                    ELSE 'folder'
-                    END as rel,
-                CASE IFNULL((SELECT dept_cd FROM cmm_dept y WHERE y.p_dept_no = x.dept_no LIMIT 1), 'NULL')
-                    WHEN 'NULL' THEN
-                        CASE IFNULL((SELECT 'Y' FROM cmm_emp z WHERE z.dept_no = x.dept_no AND z.rtrmnt_yn='N' LIMIT 1), 'NULL')
-                            WHEN 'NULL' THEN 'N'
-                            ELSE 'Y'
-                            END
-                    ELSE 'Y'
-                    END AS is_exsit_sub,
-                dept_no AS id, dept_nm data, '' AS tool_tip
-            FROM cte_parent x
-            WHERE level = 1
-              AND use_yn = 'Y'
-            ORDER BY sort
-        )x
-        UNION ALL
-        SELECT
-            emp_no AS id, cmpny_emp_cd AS code, emp_nm AS text, CONCAT(dept_no,'') as parent, 'E' as gubun, lev,
-            rel, is_exsit_sub, tool_tip
-        FROM(
-            SELECT
-                a.emp_no, a.cmpny_emp_cd,
-                CONCAT(a.emp_nm,' ',IFNULL(duty.name, ''), IFNULL((CASE WHEN a.rtrmnt_yn = 'Y' THEN CONCAT(' [퇴사. ',a.rtrmnt_dd,']') ELSE '' END), '')) emp_nm,
-                a.dept_no, 0 lev,
-                'default' rel, 'N' as is_exsit_sub, emp_no id, CONCAT(a.emp_nm,' ',IFNULL(duty.name, ''),' / ',IFNULL(a.email, '')) data,
-                CONCAT(a.emp_nm,' ',IFNULL(duty.name, ''),' / ',IFNULL(a.email, '')) tool_tip
-            FROM cmm_emp a
-                     LEFT OUTER JOIN cmm_code duty ON a.duty_cd = duty.code AND duty.client_id IN (#{clientId},-1)
-            WHERE a.dept_no = #{pDeptNo}
-              AND a.client_id = #{clientId}
-              AND a.rtrmnt_yn = 'N'
-            ORDER BY a.emp_nm
-        )y
-    </select>
-
-    <select id="findDeptEmpListForTreeSearch" resultType="CamelMap">
-        WITH RECURSIVE cte_parent AS(
-            SELECT
-                1 AS LEVEL, a.dept_no, a.p_dept_no, a.dept_nm, a.sort, a.dept_cd, a.use_yn,
-                CONVERT(a.dept_nm, CHAR(255)) depth_fullname
-            FROM cmm_dept a
-            WHERE client_id = #{clientId}
-            AND a.p_dept_no = 0
-            UNION ALL
-            SELECT
-                level+1 AS level, a.dept_no, a.p_dept_no, a.dept_nm, a.sort, a.dept_cd, a.use_yn,
-                CAST( CONCAT(CONVERT(b.depth_fullname, CHAR(255)) , '>' ,  CONVERT(a.dept_nm, CHAR(255))) AS CHAR(255)) depth_fullname
-            FROM cmm_dept a INNER JOIN cte_parent b ON a.p_dept_no = b.dept_no
-		),
-		cte_parent2 AS (
-            SELECT
-                1 AS level, a.dept_no, a.p_dept_no, a.dept_nm, a.sort, a.dept_cd, a.use_yn,
-                CONVERT( a.dept_nm, CHAR(255)) depth_fullname
-            FROM cmm_dept a
-            WHERE client_id = #{clientId}
-            AND a.p_dept_no = 0
-
-            UNION ALL
-
-            SELECT
-                level+1 as level, a.dept_no, a.p_dept_no, a.dept_nm, a.sort, a.dept_cd, a.use_yn,
-                cast( concat(convert(b.depth_fullname, CHAR(255)) , '>' ,  convert(a.dept_nm, CHAR(255))) as char(255)) depth_fullname
-            FROM cmm_dept a INNER JOIN cte_parent2 b ON a.p_dept_no = b.dept_no
-        )
-
-        SELECT
-            a.dept_no AS id,
-            a.dept_cd AS code,
-            a.dept_nm AS text,
-            (CASE WHEN a.p_dept_no = '0' THEN '#' ELSE a.p_dept_no END) AS parent,
-            'D' as gubun,
-            b.level as lev,
-            (CASE WHEN a.p_dept_no = '0' THEN 'drive' ELSE 'folder' END) AS rel,
-            (CASE IFNULL((SELECT dept_cd FROM cmm_dept y WHERE y.p_dept_no =  a.dept_no LIMIT 1), 'NULL')
-            WHEN 'NULL' THEN
-                CASE IFNULL((SELECT 'Y' FROM cmm_emp z WHERE z.dept_no =  a.dept_no AND z.rtrmnt_yn='N' LIMIT 1), 'NULL')
-                    WHEN 'NULL' THEN 'N'
-                    ELSE 'Y'
-                    END
-            ELSE 'Y'
-            END) AS is_exsit_sub,
-            '' tool_tip,
-            '' user_id,
-            '' emp_nm
-        FROM cmm_dept a INNER JOIN cte_parent b on a.dept_no = b.dept_no
-        WHERE client_id = #{clientId}
-        AND a.use_yn = 'Y'
-
-        UNION ALL
-
-        SELECT
-            emp.emp_no AS id,
-            emp.cmpny_emp_cd AS code,
-            concat(emp.emp_nm,' ',IFNULL(duty.name,'')) AS text,
-            emp.dept_no AS parent,
-            'E' AS gubun,
-            1+b.level AS lev,
-            'default' AS rel,
-            'N' AS is_exsit_sub,
-            concat(emp.emp_nm,' ',IFNULL(duty.name,''),' / ',IFNULL(emp.email,'')) AS tool_tip,
-            login.user_id AS user_id,
-            emp.emp_nm AS emp_nm
-        FROM cmm_emp emp
-        INNER JOIN cte_parent2 b on emp.dept_no = b.dept_no
-        LEFT OUTER JOIN cmm_code duty ON emp.duty_cd = duty.code AND emp.dept_no = b.dept_no AND duty.client_id IN (#{clientId},-1)
-        INNER JOIN cmm_login login ON emp.emp_no = login.emp_no
-        WHERE emp.emp_nm like CONCAT(CONCAT('%', #{str}), '%')
-    </select>
-
-
-
     <select id="findDepartmentAll" resultType="CamelMap">
         SELECT *
         FROM client_department
@@ -178,7 +35,7 @@
         INSERT INTO client_department (
             parent_department_key, department_key, name, sort, use_yn, created_by, created_at, updated_by , updated_at, client_id
         ) VALUES (
-            #{parentDepartmentKey}, #{departmentKey}, #{name}, #{sort}, #{useYn}, #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}, #{client_id}
+            #{parentDepartmentKey}, #{departmentKey}, #{name}, #{sort}, #{useYn}, #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}, #{clientId}
         )
     </insert>
 
@@ -188,7 +45,7 @@
             , name = #{name}
             , sort = #{sort}
             , use_yn = #{useYn}
-            , updated_by = #{updEmpNo}
+            , updated_by = #{updatedBy}
             , updated_at = #{updatedAt}
         WHERE id = #{id}
           AND client_id = #{clientId}

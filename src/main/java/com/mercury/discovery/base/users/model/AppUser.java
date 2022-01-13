@@ -52,11 +52,7 @@ public class AppUser extends TokenUser implements UserDetails {
     private String dutyCd;
 
     private int sort;
-    private String status;
-
-    private LocalDate joinDate;
-    private boolean isRetire;
-    private LocalDate retireDate;
+    private UserStatus status;
 
     private Integer createdBy;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
