@@ -35,7 +35,7 @@
     <logger name="jdbc.connection" level="OFF"/>
 
     <springProfile name="local">
-        <logger name="com.discovery" level="DEBUG" additivity="false">
+        <logger name="com.mercury" level="DEBUG" additivity="false">
             <appender-ref ref="STDOUT" />
         </logger>
     </springProfile>

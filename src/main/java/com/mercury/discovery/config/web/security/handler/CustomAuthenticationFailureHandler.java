@@ -29,7 +29,6 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException, ServletException {
-        log.error("onAuthenticationFailure", e);
         String username = request.getParameter("username");
 
         int errorNum;
@@ -61,7 +60,6 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
     public void onApplicationEvent(AuthenticationFailureBadCredentialsEvent event) {
         Object userName = event.getAuthentication().getPrincipal();
         Object credentials = event.getAuthentication().getCredentials();
-        log.debug("Failed login using USERNAME [" + userName + "]");
-        log.debug("Failed login using PASSWORD [" + credentials + "]");
+        log.debug("Failed login using USERNAME:{}, PASSWORD:{}", userName, credentials);
     }
 }
