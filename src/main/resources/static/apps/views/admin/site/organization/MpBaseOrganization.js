@@ -732,10 +732,9 @@ export default {
                         url: mercury.base.util.bindPath('/base/organizations/departments/{departmentKey}',{departmentKey:this.item.departmentKey})
                     }).then(resp => {
                         this.department = resp;
-                        if (resp.roles !== null) {
-                            this.departmentRoles = resp.roles.slice(); //shallow copy
-                        } else //shallow copy
-                        {
+                        if (resp.groups !== null) {
+                            this.departmentRoles = resp.groups.slice(); //shallow copy
+                        } else {
                             this.departmentRoles = [];
                         }
                         this.edit = true;

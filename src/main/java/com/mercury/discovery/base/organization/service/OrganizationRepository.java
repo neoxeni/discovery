@@ -27,7 +27,7 @@ public interface OrganizationRepository {
 
     int changeDepartmentDepartment(ChangeDepartmentDto changeDepartmentDto);
 
-    List<UserGroup> findDepartmentGroups(Integer clientId, Long id);
+    List<UserGroup> findDepartmentGroups(Integer clientId, Long departmentId);
 
     Department findDepartmentByDepartmentKey(Integer clientId, String departmentKey);
 }

@@ -39,7 +39,6 @@ public class OrganizationService {
         clientTree.setDivCd("C");
         clientTree.setClientId(clientId);
 
-
         List<JsTree> root = new ArrayList<>();
         root.add(clientTree);
 
@@ -55,10 +54,11 @@ public class OrganizationService {
             if ("ROOT".equals(item.get("parentDepartmentKey"))) {
                 jsTree.setParent(clientTree.getId());
             } else {
-                jsTree.setParent("D" + "_" + item.get("parentDepartmentKey"));
+                jsTree.setParent(departmentType + "_" + item.get("parentDepartmentKey"));
             }
 
-            jsTree.setId(departmentType + "_" + item.get("departmentKey"));
+            String id = departmentType + "_" + item.get("departmentKey");
+            jsTree.setId(id);
             jsTree.setText(item.getString("name"));
             jsTree.setData(item);
             jsTree.setDivCd(departmentType);
@@ -66,7 +66,7 @@ public class OrganizationService {
 
             root.add(jsTree);
 
-            departmentKeyMap.put(item.getInt("id"), item.getString("departmentKey"));
+            departmentKeyMap.put(item.getInt("id"), id);
         });
 
         List<CamelMap> employeeList = organizationRepository.findEmployeeAll(clientId);
@@ -77,10 +77,10 @@ public class OrganizationService {
             jsTree.setType("account");
             jsTree.setIcon("mdi mdi-account mdi-18px text-primary");
 
-            if (item.get("department_id") != null) {
-                String departmentKey = departmentKeyMap.get(item.getInt("department_id"));
+            if (item.get("departmentId") != null) {
+                String departmentKey = departmentKeyMap.get(item.getInt("departmentId"));
                 if (departmentKey != null) {
-                    jsTree.setParent(departmentType + "_" + departmentKey);
+                    jsTree.setParent(departmentKey);
                 } else {
                     jsTree.setParent(rootId);
                 }
@@ -101,8 +101,8 @@ public class OrganizationService {
     }
 
     @Transactional(readOnly = true)
-    public List<UserGroup> findDepartmentGroups(Integer clientId, Long id) {
-        return organizationRepository.findDepartmentGroups(clientId, id);
+    public List<UserGroup> findDepartmentGroups(Integer clientId, Long departmentId) {
+        return organizationRepository.findDepartmentGroups(clientId, departmentId);
     }
 
     @Transactional(readOnly = true)

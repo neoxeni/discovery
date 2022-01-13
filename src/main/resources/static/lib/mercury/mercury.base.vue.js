@@ -867,6 +867,10 @@
             deselectAll() {
                 this.instance.deselect_all();
             },
+            selectNode(nodeId) {
+                this.instance.deselect_all();
+                this.instance.select_node(nodeId);
+            },
             getSelectedNode(isFull) {//boolean
                 return this.instance.get_selected(isFull);
             },

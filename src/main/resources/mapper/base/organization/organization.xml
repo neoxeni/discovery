@@ -65,40 +65,31 @@
           AND client_id = #{clientId}
     </update>
 
+    <select id="findUserGroups" resultType="UserGroup">
+        SELECT cg.*, cgm.target, cgm.target_id, cgm.id as group_mapping_id
+        FROM cmm_group_mapping cgm JOIN cmm_group cg ON cgm.group_id = cg.id
+        WHERE target = 'E'
+          AND target_id = #{userId}
+    </select>
+
     <select id="findDepartmentGroups" resultType="UserGroup">
-        <include refid="common.sql.with" /> cte(dept_no, p_dept_no, dept_nm) AS (
-        SELECT
-        a.dept_no,
-        a.p_dept_no,
-        a.dept_nm
-        FROM client_department a
-        WHERE a.id = #{id}
-        AND a.client_id = #{clientId}
-
-        UNION ALL
-
-        SELECT
-        a.dept_no,
-        a.p_dept_no,
-        a.dept_nm
-        FROM client_department a JOIN cte b ON b.p_dept_no = a.dept_no
-        AND a.client_id = #{clientId}
+        with recursive cte (id, parent_department_key) as (
+            select     id,
+                       parent_department_key
+            from       client_department
+            where      id = #{departmentId}
+            union all
+            select     p.id,
+                       p.parent_department_key
+            from       client_department p inner join cte on p.department_key = cte.parent_department_key
         )
 
-        SELECT
-        g.group_id,
-        g.code,
-        g.name,
-        cgm.map_no,
-        'D' as target,
-        cgm.target_id,
-        g.client_id
-        FROM cmm_group_mapping cgm JOIN cmm_group g ON cgm.group_id = g.group_id
-        WHERE target='D'
-        AND target_id IN (
-        SELECT dept_no
-        FROM cte
-        )
+        SELECT cg.*, cgm.target, cgm.target_id, cgm.id as group_mapping_id
+        FROM cmm_group_mapping cgm JOIN cmm_group cg ON cgm.group_id = cg.id
+        WHERE target = 'D'
+          AND target_id IN (
+              SELECT id FROM cte
+          )
 
     </select>
 </mapper>
