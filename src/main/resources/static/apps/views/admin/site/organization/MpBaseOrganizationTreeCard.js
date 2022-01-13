@@ -25,7 +25,7 @@ export default {
             </v-menu>
         </v-card-title>
         <v-card-text class="div-scroll-y">
-            <mp-js-tree url="/base/organizations/tree" ref="jstree" @changed="changed" state></mp-js-tree>
+            <mp-js-tree url="/base/organizations/tree" ref="jstree" @changed="changed" :dnd="dnd" state></mp-js-tree>
         </v-card-text>
     </v-card>
     `,
@@ -47,6 +47,9 @@ export default {
         };
     },
     methods: {
+        refresh(){
+            this.$refs['jstree'].refresh();
+        },
         renameNode(item, name) {
             this.$refs['jstree'].renameNode(item, name);
         },

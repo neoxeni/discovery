@@ -278,7 +278,6 @@ export default {
                                                                 <v-icon color="danger" v-bind="attrs" v-on="on" @click="removePostnItem(item, index)">mdi-minus-box</v-icon>
                                                             </template><span>삭제</span></v-tooltip>
                                                     </v-text-field>
-        
                                                 </v-col>
                                             </v-row>
                                         </v-form>
@@ -561,11 +560,8 @@ export default {
                 data: JSON.stringify(data)
             }).then(resp => {
                 mercury.base.lib.notify(resp.message);
-                if (method === 'PATCH') {
-                    this.$refs['jstree-card'].renameNode(this.item, name);
-                } else {
-                    location.reload();
-                }
+                this.$refs['jstree-card'].refresh();
+
             });
         },
         saveGroupItem() {
