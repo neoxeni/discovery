@@ -2,6 +2,7 @@
 <sitemenu id="mercury" name="mercury-website">
     <application id="Discovery" name="Discovery" path="/" >
         <menu name="사이트관리" path="/admin/site/code/MpBaseCode">
+            <menu name="조직관리" path="/admin/site/organization/MpBaseOrganization"/>
             <menu name="코드관리" path="/admin/site/code/MpBaseCode"/>
             <menu name="메뉴관리" path="/admin/site/menu/MpBaseMenu"/>
             <menu name="로그관리" path="/admin/site/log/MpBaseLog"/>

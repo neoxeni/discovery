@@ -233,11 +233,11 @@ const MpBaseCode = {
             this.form.data = item;
             if (item.parent === '#') {
                 this.form.type = 'codeDiv';
-                this.form.updatable = (node.data.updEnableYn === 'Y' && node.data.cmpnyNo !== -1);
+                this.form.updatable = (node.data.updEnableYn === 'Y' && node.data.clientId !== -1);
             } else {
                 const topNode = codeTree.getTopNode(node);
                 this.form.type = 'code';
-                this.form.updatable = (topNode.data.updEnableYn === 'Y' && node.data.cmpnyNo !== -1);
+                this.form.updatable = (topNode.data.updEnableYn === 'Y' && node.data.clientId !== -1);
             }
         },
         fetchData() {

@@ -237,11 +237,23 @@
 
         /**
          * @description 전달된 object의 깊은 복사를 수행한다.
-         * @param {Object} obj array인지 확인할 Object
+         * @param {Object} obj 대상 object
          * @returns {Object} 깊은 복사된 obj 객체
          */
         deepCopy: function(obj){
             return JSON.parse(JSON.stringify(obj));
+        },
+
+        /**
+         * @description 전달된 object 를 변경하지 못하도록 불변하게 만든다..
+         * @param {Object} obj 대상 object
+         * @returns {Object} immutable object
+         */
+        deepFreeze: function(obj){
+            Object.keys(obj).forEach(prop => {
+                if (typeof obj[prop] === 'object' && !Object.isFrozen(obj[prop])) self.deepFreeze(obj[prop]);
+            });
+            return Object.freeze(obj);
         },
 
         /**
