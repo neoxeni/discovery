@@ -24,11 +24,7 @@ public interface OrganizationRepository {
 
     int updateDepartment(Department department);
 
-    List<CamelMap> findDeptEmpListForTree(OrganizationSearchDto organizationSearchDto);
-
-    List<CamelMap> findDeptEmpListForTreeSearch(OrganizationSearchDto organizationSearchDto);
-
-    Department findDepartment(Integer clientId, Integer deptNo);
+    Department findDepartment(Integer clientId, Long id);
 
     int changeEmployeeDepartment(ChangeDepartmentDto changeDepartmentDto);
 
@@ -37,4 +33,6 @@ public interface OrganizationRepository {
     List<UserRole> findDepartmentsRoles(Integer clientId, Long id);
 
     Set<UserAppRole> findDepartmentsAppRoles(Integer clientId, Long deptNo);
+
+    Department findDepartmentByDepartmentKey(Integer clientId, String departmentKey);
 }

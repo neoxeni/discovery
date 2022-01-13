@@ -160,6 +160,13 @@
         ORDER BY e.sort
     </select>
 
+    <select id="findDepartmentByDepartmentKey" resultType="Department">
+        SELECT *
+        FROM client_department
+        WHERE department_key = #{departmentKey}
+          AND client_id = #{clientId}
+    </select>
+
     <select id="findDepartment" resultType="Department">
         SELECT *
         FROM client_department
@@ -275,10 +282,6 @@
         )
 
     </select>
-
-
-
-
 
 
 

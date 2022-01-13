@@ -49,7 +49,7 @@ public class OrganizationService {
         departmentList.forEach(item -> {
             JsTree jsTree = new JsTree();
             jsTree.setDataType(departmentType);
-            jsTree.setType("team");
+            jsTree.setType("department");
             jsTree.setIcon("mdi mdi-microsoft-teams mdi-18px text-primary");
 
             if ("ROOT".equals(item.get("parentDepartmentKey"))) {
@@ -100,10 +100,14 @@ public class OrganizationService {
         return root;
     }
 
+    @Transactional(readOnly = true)
+    public Department findDepartment(Integer clientId, Long id) {
+        return organizationRepository.findDepartment(clientId, id);
+    }
 
     @Transactional(readOnly = true)
-    public Department findDepartment(Integer clientId, Integer deptNo) {
-        return organizationRepository.findDepartment(clientId, deptNo);
+    public Department findDepartmentByDepartmentKey(Integer clientId, String departmentKey) {
+        return organizationRepository.findDepartmentByDepartmentKey(clientId, departmentKey);
     }
 
     @CacheEvict(cacheNames = "deptEmpListForTreeAll", key = "#department.clientId.toString()")

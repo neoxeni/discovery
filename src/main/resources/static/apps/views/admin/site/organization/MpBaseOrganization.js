@@ -706,11 +706,13 @@ export default {
             }
             const node = data.node;
             console.log(node)
-            const no = node.original.no;
+
             this.item = Object.assign(Object.assign({}, node.original), Object.assign({}, node.data));
 
+            const no = this.item.id;
+
             if (node.parent === '#') {
-                this.paths = '<i class="text-primary">' + this.item.text + '</i>';
+                this.paths = '<i class="text-primary">' + node.text + '</i>';
                 xAjax({
                     url: '/base/companiesMe'
                 }).then(resp => {
@@ -726,15 +728,15 @@ export default {
                 });
             } else {
                 const prePath = instance.get_path(node.parent, ' > ');
-                this.paths = '<i>' + prePath + '</i>' + '<i class="text-danger"> > </i>' + '<i class="text-primary">' + this.item.text + '</i>';
-                const gubun = this.item['gubun'];
-                if (gubun === 'D') {
+                this.paths = '<i>' + prePath + '</i>' + '<i class="text-danger"> > </i>' + '<i class="text-primary">' + node.text + '</i>';
+                const dataType = node.original['dataType'];
+                if (dataType === 'D') {
                     //const deptCd = node.original.deptCd;deptNo
                     xAjax({
-                        url: mercury.base.util.bindPath('/base/organizations/departments/{deptNo}',{deptNo:no})
+                        url: mercury.base.util.bindPath('/base/organizations/departments/{departmentKey}',{departmentKey:this.item.departmentKey})
                     }).then(resp => {
                         this.department = resp;
-                        if (resp.roles !== undefined) {
+                        if (resp.roles !== null) {
                             this.departmentRoles = resp.roles.slice(); //shallow copy
                         } else //shallow copy
                         {
@@ -743,13 +745,13 @@ export default {
                         this.edit = true;
                         this.type = 'department';
                     });
-                } else if (gubun === 'E') {
+                } else if (dataType === 'E') {
                     //const userKey = node.original.userKey;
                     xAjax({
-                        url: mercury.base.util.bindPath('/base/users/{empNo}',{empNo:no})
+                        url: mercury.base.util.bindPath('/base/organizations/employees/{userKey}',{userKey:this.item.userKey})
                     }).then(resp => {
                         this.employee = resp;
-                        if (resp.roles !== undefined) {
+                        if (resp.roles !== null) {
                             this.employeeRoles = resp.roles.filter(role => role.dataGbn === 'E');
                             this.employeeDepartmentRoles = resp.roles.filter(role => role.dataGbn === 'D');
                         } else {

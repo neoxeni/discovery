@@ -7,6 +7,7 @@ import com.mercury.discovery.base.organization.model.Department;
 import com.mercury.discovery.base.organization.service.OrganizationService;
 import com.mercury.discovery.base.users.model.AppUser;
 import com.mercury.discovery.base.users.model.UserRole;
+import com.mercury.discovery.base.users.service.UserService;
 import com.mercury.discovery.common.model.JsTree;
 import com.mercury.discovery.common.web.SimpleResponseModel;
 import com.mercury.discovery.utils.IDGenerator;
@@ -28,6 +29,8 @@ public class OrganizationRestController {
 
     private final OrganizationService organizationService;
 
+    private final UserService userService;
+
     private final CodeService codeService;
 
     @GetMapping("/base/organizations/tree")
@@ -36,13 +39,21 @@ public class OrganizationRestController {
         return ResponseEntity.ok(codes);
     }
 
-    @GetMapping("/base/organizations/departments/{deptNo}")
-    public ResponseEntity<?> getDepartment(AppUser appUser, @PathVariable Integer deptNo) {
-        Department department = organizationService.findDepartment(appUser.getClientId(), deptNo);
+    @GetMapping("/base/organizations/employees/{userKey}")
+    public ResponseEntity<?> getEmployee(AppUser appUser, @PathVariable String userKey) {
+        return ResponseEntity.ok(userService.getUser(appUser.getClientId(), userKey));
+    }
 
-        List<UserRole> list = organizationService.findDepartmentsRoles(appUser.getClientId(), department.getId());
+    @GetMapping("/base/organizations/departments/{departmentKey}")
+    public ResponseEntity<?> getDepartment(AppUser appUser, @PathVariable String departmentKey) {
+        Department department = organizationService.findDepartmentByDepartmentKey(appUser.getClientId(), departmentKey);
+
+
         List<UserRole> roles = new ArrayList<>();
         List<UserRole> parentsRoles = new ArrayList<>();
+
+        /*
+        List<UserRole> list = organizationService.findDepartmentsRoles(appUser.getClientId(), department.getId());
         list.forEach(userRole -> {
             if (userRole.getDataNo().equals(department.getId())) {
                 roles.add(userRole);
@@ -50,6 +61,7 @@ public class OrganizationRestController {
                 parentsRoles.add(userRole);
             }
         });
+        */
 
         department.setRoles(roles);
         department.setParentsRoles(parentsRoles);
