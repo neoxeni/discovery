@@ -13,7 +13,7 @@ export default {
                     <mp-button color="primary" label="조회" icon="mdi-magnify" @click="fetchData(true)"></mp-button>
                     <mp-button color="green" label="엑셀" icon="mdi-file-excel" @click="excelData()"></mp-button>
                     <mp-button color="danger" label="삭제" icon="mdi-trash-can" @click="deleteItem()"></mp-button>
-                    <!--<mp-button color="warning" label="새로입력" icon="mdi-plus" @click="newItem()"></mp-button>-->
+                    <mp-button color="warning" label="새로입력" icon="mdi-plus" @click="newItem()"></mp-button>
                 </div>
             </mp-search>
             <v-data-table dense fixed-header item-key="mapNo" :height="$settings.datatable.rows5" :footer-props="$settings.datatable.footer5" :headers="tbl.headers" :items="filteredItems" :items-per-page="5" show-select v-model="tbl.selectedItems">
@@ -42,18 +42,11 @@ export default {
     data: function() {
         return {
             tbl: {
-                headers: [{
-                    text: '구분',
-                    value: 'data_gbn'
-                }, {
-                    text: '이름',
-                    value: 'dataNm'
-                }, {
-                    text: '사용여부',
-                    value: 'useYn',
-                    align: 'center',
-                    width: '90px'
-                }],
+                headers: [
+                    {text: '구분', value: 'data_gbn'},
+                    {text: '이름', value: 'dataNm'},
+                    {text: '사용여부',value: 'useYn',align: 'center',width: '90px'}
+                ],
                 items: [],
                 total: 0,
                 options: {},

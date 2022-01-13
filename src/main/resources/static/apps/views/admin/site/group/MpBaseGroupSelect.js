@@ -2,7 +2,7 @@ export default {
     name: 'mp-base-group-select',
     template: `
         <div>
-            <v-select label="그룹" v-model="group.item" :items="group.items" item-text="grpNm" item-value="grpNo" @change="changeSelect" return-object>
+            <v-select label="그룹" v-model="group.item" :items="group.items" item-text="grpNm" item-value="id" @change="changeSelect" return-object>
                 <template v-slot:selection="data">
                     <v-chip class="ma-2" x-small label>{{ data.item.grpCd }}</v-chip> {{ data.item.grpNm }}
                 </template>
@@ -13,7 +13,7 @@ export default {
                 <v-tooltip bottom slot="append-outer"><template v-slot:activator="{ on, attrs }">
                         <v-icon color="info" @click="newItem()" v-bind="attrs" v-on="on">mdi-plus</v-icon>
                     </template><span>추가</span></v-tooltip>
-                <v-tooltip bottom slot="append-outer" v-if="group.item.grpNo !== undefined"><template v-slot:activator="{ on, attrs }">
+                <v-tooltip bottom slot="append-outer" v-if="group.item.id !== undefined"><template v-slot:activator="{ on, attrs }">
                         <v-icon color="info" @click="selectItem(group.item)" v-bind="attrs" v-on="on">mdi-pencil</v-icon>
                     </template><span>수정</span></v-tooltip>
             </v-select>
@@ -52,7 +52,7 @@ export default {
         </div>
     `,
     props: {
-        grpNo: Number,
+        id: Number,
         change: Function
     },
     data: function() {
@@ -69,7 +69,7 @@ export default {
             },
             form: {
                 init: {
-                    grpNo: undefined,
+                    id: undefined,
                     grpCd: undefined,
                     grpNm: undefined,
                     useYn: 'Y'
@@ -146,7 +146,7 @@ export default {
             mercury.base.lib.confirm('[' + item.grpNm + '] 그룹 및 구성원을 모두 삭제하시겠습니까?').then(result => {
                 if (result.isConfirmed) {
                     xAjax({
-                        url: '/base/groups/' + item['grpNo'],
+                        url: '/base/groups/' + item['id'],
                         method: 'DELETE'
                     }).then(response => {
                         mercury.base.lib.notify(response.message);
@@ -165,7 +165,7 @@ export default {
             }
         },
         changeSelect(item) {
-            this.$emit('update:grpNo', item.grpNo);
+            this.$emit('update:id', item.id);
         }
     }
 }
