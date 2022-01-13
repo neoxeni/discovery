@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.mercury.discovery.base.users.service.UserRepository">
-
     <sql id="user_all">
         ${l}.username,
         ${l}.password,
@@ -65,6 +64,44 @@
             LEFT OUTER JOIN cmm_code duty ON e.duty_cd = duty.code  AND duty.client_id = e.client_id AND duty.div_cd = 'OR01'
         WHERE e.user_key = #{userKey}
     </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO client_user(
+             name, nickname, phone, email
+            , identification, extension_no, position_cd, duty_cd, sort, status
+            , created_by, created_at, updated_by, updated_at, user_key, client_id, department_id
+        ) VALUES (
+            #{name}, #{nickname}, #{phone}, #{email}
+            , #{identification}, #{extensionNo}, #{positionCd}, #{dutyCd}, #{sort}, #{status}
+            , #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}, #{userKey}, #{clientId}, #{departmentId}
+         )
+    </insert>
+
+    <update id="update">
+        UPDATE client_user SET
+            name = #{name}
+            , nickname = #{nickname}
+            , phone = #{phone}
+            , email = #{email}
+            , identification = #{identification}
+            , extension_no = #{extensionNo}
+            , position_cd = #{positionCd}
+            , duty_cd = #{dutyCd}
+            , sort  = #{sort}
+            , status = #{status}
+            , updated_by = #{updatedBy}
+            , updated_at = #{updatedAt}
+            , department_id = #{departmentId}
+        WHERE id = #{id}
+          AND client_id= #{clientId}
+    </update>
+
+    <delete id="delete">
+        UPDATE client_user SET
+            status = 'INACTIVE'
+        WHERE id = #{id}
+          AND client_id = #{clientId}
+    </delete>
 
     <select id="find" resultType="AppUser">
         SELECT  <include refid="user_all">
@@ -130,52 +167,6 @@
         WHERE data_gbn = 'E'
         AND data_no = #{empNo}
     </select>
-
-    <insert id="insert" useGeneratedKeys="true" keyProperty="empNo">
-        <selectKey keyProperty="empNo" resultType="int" order="BEFORE" databaseId="oracle">
-            SELECT sq_cmm_emp.NEXTVAL FROM DUAL
-        </selectKey>
-
-        INSERT INTO cmm_emp(emp_no,
-            dept_no, emp_nm, ext_tel_no, hire_dd
-            , rtrmnt_yn, rtrmnt_dd, created_by, created_at, phone_user_id, phone_user_tel, phone_extension_no
-            ,postn_cd, duty_cd, client_id, emp_sort, email, emp_tp, real_emp_nm, user_key
-        ) VALUES ( #{empNo},
-            #{deptNo}, #{empNm}, #{extTelNo}, #{hireDd},
-            #{rtrmntYn}, #{rtrmntDd}, #{createdBy}, #{createdAt}, #{phoneUserId}, #{phoneUserTel}, #{phoneExtensionNo}
-            , #{postnCd}, #{dutyCd}, #{clientId}, #{empSort}, #{email}, #{empTp}, #{realEmpNm}, #{userKey}
-        )
-    </insert>
-
-    <update id="update">
-        UPDATE cmm_emp SET
-        cmpny_emp_cd = #{cmpnyEmpCd}
-        , dept_no = #{deptNo}
-        , emp_nm = #{empNm}
-        , ext_tel_no = #{extTelNo}
-        , hire_dd = #{hireDd}
-        , rtrmnt_yn = #{rtrmntYn}
-        , rtrmnt_dd = #{rtrmntDd}
-        , upd_emp_no = #{updatedBy}
-        , updated_at  = #{updatedAt}
-        , phone_user_id = #{phoneUserId}
-        , phone_user_tel = #{phoneUserTel}
-        , phone_extension_no = #{phoneExtensionNo}
-        , postn_cd = #{postnCd}
-        , duty_cd = #{dutyCd}
-        , emp_sort = #{empSort}
-        , email = #{email}
-        , emp_tp = #{empTp}
-        , real_emp_nm = #{realEmpNm}
-        WHERE emp_no = #{empNo}
-        AND client_id= #{clientId}
-    </update>
-
-    <delete id="delete">
-        DELETE FROM client_user_login
-        WHERE user_id = #{id}
-          AND client_id = #{clientId}
-    </delete>
 
     <insert id="insertLogin">
         INSERT INTO client_user_login

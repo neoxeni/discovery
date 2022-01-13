@@ -11,7 +11,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -135,6 +134,6 @@ public class AppUser extends TokenUser implements UserDetails {
     @Override
     public boolean isEnabled() {
         //org.springframework.security.authentication.DisabledException: 유효하지 않은 사용자입니다.
-        return !"UNAUTHORIZED".equals(status);
+        return status == UserStatus.ACTIVE;
     }
 }
