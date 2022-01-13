@@ -134,9 +134,9 @@ CREATE TABLE cmm_action_log(
 
 create table cmm_group (
     id                          bigint         auto_increment comment 'ID' primary key,
-
-    grp_cd                      varchar(20)             null comment '그룹코드',
-    grp_nm                      varchar(1000)           null comment '그룹명',
+    type                        varchar(10)         not null default 'ROLE' comment '타입',
+    code                        varchar(36)             null comment '코드',
+    name                        varchar(1000)           null comment '이름',
     use_yn                      char(1) default 'Y' not null comment '사용여부',
     upd_enable_yn               char(1) default 'Y' not null comment '수정가능여부',
 
@@ -145,7 +145,7 @@ create table cmm_group (
     updated_by                  INT                     NULL COMMENT '수정자',
     updated_at                  DATETIME                NULL COMMENT '수정일',
     client_id                   INT                 NOT NULL COMMENT '회사아이디',
-    UNIQUE KEY UK1_TB_GROUP(client_id, grp_cd)
+    UNIQUE KEY UK1_TB_GROUP(client_id, code)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='그룹';
 
 create table cmm_group_mapping(

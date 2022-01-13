@@ -12,7 +12,7 @@ public enum UserStatus{
         this.name = name;
     }
 
-    public String getLabel() {
+    public String getName() {
         return name;
     }
 }

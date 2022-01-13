@@ -8,7 +8,7 @@ public class GroupMappingRequestDto {
 
     private Long grpNo;
 
-    private String grpCd;
+    private String code;
 
     private String dataGbn;
 

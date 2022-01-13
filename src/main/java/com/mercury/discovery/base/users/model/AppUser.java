@@ -91,7 +91,7 @@ public class AppUser extends TokenUser implements UserDetails {
         Map<String, String> rolePairs = new HashMap<>();
         if (roles != null) {
             for (UserRole role : roles) {
-                rolePairs.put(role.getGrpCd(), role.getGrpNm());
+                rolePairs.put(role.getCode(), role.getName());
             }
         }
 

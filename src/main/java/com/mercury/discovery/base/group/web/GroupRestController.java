@@ -30,8 +30,8 @@ public class GroupRestController {
     private final GroupService groupService;
 
     @GetMapping("/base/groups")
-    public ResponseEntity<?> getGroups(AppUser appUser, @RequestParam(required = false) Integer cateId) {
-        return ResponseEntity.ok(groupService.findGroupAll(appUser.getClientId(), cateId));
+    public ResponseEntity<?> getGroups(AppUser appUser) {
+        return ResponseEntity.ok(groupService.findGroupAll(appUser.getClientId()));
     }
 
     @PostMapping("/base/groups")
@@ -89,7 +89,7 @@ public class GroupRestController {
 
         Group group = groupService.findGroup(appUser.getClientId(), groupMappingRequestDto.getGrpNo());
 
-        ResultExcelDataHandler<?> resultExcelDataHandler = ExcelUtils.getResultExcelDataHandler(group.getGrpNm() + " 그룹 구성원", columns);
+        ResultExcelDataHandler<?> resultExcelDataHandler = ExcelUtils.getResultExcelDataHandler(group.getName() + " 그룹 구성원", columns);
         groupService.downloadExcelGroupMappingsByGrpNo(groupMappingRequestDto, pageable, resultExcelDataHandler);
         resultExcelDataHandler.download();
     }
@@ -194,7 +194,7 @@ public class GroupRestController {
 
         List<ExcelColumn> columns = new ArrayList<>();
 
-        columns.add(ExcelUtils.column("grpNm", "그룹", 200));
+        columns.add(ExcelUtils.column("name", "그룹", 200));
         columns.add(ExcelUtils.column("dataNm", "대상", 150));
         columns.add(ExcelUtils.column("regEmpNm", "변경자", 100));
         columns.add(ExcelUtils.builder("action", "행위", 100, "CENTER").valueTransformer((name, value, data) -> {

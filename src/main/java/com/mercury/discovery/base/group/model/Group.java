@@ -15,8 +15,9 @@ import java.time.LocalDateTime;
 @Data
 public class Group {
     private Long id;
-    private String grpCd;
-    private String grpNm;
+    private GroupType type;
+    private String code;
+    private String name;
 
     private String useYn;
     private String updEnableYn;

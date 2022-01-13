@@ -10,37 +10,33 @@
     </select>
 
     <select id="findGroupAll" resultType="Group">
-        SELECT g.*
-        FROM cmm_group g
-        WHERE g.client_id = #{clientId}
+        SELECT *
+        FROM cmm_group
+        WHERE client_id = #{clientId}
         <if test='useYn != null and useYn != ""'>
-            AND g.use_yn = #{useYn}
+            AND use_yn = #{useYn}
         </if>
-
-        ORDER BY g.grp_nm
+        ORDER BY name
     </select>
 
     <insert id="insertGroup" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO cmm_group (
-            grp_cd, grp_nm ,use_yn, upd_enable_yn, created_by, created_at , updated_by, updated_at ,client_id
+            type, code, name ,use_yn, upd_enable_yn, created_by, created_at , updated_by, updated_at ,client_id
         ) VALUES (
-            #{grpCd} ,#{grpNm} , #{useYn}, #{updEnableYn}, #{createdBy}, #{createdAt}, #{createdBy}, #{createdAt} ,#{clientId}
+            #{type}, #{code} ,#{name} , #{useYn}, #{updEnableYn}, #{createdBy}, #{createdAt}, #{createdBy}, #{createdAt} ,#{clientId}
         )
     </insert>
 
     <update id="updateGroup">
         UPDATE cmm_group SET
-        grp_nm = #{grpNm}
-        <if test='grpCd != null and grpCd != ""'>
-            ,grp_cd = #{grpCd}
-        </if>
+        name = #{name}
         <if test='updEnableYn != null and updEnableYn != ""'>
             ,upd_enable_yn = #{updEnableYn}
         </if>
         ,use_yn = #{useYn}
         ,updated_at = #{updatedAt}
         ,updated_by = #{updatedBy}
-        WHERE grp_no = #{grpNo}
+        WHERE id = #{id}
         AND client_id = #{clientId}
     </update>
 
@@ -158,7 +154,7 @@
         a.created_at,
         a.reg_ip,
         a.client_id,
-        CASE WHEN g.grp_nm IS NULL THEN ag.app_grp_nm ELSE g.grp_nm END as grp_nm,
+        CASE WHEN g.name IS NULL THEN ag.app_name ELSE g.name END as name,
         CASE WHEN e.emp_nm IS NULL THEN d.dept_nm ELSE e.emp_nm END as data_nm,
         e2.emp_nm as reg_emp_nm
         FROM cmm_group_map_hst a
@@ -211,7 +207,4 @@
         #{mapNo}, #{grpNo}, #{dataGbn}, #{dataNo}, #{action}, #{createdBy}, #{createdAt}, #{regIp}, #{clientId}
         )
     </insert>
-
-
-
 </mapper>

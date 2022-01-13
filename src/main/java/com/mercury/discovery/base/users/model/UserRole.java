@@ -13,8 +13,8 @@ public class UserRole implements Serializable {
 
     //Group 객체와 동일한 이름:S
     private Integer grpNo;
-    private String grpCd;
-    private String grpNm;
+    private String code;
+    private String name;
     //Group 객체와 동일한 이름:E
 
     //GroupMapping 객체와 동일한 이름:S

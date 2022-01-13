@@ -620,8 +620,8 @@ export default {
                     groupMappings.push({
                         dataGbn: dataGbn,
                         dataNo: dataNo,
-                        grpCd: item.grpCd,
-                        grpNm: item.grpNm,
+                        code: item.code,
+                        name: item.name,
                         grpNo: item.grpNo,
                         useYn: 'Y',
                         mapNo: null //새로 추가되어야 함

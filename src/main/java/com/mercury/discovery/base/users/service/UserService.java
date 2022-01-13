@@ -62,7 +62,7 @@ public class UserService {
             authorities.addAll(appUser.getAuthorities());
         }
         roleList.forEach(userRole -> {
-            authorities.add(new SimpleGrantedAuthority("ROLE_" + userRole.getGrpCd()));
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + userRole.getCode()));
         });
 
         /*List<UserAppRole> appRoleList = getUserAppRoles(appUser);

@@ -87,8 +87,8 @@
 
         SELECT
         g.grp_no,
-        g.grp_cd,
-        g.grp_nm,
+        g.code,
+        g.name,
         cgm.map_no,
         'D' as data_gbn,
         cgm.data_no,
@@ -125,8 +125,8 @@
 
         SELECT
         g.app_grp_no,
-        g.app_grp_cd,
-        g.app_grp_nm,
+        g.app_code,
+        g.app_name,
         cgm.map_no,
         'D' as data_gbn,
         cgm.data_no,

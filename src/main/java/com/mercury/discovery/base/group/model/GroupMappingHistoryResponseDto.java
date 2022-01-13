@@ -8,7 +8,7 @@ import org.apache.ibatis.type.Alias;
 @Alias("GroupMappingHistoryResponseDto")
 @Data
 public class GroupMappingHistoryResponseDto extends GroupMappingHistory{
-    private String grpNm;
+    private String name;
     private String dataNm;
     private String regEmpNm;
 }

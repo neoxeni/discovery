@@ -14,12 +14,15 @@ import java.time.LocalDateTime;
 
 @Alias("GroupMapping")
 @Data
-@EqualsAndHashCode(of = {"groupId", "dataGbn", "dataNo"})
+@EqualsAndHashCode(of = {"id"})
 public class GroupMapping {
     private Long id;
 
+    private Long groupId;
+
     private String dataGbn;
     private Integer dataNo;
+
     private String useYn;
     private Integer sort;
 
@@ -28,5 +31,5 @@ public class GroupMapping {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
-    private Long groupId;
+
 }

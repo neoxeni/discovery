@@ -2,12 +2,12 @@ export default {
     name: 'mp-base-group-select',
     template: `
         <div>
-            <v-select label="그룹" v-model="group.item" :items="group.items" item-text="grpNm" item-value="id" @change="changeSelect" return-object>
+            <v-select label="그룹" v-model="group.item" :items="group.items" item-text="name" item-value="id" @change="changeSelect" return-object>
                 <template v-slot:selection="data">
-                    <v-chip class="ma-2" x-small label>{{ data.item.grpCd }}</v-chip> {{ data.item.grpNm }}
+                    <v-chip class="ma-2" x-small label>{{ data.item.code }}</v-chip> {{ data.item.name }}
                 </template>
                 <template v-slot:item="data">
-                    <v-chip class="ma-2" x-small label>{{ data.item.grpCd }}</v-chip> {{ data.item.grpNm }}
+                    <v-chip class="ma-2" x-small label>{{ data.item.code }}</v-chip> {{ data.item.name }}
                 </template>
         
                 <v-tooltip bottom slot="append-outer"><template v-slot:activator="{ on, attrs }">
@@ -17,19 +17,21 @@ export default {
                         <v-icon color="info" @click="selectItem(group.item)" v-bind="attrs" v-on="on">mdi-pencil</v-icon>
                     </template><span>수정</span></v-tooltip>
             </v-select>
-        
-        
             <mp-view :view.sync="view">
                 <template v-slot:body="{edit}">
                     <v-form v-model="form.valid" ref="form">
                         <v-container>
                             <v-row>
                                 <v-col cols="12" md="6">
-                                    <v-text-field label="그룹코드*" v-model="form.data.grpCd" :readonly="edit" required :rules="form.rules.grpCd"></v-text-field>
+                                    <v-text-field label="그룹코드*" v-model="form.data.code" :readonly="edit" required :rules="form.rules.code"></v-text-field>
                                 </v-col>
                                 <v-col cols="12" md="6">
-                                    <v-text-field label="그룹명*" v-model="form.data.grpNm" required :rules="form.rules.required"></v-text-field>
+                                    <v-text-field label="그룹명*" v-model="form.data.name" required :rules="form.rules.required"></v-text-field>
                                 </v-col>
+                                <v-col cols="12" md="6">
+                                    <v-select label="타입" v-model="form.data.type" :items="codes.groupType"></v-select>
+                                </v-col>
+                                
                                 <v-col cols="12" md="6">
                                     <v-select label="사용여부*" v-model="form.data.useYn" :items="[{text:'사용',value:'Y'},{text:'미사용',value:'N'}]" required :rules="[v => (v && v.length > 0) || 'Required field']"></v-select>
                                 </v-col>
@@ -70,20 +72,21 @@ export default {
             form: {
                 init: {
                     id: undefined,
-                    grpCd: undefined,
-                    grpNm: undefined,
+                    type: 'ROLE',
+                    code: undefined,
+                    name: undefined,
                     useYn: 'Y'
                 },
                 data: {},
                 valid: false,
                 rules: {
                     required: [v => v && v.length > 0 || 'Required field'],
-                    grpCd: [v => v && v.length > 0 || 'Required field', v => {
+                    code: [v => v && v.length > 0 || 'Required field', v => {
                         if (this.view.edit) {
                             return true;
                         }
                         const same = this.group.items.filter(item => {
-                            return item.grpCd === v;
+                            return item.code === v;
                         });
                         if (same.length > 0) {
                             return v + ' exists';
@@ -91,6 +94,9 @@ export default {
                         return true;
                     }]
                 }
+            },
+            codes: {
+                groupType: mercury.base.lib.code('GroupType', {type: 'v-object'})
             }
         };
     },
@@ -106,7 +112,7 @@ export default {
                 this.group.items = resp;
                 this.$nextTick(() => {
                     if (initialGrpCd !== undefined) {
-                        const findItems = this.group.items.find(item => item.grpCd === initialGrpCd);
+                        const findItems = this.group.items.find(item => item.code === initialGrpCd);
                         if (findItems !== undefined) {
                             this.group.item = findItems;
                             this.changeSelect(findItems);
@@ -137,13 +143,13 @@ export default {
                 mercury.base.lib.notify(response.message);
                 if (response['affected'] > 0) {
                     this.view.show = false;
-                    this.fetchData(this.form.data.grpCd);
+                    this.fetchData(this.form.data.code);
                 }
             });
         },
         deleteItem() {
             const item = this.group.item;
-            mercury.base.lib.confirm('[' + item.grpNm + '] 그룹 및 구성원을 모두 삭제하시겠습니까?').then(result => {
+            mercury.base.lib.confirm('[' + item.name + '] 그룹 및 구성원을 모두 삭제하시겠습니까?').then(result => {
                 if (result.isConfirmed) {
                     xAjax({
                         url: '/base/groups/' + item['id'],

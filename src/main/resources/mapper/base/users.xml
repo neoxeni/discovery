@@ -122,14 +122,14 @@
             <when test="empNo != null">
                 AND e.emp_no = #{empNo}
             </when>
-            <when test="grpCd != null">
+            <when test="code != null">
                 AND e.emp_no IN (
                     SELECT
                         b.data_no as emp_no
                     FROM cmm_group a
                         JOIN cmm_group_map b on a.grp_no  = b.grp_no
                     WHERE a.client_id = #{clientId}
-                    AND a.grp_cd = #{grpCd}
+                    AND a.code = #{code}
                     AND b.data_gbn = 'E'
 
                     UNION ALL
@@ -143,7 +143,7 @@
                         FROM cmm_group a
                             JOIN cmm_group_map b on a.grp_no  = b.grp_no
                         WHERE a.client_id = #{clientId}
-                        AND a.grp_cd = #{grpCd}
+                        AND a.code = #{code}
                         AND b.data_gbn = 'D'
                     )
                 )
@@ -156,14 +156,14 @@
     </select>
 
     <select id="findRolesByUserId" resultType="UserRole">
-        SELECT cg.grp_no, cg.grp_cd, cg.grp_nm, cgm.map_no, cgm.data_gbn, cgm.data_no, cg.client_id
+        SELECT cg.grp_no, cg.code, cg.name, cgm.map_no, cgm.data_gbn, cgm.data_no, cg.client_id
         FROM cmm_group_map cgm JOIN cmm_group cg ON cgm.grp_no = cg.grp_no
         WHERE data_gbn = 'E'
         AND data_no = #{userId}
     </select>
 
     <select id="findAppRolesByEmpNo" resultType="UserAppRole">
-        SELECT ag.app_grp_no, ag.app_grp_cd, ag.app_grp_nm, agm.map_no, agm.data_gbn, agm.data_no, ag.client_id
+        SELECT ag.app_grp_no, ag.app_code, ag.app_name, agm.map_no, agm.data_gbn, agm.data_no, ag.client_id
         FROM cmm_app_group_map agm JOIN cmm_app_group ag ON agm.app_grp_no = ag.app_grp_no
         WHERE data_gbn = 'E'
         AND data_no = #{empNo}

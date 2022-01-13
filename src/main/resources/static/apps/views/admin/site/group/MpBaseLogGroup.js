@@ -5,12 +5,12 @@ export default {
             <mp-search>
                 <mp-calendar mode="range" :model.sync="search.range" label="기간"></mp-calendar>
                 <div>
-                    <v-select label="그룹" v-model="search.grpNo" :items="group.items" item-text="grpNm" item-value="grpNo" outlined dense hide-details clearable>
+                    <v-select label="그룹" v-model="search.grpNo" :items="group.items" item-text="name" item-value="grpNo" outlined dense hide-details clearable>
                         <template v-slot:selection="data">
-                            {{ data.item.grpNm }}
+                            {{ data.item.name }}
                         </template>
                         <template v-slot:item="data">
-                            <v-chip class="ma-2" x-small label>{{ data.item.grpCd }}</v-chip> {{ data.item.grpNm }}
+                            <v-chip class="ma-2" x-small label>{{ data.item.code }}</v-chip> {{ data.item.name }}
                         </template>
                     </v-select>
                 </div>
@@ -59,7 +59,7 @@ export default {
             tbl: {
                 headers: [{
                     text: '그룹',
-                    value: 'grpNm'
+                    value: 'name'
                 }, {
                     text: '대상',
                     value: 'dataNm',
