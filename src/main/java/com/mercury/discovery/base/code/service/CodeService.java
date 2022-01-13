@@ -213,7 +213,7 @@ public class CodeService {
         codeDivs.forEach(item -> {
             JsTree jsTree = new JsTree();
             jsTree.setDataType("codeDiv");
-            jsTree.setType("folder");
+            jsTree.setIcon("mdi mdi-folder mdi-18px text-primary");
             jsTree.setParent("#");
             jsTree.setId(item.getDivCd());
             jsTree.setText(item.getDivNm());
@@ -227,7 +227,7 @@ public class CodeService {
         codes.forEach(item -> {
             JsTree jsTree = new JsTree();
             jsTree.setDataType("code");
-            jsTree.setType("code");
+            jsTree.setIcon("mdi mdi-code-braces mdi-18px text-primary");
 
             if ("ROOT".equals(item.getParentCode())) {
                 jsTree.setParent(item.getDivCd());

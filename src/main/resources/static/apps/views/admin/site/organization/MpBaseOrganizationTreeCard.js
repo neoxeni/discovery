@@ -25,7 +25,7 @@ export default {
             </v-menu>
         </v-card-title>
         <v-card-text class="div-scroll-y">
-            <mp-base-tree url="/base/organizations/tree" ref="codeTree" @changed="treeChanged" state></mp-base-tree>
+            <mp-js-tree url="/base/organizations/tree" ref="jstree" @changed="changed" state></mp-js-tree>
         </v-card-text>
     </v-card>
     `,
@@ -57,10 +57,10 @@ export default {
             this.$refs['jstree'].search(this.searchText);
         },
         expandAll() {
-            this.$refs['jstree'].openAll();
+            this.$refs['jstree'].expandAll();
         },
         collapseAll() {
-            this.$refs['jstree'].closeAll();
+            this.$refs['jstree'].collapseAll();
         },
         treeLoaded(e, data, instance) {
             instance.jstree().open_node(1);

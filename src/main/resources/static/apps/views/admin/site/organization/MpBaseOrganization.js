@@ -705,8 +705,10 @@ export default {
                 return;
             }
             const node = data.node;
+            console.log(node)
             const no = node.original.no;
-            this.item = node.original;
+            this.item = Object.assign(Object.assign({}, node.original), Object.assign({}, node.data));
+
             if (node.parent === '#') {
                 this.paths = '<i class="text-primary">' + this.item.text + '</i>';
                 xAjax({
@@ -723,7 +725,7 @@ export default {
                     this.companyRoles = resp.roles.slice();
                 });
             } else {
-                const prePath = instance.jstree().get_path(node.parent, ' > ');
+                const prePath = instance.get_path(node.parent, ' > ');
                 this.paths = '<i>' + prePath + '</i>' + '<i class="text-danger"> > </i>' + '<i class="text-primary">' + this.item.text + '</i>';
                 const gubun = this.item['gubun'];
                 if (gubun === 'D') {

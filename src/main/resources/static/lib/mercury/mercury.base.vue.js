@@ -689,11 +689,17 @@
         template: `<input type="text" style="position:absolute;width:0 !important;height:0 !important;line-height: 0 !important;"/>`,
     });
 
-    Vue.component('mp-base-org', {
+
+    Vue.component('mp-js-tree', {
         template: `
-            <div ref="org-jstree" style="background: #fff;"></div>
+            <div :ref="refName" class="js-tree-wrapper"></div>
         `,
         props: {
+            url: String,
+            refName: {
+                type: String,
+                default: 'js-tree'
+            },
             changed: Function,
             created: Function,
             renamed: Function,
@@ -706,161 +712,190 @@
             dnd: {
                 type: Boolean,
                 default: false
+            },
+            state: {
+                type: Boolean,
+                default: false
             }
         },
         data: function () {
             return {
                 instance: undefined
-            }
+            };
+        },
+        created() {
+
         },
         async mounted() {
-            const options = {
-                multiple: this.multiple,
-                dnd: this.dnd
-            }
-
-            const plugins = ["themes", "json_data", "ui", "crrm", "types", "search"/*, "wholerow"*//*, "contextmenu"*/];
-            if (options['dnd']) {
-                plugins.push("dnd");
-            }
-
-            const convertJsTreeData = function (data, root) {
-                data.text = data.name;
-                data.gubun = data.type;
-                data.id = data.type + data.no;
-
-                if (root) {
-                    data.icon = 'mdi mdi-office-building-outline mdi-18px';
-                } else {
-                    if (data.gubun === 'D') {
-                        data.icon = 'mdi mdi-microsoft-teams mdi-18px text-primary';
-                    } else {
-                        data.icon = 'mdi mdi-account mdi-18px text-secondary'
-                    }
-                }
-
-                if (data.children && data.children.length > 0) {
-                    data.children.forEach(child => convertJsTreeData(child, false));
-                }
-            }
-
-            const treeData = await xAjax({url: '/base/organizations/tree'})
-
-            convertJsTreeData(treeData, true);
-
-            const _this = this;
-            const $refTree = $(this.$refs['org-jstree']);
-            const instance = this.instance = $refTree.jstree({
-                "plugins": plugins,
-                "themes": {
-                    "responsive": false
-                },
-                core: {
-                    multiple: options.multiple,
-                    data: treeData,
-                    check_callback: function (operation, node, node_parent, node_position, more) {
-                        /*
-                        * operation : 동작 상태('create_node', 'rename_node', 'delete_node', 'move_node', 'copy_node' or 'edit')
-                        * node : 선택된 노드 정
-                        * node_parent : Drop 된 트리의 부모 노드 정보
-                        * node_position : Drop 된 위치
-                        * more : 기타 정보
-                        */
-
-                        const parentData = node_parent.original;
-                        const currentData = node.original;
-
-                        //console.log(parentData, currentData);
-
-                        if (operation === "move_node") {
-                            if (parentData !== undefined) {
-                                if (parentData.gubun === 'E') {
-                                    return false;//직원 위로 옮기려 한 경우
-                                }
-                            }
-                        }
-
-                        return true;
-                    },
-                },
-                "state": {
-                    "key": "ubicus-base-organization"
-                },
-                "types": {
-                    "default": {
-                        "icon": "fa fa-folder text-primary"
-                    },
-                    "file": {
-                        "icon": "fa fa-file  text-primary"
-                    }
-                },
-                search: {
-                    case_insensitive: true,
-                    show_only_matches: true,
-                    search_callback: function (str, node) {
-                        console.log(str, node);
-
-                        if (str === "") {
-                            return true;
-                        }
-
-                        if (str.indexOf('/') === 0) {//경로 검색
-                            const path = node.data.path + node.data.paths;
-                            return path.includes(str);
-                        }
-
-                        const text = node.text.toLowerCase();
-                        return text.includes(str.toLowerCase());
-                    }
-                }
-            }).on("loaded.jstree", function (e, data) {
-                _this.$emit('loaded', e, data, $refTree);
-            }).on("changed.jstree", function (e, data) {
-                _this.$emit('changed', e, data, $refTree);
-            }).on('create_node.jstree', function (e, data) {
-                _this.$emit('created', e, data, $refTree);
-            }).on('rename_node.jstree', function (e, data) {
-                _this.$emit('renamed', e, data, $refTree);
-            }).on('delete_node.jstree', function (e, data) {
-                _this.$emit('deleted', e, data, $refTree);
-            }).on("move_node.jstree", function (e, data) {
-                _this.$emit('moved', e, data, $refTree);
-            });
+            await this.fetchData();
         },
         computed: {},
         watch: {},
         methods: {
-            refresh(nodeId) {
+            async fetchData() {
+                const options = {
+                    multiple: this.multiple,
+                    dnd: this.dnd,
+                    state: this.state
+                };
+
+                const plugins = ['themes', 'json_data', 'ui', 'crrm', 'types', 'search'/*, "wholerow"*//*, "contextmenu"*/];
+                if (options['dnd']) {
+                    plugins.push('dnd');
+                }
+                if (options['state']) {
+                    plugins.push('state');
+                }
+
+
+                const _this = this;
+
+                const treeData = await this.xAjax({
+                    url: this.url
+                });
+
+                const jsTreeOptions = {
+                    'plugins': plugins,
+                    'themes': {
+                        'responsive': false
+                    },
+                    core: {
+                        multiple: options.multiple,
+                        data: treeData,
+                        check_callback: true
+                    },
+                    'state': {
+                        'key': 'ubicus-base-tree-' + this.refName
+                    },
+                    'types': {
+                        'default': {
+                            'icon': 'mdi mdi-folder text-primary'
+                        },
+                        'folder': {
+                            'icon': 'mdi mdi-folder text-primary'
+                        },
+                        'file': {
+                            'icon': 'mdi mdi-file  text-primary'
+                        }
+                    },
+                    search: {
+                        case_insensitive: true,
+                        show_only_matches: true,
+                        search_callback: function (str, node) {
+
+                            if (str === '') {
+                                return true;
+                            }
+
+                            const pos = str.indexOf('^');
+                            let target = 'name';
+                            let keyword = str.trim();
+
+                            if (pos > 0) {
+                                target = str.substring(0, pos).trim();
+                                keyword = str.substring(pos + 1).trim();
+                            }
+
+
+                            if (keyword === '') {
+                                return true;
+                            }
+
+                            keyword = keyword.toLowerCase();
+
+                            if (target === 'code') {
+                                return (node.data.code || node.data.divCd).toLowerCase().includes(keyword);
+                            } else {
+                                if (keyword.indexOf('/') === 0) {//경로 검색
+                                    const path = node.data.path + node.data.paths;
+                                    return path.toLowerCase().includes(keyword);
+                                }
+
+                                return node.text.toLowerCase().includes(keyword);
+                            }
+
+                        }
+                    }
+                };
+
+                const $refTree = $(this.$refs[this.refName]);
+                $refTree.jstree(jsTreeOptions).on('changed.jstree', function (e, data) {
+                    _this.$emit('changed', e, data, _this.instance);
+                }).on('create_node.jstree', function (e, data) {
+                    _this.$emit('created', e, data, _this.instance);
+                }).on('rename_node.jstree', function (e, data) {
+                    _this.$emit('renamed', e, data, _this.instance);
+                }).on('delete_node.jstree', function (e, data) {
+                    _this.$emit('deleted', e, data, _this.instance);
+                }).on('move_node.jstree', function (e, data) {
+                    _this.$emit('moved', e, data, _this.instance);
+                });
+
+                this.instance = $refTree.jstree(true);
+            },
+            async refresh(nodeId) {
                 if (nodeId !== undefined) {
-                    $(this.$refs['org-jstree']).jstree(true).refresh_node(nodeId);
+                    this.instance.refresh_node(nodeId);
                 } else {
-                    $(this.$refs['org-jstree']).jstree(true).refresh();
+                    this.instance.settings.core.data = await this.xAjax({
+                        url: this.url
+                    });
+                    this.instance.refresh();
                 }
             },
-            search(searchText) {
-                $(this.$refs['org-jstree']).jstree(true).search(searchText);
-            },
-            open_node(node) {
-                $(this.$refs['org-jstree']).jstree(true).open_node(node);
-            },
-            openAll() {
-                $(this.$refs['org-jstree']).jstree(true).open_all();
-            },
-            closeAll() {
-                $(this.$refs['org-jstree']).jstree(true).close_all();
+            search(target, searchText) {
+                this.instance.search(`${target}^${searchText}`);
             },
             showAll() {
-                $(this.$refs['org-jstree']).jstree(true).show_all();
-            },
-            renameNode(node, text) {
-                $(this.$refs['org-jstree']).jstree(true).rename_node(node, text);
+                this.instance.show_all();
             },
             rename_node(node, text) {
-                $(this.$refs['org-jstree']).jstree(true).rename_node(node, text);
+                this.instance.rename_node(node, text);
             },
-            selectNode(nodeId) {
-                $(this.$refs['org-jstree']).jstree(true).deselect_all();
-                $(this.$refs['org-jstree']).jstree(true).select_node(nodeId);
+            getInstance() {
+                return this.instance;
+            },
+            getPath(node) {
+                const nodePath = '<i class="text-primary">' + node.text + '</i>';
+                if (node.parent === '#') {
+                    return nodePath;
+                } else {
+                    const prePath = this.instance.get_path(node.parent, ' > ');
+                    return '<i>' + prePath + '</i>' + '<i class="text-danger"> > </i>' + nodePath;
+                }
+            },
+            deselectAll() {
+                this.instance.deselect_all();
+            },
+            getSelectedNode(isFull) {//boolean
+                return this.instance.get_selected(isFull);
+            },
+            getNode(nodeId) {
+                return this.instance.get_node(nodeId);
+            },
+            getTopNode(node) {
+                if (typeof node === 'string') {//id
+                    node = this.instance.get_node(node);
+                }
+
+                let parent = node;
+                let i = 0;
+                while (parent.parent !== '#') {
+                    parent = this.instance.get_node(parent.parent);
+                    i++;
+
+                    if (i > 10) {
+                        console.log('loop count over ' + i);
+                        break;
+                    }
+                }
+                return parent;
+            },
+            expandAll() {
+                this.instance.open_all();
+            },
+            collapseAll() {
+                this.instance.close_all();
             }
         }
     });

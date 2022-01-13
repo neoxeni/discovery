@@ -1,11 +1,5 @@
-
-import MpBaseTree from "/static/apps/components/ui/MpBaseTree.js"
-
-const MpBaseCode = {
+export default {
     name: 'mp-base-code',
-    components: {
-        MpBaseTree: MpBaseTree
-    },
     template: `
         <div>
             <v-sheet>
@@ -44,7 +38,7 @@ const MpBaseCode = {
                                 </v-row>
                             </v-card-title>
                             <v-card-text class="div-scroll-y">
-                                <mp-base-tree url="/base/codes/tree" ref="codeTree" @changed="treeChanged" state></mp-base-tree>
+                                <mp-js-tree url="/base/codes/tree" ref="codeTree" @changed="treeChanged" state></mp-js-tree>
                             </v-card-text>
                         </v-card>
                     </v-col>
@@ -317,6 +311,4 @@ const MpBaseCode = {
             this.$refs['codeTree'].collapseAll();
         }
     }
-};
-
-export default MpBaseCode;
+}

@@ -30,7 +30,8 @@ public class OrganizationService {
 
         JsTree clientTree = new JsTree();
         clientTree.setDataType("C");
-        clientTree.setType("C");
+        clientTree.setType("client");
+        clientTree.setIcon("mdi mdi-office-building-outline mid-18px");
         clientTree.setParent("#");
         clientTree.setId(rootId);
         clientTree.setText("머큐리프로젝트");
@@ -48,7 +49,8 @@ public class OrganizationService {
         departmentList.forEach(item -> {
             JsTree jsTree = new JsTree();
             jsTree.setDataType(departmentType);
-            jsTree.setType(departmentType);
+            jsTree.setType("team");
+            jsTree.setIcon("mdi mdi-microsoft-teams mdi-18px text-primary");
 
             if ("ROOT".equals(item.get("parentDepartmentKey"))) {
                 jsTree.setParent(clientTree.getId());
@@ -72,7 +74,8 @@ public class OrganizationService {
         employeeList.forEach(item -> {
             JsTree jsTree = new JsTree();
             jsTree.setDataType(employeeType);
-            jsTree.setType(employeeType);
+            jsTree.setType("account");
+            jsTree.setIcon("mdi mdi-account mdi-18px text-primary");
 
             if (item.get("department_id") != null) {
                 String departmentKey = departmentKeyMap.get(item.getInt("department_id"));
