@@ -8,15 +8,15 @@
             SELECT
                 1 as level, a.dept_no, a.p_dept_no, a.dept_nm, a.sort, a.dept_cd, a.use_yn,
                 CONVERT(a.dept_nm, CHAR(255)) depth_fullname
-            FROM tb_cmm_dept a
-            WHERE cmpny_no = #{clientId}
+            FROM cmm_dept a
+            WHERE client_id = #{clientId}
               AND a.p_dept_no = #{pDeptNo}
             UNION ALL
             SELECT
                 level+1 AS level, a.dept_no, a.p_dept_no, a.dept_nm, a.sort, a.dept_cd, a.use_yn,
                 CAST( CONCAT(CONVERT(b.depth_fullname, CHAR(255)) , '>' ,  CONVERT(a.dept_nm, CHAR(255))) AS CHAR(255)) depth_fullname
-            FROM tb_cmm_dept a INNER JOIN cte_parent b ON a.p_dept_no = b.dept_no
-            WHERE a.cmpny_no = #{clientId}
+            FROM cmm_dept a INNER JOIN cte_parent b ON a.p_dept_no = b.dept_no
+            WHERE a.client_id = #{clientId}
         )
         SELECT
             dept_no AS id,
@@ -35,9 +35,9 @@
                     WHEN '0' THEN 'drive'
                     ELSE 'folder'
                     END as rel,
-                CASE IFNULL((SELECT dept_cd FROM tb_cmm_dept y WHERE y.p_dept_no = x.dept_no LIMIT 1), 'NULL')
+                CASE IFNULL((SELECT dept_cd FROM cmm_dept y WHERE y.p_dept_no = x.dept_no LIMIT 1), 'NULL')
                     WHEN 'NULL' THEN
-                        CASE IFNULL((SELECT 'Y' FROM tb_cmm_emp z WHERE z.dept_no = x.dept_no AND z.rtrmnt_yn='N' LIMIT 1), 'NULL')
+                        CASE IFNULL((SELECT 'Y' FROM cmm_emp z WHERE z.dept_no = x.dept_no AND z.rtrmnt_yn='N' LIMIT 1), 'NULL')
                             WHEN 'NULL' THEN 'N'
                             ELSE 'Y'
                             END
@@ -60,10 +60,10 @@
                 a.dept_no, 0 lev,
                 'default' rel, 'N' as is_exsit_sub, emp_no id, CONCAT(a.emp_nm,' ',IFNULL(duty.name, ''),' / ',IFNULL(a.email, '')) data,
                 CONCAT(a.emp_nm,' ',IFNULL(duty.name, ''),' / ',IFNULL(a.email, '')) tool_tip
-            FROM tb_cmm_emp a
-                     LEFT OUTER JOIN cmm_code duty ON a.duty_cd = duty.code AND duty.cmpny_no IN (#{clientId},-1)
+            FROM cmm_emp a
+                     LEFT OUTER JOIN cmm_code duty ON a.duty_cd = duty.code AND duty.client_id IN (#{clientId},-1)
             WHERE a.dept_no = #{pDeptNo}
-              AND a.cmpny_no = #{clientId}
+              AND a.client_id = #{clientId}
               AND a.rtrmnt_yn = 'N'
             ORDER BY a.emp_nm
         )y
@@ -74,21 +74,21 @@
             SELECT
                 1 AS LEVEL, a.dept_no, a.p_dept_no, a.dept_nm, a.sort, a.dept_cd, a.use_yn,
                 CONVERT(a.dept_nm, CHAR(255)) depth_fullname
-            FROM tb_cmm_dept a
-            WHERE cmpny_no = #{clientId}
+            FROM cmm_dept a
+            WHERE client_id = #{clientId}
             AND a.p_dept_no = 0
             UNION ALL
             SELECT
                 level+1 AS level, a.dept_no, a.p_dept_no, a.dept_nm, a.sort, a.dept_cd, a.use_yn,
                 CAST( CONCAT(CONVERT(b.depth_fullname, CHAR(255)) , '>' ,  CONVERT(a.dept_nm, CHAR(255))) AS CHAR(255)) depth_fullname
-            FROM tb_cmm_dept a INNER JOIN cte_parent b ON a.p_dept_no = b.dept_no
+            FROM cmm_dept a INNER JOIN cte_parent b ON a.p_dept_no = b.dept_no
 		),
 		cte_parent2 AS (
             SELECT
                 1 AS level, a.dept_no, a.p_dept_no, a.dept_nm, a.sort, a.dept_cd, a.use_yn,
                 CONVERT( a.dept_nm, CHAR(255)) depth_fullname
-            FROM tb_cmm_dept a
-            WHERE cmpny_no = #{clientId}
+            FROM cmm_dept a
+            WHERE client_id = #{clientId}
             AND a.p_dept_no = 0
 
             UNION ALL
@@ -96,7 +96,7 @@
             SELECT
                 level+1 as level, a.dept_no, a.p_dept_no, a.dept_nm, a.sort, a.dept_cd, a.use_yn,
                 cast( concat(convert(b.depth_fullname, CHAR(255)) , '>' ,  convert(a.dept_nm, CHAR(255))) as char(255)) depth_fullname
-            FROM tb_cmm_dept a INNER JOIN cte_parent2 b ON a.p_dept_no = b.dept_no
+            FROM cmm_dept a INNER JOIN cte_parent2 b ON a.p_dept_no = b.dept_no
         )
 
         SELECT
@@ -107,9 +107,9 @@
             'D' as gubun,
             b.level as lev,
             (CASE WHEN a.p_dept_no = '0' THEN 'drive' ELSE 'folder' END) AS rel,
-            (CASE IFNULL((SELECT dept_cd FROM tb_cmm_dept y WHERE y.p_dept_no =  a.dept_no LIMIT 1), 'NULL')
+            (CASE IFNULL((SELECT dept_cd FROM cmm_dept y WHERE y.p_dept_no =  a.dept_no LIMIT 1), 'NULL')
             WHEN 'NULL' THEN
-                CASE IFNULL((SELECT 'Y' FROM tb_cmm_emp z WHERE z.dept_no =  a.dept_no AND z.rtrmnt_yn='N' LIMIT 1), 'NULL')
+                CASE IFNULL((SELECT 'Y' FROM cmm_emp z WHERE z.dept_no =  a.dept_no AND z.rtrmnt_yn='N' LIMIT 1), 'NULL')
                     WHEN 'NULL' THEN 'N'
                     ELSE 'Y'
                     END
@@ -118,8 +118,8 @@
             '' tool_tip,
             '' user_id,
             '' emp_nm
-        FROM tb_cmm_dept a INNER JOIN cte_parent b on a.dept_no = b.dept_no
-        WHERE cmpny_no = #{clientId}
+        FROM cmm_dept a INNER JOIN cte_parent b on a.dept_no = b.dept_no
+        WHERE client_id = #{clientId}
         AND a.use_yn = 'Y'
 
         UNION ALL
@@ -136,10 +136,10 @@
             concat(emp.emp_nm,' ',IFNULL(duty.name,''),' / ',IFNULL(emp.email,'')) AS tool_tip,
             login.user_id AS user_id,
             emp.emp_nm AS emp_nm
-        FROM tb_cmm_emp emp
+        FROM cmm_emp emp
         INNER JOIN cte_parent2 b on emp.dept_no = b.dept_no
-        LEFT OUTER JOIN cmm_code duty ON emp.duty_cd = duty.code AND emp.dept_no = b.dept_no AND duty.cmpny_no IN (#{clientId},-1)
-        INNER JOIN tb_cmm_login login ON emp.emp_no = login.emp_no
+        LEFT OUTER JOIN cmm_code duty ON emp.duty_cd = duty.code AND emp.dept_no = b.dept_no AND duty.client_id IN (#{clientId},-1)
+        INNER JOIN cmm_login login ON emp.emp_no = login.emp_no
         WHERE emp.emp_nm like CONCAT(CONCAT('%', #{str}), '%')
     </select>
 
@@ -147,27 +147,27 @@
 
     <select id="findDepartmentAll" resultType="CamelMap">
         SELECT *
-        FROM tb_cmm_dept
-        WHERE cmpny_no = #{clientId}
+        FROM cmm_dept
+        WHERE client_id = #{clientId}
         -- AND use_yn = 'Y'
         ORDER BY p_dept_no desc , sort
     </select>
 
     <select id="findEmployeeAll" resultType="CamelMap">
         SELECT e.*
-        FROM tb_cmm_emp e, tb_cmm_dept d
+        FROM cmm_emp e, cmm_dept d
         WHERE e.dept_no = d.dept_no
 --         AND d.use_yn = 'Y'
-        AND e.cmpny_no = #{clientId}
+        AND e.client_id = #{clientId}
 --         AND e.rtrmnt_yn = 'N'
         ORDER BY e.emp_sort
     </select>
 
     <select id="findDepartment" resultType="Department">
         SELECT *
-        FROM tb_cmm_dept
+        FROM cmm_dept
         WHERE dept_no = #{deptNo}
-          AND cmpny_no = #{clientId}
+          AND client_id = #{clientId}
     </select>
 
     <insert id="insertDepartment" useGeneratedKeys="true" keyProperty="deptNo">
@@ -175,15 +175,15 @@
             select sq_cmm_dept.NEXTVAL FROM DUAL
         </selectKey>
 
-        INSERT INTO tb_cmm_dept (dept_no,
-        cmpny_no, dept_cd, dept_nm, dpth, sort, use_yn, p_dept_no, reg_emp_no , reg_dt
+        INSERT INTO cmm_dept (dept_no,
+        client_id, dept_cd, dept_nm, dpth, sort, use_yn, p_dept_no, created_by , created_at
         ) VALUES (#{deptNo},
-        #{clientId}, #{deptCd}, #{deptNm}, #{dpth}, #{sort}, #{useYn}, #{pDeptNo}, #{regEmpNo}, #{regDt}
+        #{clientId}, #{deptCd}, #{deptNm}, #{dpth}, #{sort}, #{useYn}, #{pDeptNo}, #{createdBy}, #{createdAt}
         )
     </insert>
 
     <update id="updateDepartment">
-        UPDATE tb_cmm_dept SET
+        UPDATE cmm_dept SET
             dept_cd = #{deptCd}
             , dept_nm = #{deptNm}
             , dpth = #{dpth}
@@ -191,23 +191,23 @@
             , use_yn = #{useYn}
             , p_dept_no = #{pDeptNo}
             , upd_emp_no = #{updEmpNo}
-            , upd_dt = #{updDt}
+            , updated_at = #{updatedAt}
         WHERE dept_no = #{deptNo}
-          AND cmpny_no = #{clientId}
+          AND client_id = #{clientId}
     </update>
 
     <update id="changeEmployeeDepartment">
-        UPDATE tb_cmm_emp SET
+        UPDATE cmm_emp SET
             dept_no = #{deptNo}
         WHERE emp_no = #{empNo}
-          AND cmpny_no = #{clientId}
+          AND client_id = #{clientId}
     </update>
 
     <update id="changeDepartmentDepartment">
-        UPDATE tb_cmm_dept SET
+        UPDATE cmm_dept SET
             p_dept_no = #{pDeptNo}
         WHERE dept_no = #{deptNo}
-          AND cmpny_no = #{clientId}
+          AND client_id = #{clientId}
     </update>
 
     <select id="findDepartmentsRoles" resultType="UserRole">
@@ -216,9 +216,9 @@
         a.dept_no,
         a.p_dept_no,
         a.dept_nm
-        FROM tb_cmm_dept a
+        FROM cmm_dept a
         WHERE a.dept_no = #{deptNo}
-        AND a.cmpny_no = #{clientId}
+        AND a.client_id = #{clientId}
 
         UNION ALL
 
@@ -226,8 +226,8 @@
         a.dept_no,
         a.p_dept_no,
         a.dept_nm
-        FROM tb_cmm_dept a JOIN cte b ON b.p_dept_no = a.dept_no
-        AND a.cmpny_no = #{clientId}
+        FROM cmm_dept a JOIN cte b ON b.p_dept_no = a.dept_no
+        AND a.client_id = #{clientId}
         )
 
         SELECT
@@ -237,8 +237,8 @@
         cgm.map_no,
         'D' as data_gbn,
         cgm.data_no,
-        g.cmpny_no
-        FROM tb_cmm_group_map cgm JOIN tb_cmm_group g ON cgm.grp_no = g.grp_no
+        g.client_id
+        FROM cmm_group_map cgm JOIN cmm_group g ON cgm.grp_no = g.grp_no
         WHERE data_gbn='D'
         AND data_no IN (
         SELECT dept_no
@@ -254,9 +254,9 @@
         a.dept_no,
         a.p_dept_no,
         a.dept_nm
-        FROM tb_cmm_dept a
+        FROM cmm_dept a
         WHERE a.dept_no = #{deptNo}
-        AND a.cmpny_no = #{clientId}
+        AND a.client_id = #{clientId}
 
         UNION ALL
 
@@ -264,8 +264,8 @@
         a.dept_no,
         a.p_dept_no,
         a.dept_nm
-        FROM tb_cmm_dept a JOIN cte b ON b.p_dept_no = a.dept_no
-        AND a.cmpny_no = #{clientId}
+        FROM cmm_dept a JOIN cte b ON b.p_dept_no = a.dept_no
+        AND a.client_id = #{clientId}
         )
 
         SELECT
@@ -275,8 +275,8 @@
         cgm.map_no,
         'D' as data_gbn,
         cgm.data_no,
-        g.cmpny_no
-        FROM tb_cmm_app_group_map cgm JOIN tb_cmm_app_group g ON cgm.app_grp_no = g.app_grp_no
+        g.client_id
+        FROM cmm_app_group_map cgm JOIN cmm_app_group g ON cgm.app_grp_no = g.app_grp_no
         WHERE data_gbn='D'
         AND data_no IN (
         SELECT dept_no
@@ -291,24 +291,24 @@
                     SELECT
                         1 AS LEVEL, a.dept_cd, a.dept_no, a.p_dept_no, a.dept_nm, a.use_yn,
                         CONVERT( a.dept_nm, CHAR(255)) depth_fullname
-                    FROM tb_cmm_dept a
-                    WHERE a.p_dept_no = 0 AND a.cmpny_no = #{clientId}
+                    FROM cmm_dept a
+                    WHERE a.p_dept_no = 0 AND a.client_id = #{clientId}
 
                     UNION ALL
 
                     SELECT
                         b.level+1 AS level, a.dept_cd, a.dept_no,a.p_dept_no, a.dept_nm, a.use_yn,
                         CAST( CONCAT(CONVERT(b.depth_fullname, CHAR(255)) , ' > ' ,  CONVERT(a.dept_nm, CHAR(255))) AS CHAR(255)) depth_fullname
-                    FROM tb_cmm_dept a
+                    FROM cmm_dept a
                     INNER JOIN cte b
                     ON a.p_dept_no = b.dept_no
-                    WHERE  a.cmpny_no = #{clientId}
+                    WHERE  a.client_id = #{clientId}
                 )
                 SELECT
                     CONCAT('D', dept_no) id,
                     depth_fullname,
                     (
-		                SELECT COUNT(1) FROM tb_cmm_emp emp WHERE emp.dept_no = x.dept_no
+		                SELECT COUNT(1) FROM cmm_emp emp WHERE emp.dept_no = x.dept_no
                     ) emp_count
                 FROM cte x
                 WHERE use_yn = 'Y' ORDER BY depth_fullname
@@ -319,23 +319,23 @@
                 (
                     SELECT
                         a.dept_cd, a.dept_no, a.p_dept_no, a.dept_nm, a.use_yn, a.dept_nm depth_fullname
-                    FROM tb_cmm_dept a
-                    WHERE a.p_dept_no = 0 AND a.cmpny_no = #{clientId}
+                    FROM cmm_dept a
+                    WHERE a.p_dept_no = 0 AND a.client_id = #{clientId}
 
                     UNION ALL
 
                     SELECT
                         a.dept_cd, a.dept_no,a.p_dept_no, a.dept_nm, a.use_yn,
                         CONCAT(CONCAT(b.depth_fullname, ' > '), a.dept_nm) depth_fullname
-                    FROM tb_cmm_dept a
+                    FROM cmm_dept a
                     INNER JOIN cte b
                     ON a.p_dept_no = b.dept_no
-                    WHERE  a.cmpny_no = #{clientId}
+                    WHERE  a.client_id = #{clientId}
                 )
                 SELECT
                     CONCAT('D', dept_no) id, depth_fullname,
                     (
-		                SELECT COUNT(1) FROM tb_cmm_emp emp WHERE emp.dept_no = x.dept_no
+		                SELECT COUNT(1) FROM cmm_emp emp WHERE emp.dept_no = x.dept_no
                     ) emp_count
                 FROM cte x
                 WHERE use_yn = 'Y' ORDER BY depth_fullname
@@ -343,8 +343,8 @@
 
     <select id="findDepartmentByParent" resultType="CamelMap">
         SELECT *
-        FROM tb_cmm_dept
-        WHERE cmpny_no = #{clientId}
+        FROM cmm_dept
+        WHERE client_id = #{clientId}
         <if test="useYn != null and useYn != ''">
             AND use_yn = #{useYn}
         </if>
@@ -361,8 +361,8 @@
             SELECT
                 1 as lvl, a.dept_no, a.p_dept_no, a.dept_nm, a.sort, a.dept_cd, a.use_yn,
                 a.dept_nm AS org_path_nm
-            FROM tb_cmm_dept a
-            WHERE cmpny_no = #{clientId}
+            FROM cmm_dept a
+            WHERE client_id = #{clientId}
             <choose>
                 <when test='rootYn == "Y"'>
                 AND a.p_dept_no = 0
@@ -375,16 +375,16 @@
             SELECT
                 lvl+1 AS lvl, a.dept_no, a.p_dept_no, a.dept_nm, a.sort, a.dept_cd, a.use_yn,
                 CONCAT(b.org_path_nm, CONCAT(' > ' ,  a.dept_nm)) AS org_path_nm
-            FROM tb_cmm_dept a INNER JOIN cte_parent b ON a.p_dept_no = b.dept_no
-            WHERE a.cmpny_no = #{clientId}
+            FROM cmm_dept a INNER JOIN cte_parent b ON a.p_dept_no = b.dept_no
+            WHERE a.client_id = #{clientId}
         )
         SELECT e.*, d.dept_cd, d.dept_nm, d.p_dept_no, d.use_yn, c.org_path_nm
-        FROM tb_cmm_emp e, tb_cmm_dept d, cte_parent c
+        FROM cmm_emp e, cmm_dept d, cte_parent c
         WHERE e.dept_no = d.dept_no AND c.dept_no = e.dept_no
         <if test='useYn == "Y"'>
             AND d.use_yn = 'Y'
         </if>
-        AND e.cmpny_no = #{clientId}
+        AND e.client_id = #{clientId}
         <if test='rtrmntYn == "N"'>
             AND e.rtrmnt_yn = 'N'
         </if>

@@ -26,11 +26,11 @@ public class AttachFile implements Serializable {
 
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime regDt;
+    private LocalDateTime createdAt;
 
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime updDt;
+    private LocalDateTime updatedAt;
 
     private AttachDivCd attachDivCd;
     private String dataNo;

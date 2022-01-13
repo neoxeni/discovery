@@ -7,13 +7,13 @@ import java.time.LocalDateTime;
 
 
 /**
- * tb_cmm_emp
+ * cmm_emp
  */
 
 @Alias("Employee")
 @Data
 public class Employee {
-    // from tb_cmm_emp
+    // from cmm_emp
     private Integer empNo;
     private String cmpnyEmpCd;
     private Integer deptNo;
@@ -23,10 +23,10 @@ public class Employee {
     private String rtrmntYn;
     private String rtrmntDd;//LocalDate
 
-    private Integer regEmpNo;
-    private LocalDateTime regDt;
-    private Integer udpEmpNo;
-    private LocalDateTime udpDt;
+    private Integer createdBy;
+    private LocalDateTime createdAt;
+    private Integer updatedBy;
+    private LocalDateTime updatedAt;
 
     private String phoneUserId;
     private String phoneUserTel;

@@ -8,7 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 
 /**
- * tb_cmm_sub_group_map
+ * cmm_sub_group_map
  */
 
 @Alias("SubGroupMapping")
@@ -20,8 +20,8 @@ public class SubGroupMapping {
     private String subGrpNm;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime regDt;
-    private Integer regUserNo;
+    private LocalDateTime createdAt;
+    private Integer createdBy;
     private Integer clientId;
 
 }

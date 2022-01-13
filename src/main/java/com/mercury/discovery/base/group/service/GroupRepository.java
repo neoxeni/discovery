@@ -14,13 +14,13 @@ import java.util.List;
 public interface GroupRepository {
     List<Group> findGroupAll(int clientId, String useYn, Integer cateId);
 
-    Group findGroup(int clientId, int grpNo);
+    Group findGroup(int clientId, Long id);
 
     int insertGroup(Group group);
 
     int updateGroup(Group group);
 
-    int deleteGroup(Integer clientId, Integer grpNo);
+    int deleteGroup(Integer clientId, Long grpNo);
 
     Page<GroupMappingResponseDto> findGroupMappingsByGrpNo(GroupMappingRequestDto groupMappingRequestDto, Pageable pageable);
 
@@ -28,11 +28,11 @@ public interface GroupRepository {
 
     int insertGroupMappings(List<GroupMapping> groupMappings);
 
-    int deleteGroupMappings(Integer clientId, List<Integer> groupMappingNos);
+    int deleteGroupMappings(Integer clientId, List<Long> groupMappingNos);
 
     int deleteAppGroupMappings(Integer clientId, List<Integer> groupMappingNos);
 
-    void deleteGroupMappingsByGrpNo(Integer clientId, Integer grpNo);
+    void deleteGroupMappingsByGrpNo(Integer clientId, Long grpNo);
 
     int insertGroupMappingsHistory(GroupMappingHistory groupMappingHistory);
 

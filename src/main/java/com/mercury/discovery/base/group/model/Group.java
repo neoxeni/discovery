@@ -8,32 +8,28 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 
 /**
- * tb_cmm_group
+ * cmm_group
  */
 
 @Alias("Group")
 @Data
 public class Group {
-
-    private Integer cateId;
-
-    private Integer grpNo;
+    private Long id;
     private String grpCd;
     private String grpNm;
+
     private String useYn;
-    private String cateNm;
+    private String updEnableYn;
 
+    private Integer createdBy;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime regDt;
-    private Integer regUserNo;
+    private LocalDateTime createdAt;
 
+    private Integer updatedBy;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime updDt;
-    private Integer updUserNo;
+    private LocalDateTime updatedAt;
 
     private Integer clientId;
-    private String updEnableYn;
-    private String callcenterYn;
 }

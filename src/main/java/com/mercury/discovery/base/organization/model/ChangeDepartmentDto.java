@@ -19,11 +19,11 @@ public class ChangeDepartmentDto {
 
     private Integer pDeptNo;
 
-    private Integer updEmpNo;
+    private Integer updatedBy;
 
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime updDt;
+    private LocalDateTime updatedAt;
 
 
 

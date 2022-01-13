@@ -6,7 +6,7 @@ import lombok.Data;
 public class GroupMappingRequestDto {
     private Integer clientId;
 
-    private Integer grpNo;
+    private Long grpNo;
 
     private String grpCd;
 

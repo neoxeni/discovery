@@ -89,8 +89,8 @@ CREATE TABLE cmm_code_div (
 CREATE TABLE cmm_code (
     div_cd                      VARCHAR(20)         NOT NULL COMMENT '분류코드',
     cd                          VARCHAR(36)         NOT NULL COMMENT '코드',
-    parent_code                   VARCHAR(36)         NOT NULL DEFAULT 'ROOT' COMMENT '상위코드',
-    name                       VARCHAR(100)        NOT NULL COMMENT '코드명',
+    parent_code                 VARCHAR(36)         NOT NULL DEFAULT 'ROOT' COMMENT '상위코드',
+    name                        VARCHAR(100)        NOT NULL COMMENT '코드명',
     sort                        INT                 NOT NULL DEFAULT 0 COMMENT '정렬번호',
     use_yn                      CHAR(1)             NOT NULL DEFAULT 'Y' COMMENT '사용여부',
     etc1                        VARCHAR(100)            NULL COMMENT 'etc1',
@@ -114,7 +114,7 @@ CREATE TABLE cmm_code (
 
 CREATE TABLE cmm_action_log(
     id                  BIGINT        AUTO_INCREMENT COMMENT 'ID' PRIMARY KEY,
-    user_id             INT                     NULL COMMENT '사번',
+
     ip                  VARCHAR(40)             NULL COMMENT '접속아이피',
     created_at          DATETIME default current_timestamp() COMMENT '등록일시',
     menu                VARCHAR(300)            NULL COMMENT '메뉴명',
@@ -129,10 +129,57 @@ CREATE TABLE cmm_action_log(
     etc4                VARCHAR(100)            NULL COMMENT '기타4',
     etc5                VARCHAR(100)            NULL COMMENT '기타5',
     div_cd              VARCHAR(20)             NULL COMMENT '구분코드',
-    client_id                   INT             NULL COMMENT '회사 아이디',
+
+    user_id             INT                     NULL COMMENT '사번',
+    client_id           INT                     NULL COMMENT '회사 아이디',
     INDEX IX1_TB_ADMIN_LOG (created_at, client_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='관리자 로그 히스토리';
 
 
+create table cmm_group (
+    id                          bigint         auto_increment comment 'ID' primary key,
 
+    grp_cd                      varchar(20)             null comment '그룹코드',
+    grp_nm                      varchar(1000)           null comment '그룹명',
+    use_yn                      char(1) default 'Y' not null comment '사용여부',
+    upd_enable_yn               char(1) default 'Y' not null comment '수정가능여부',
+
+    created_by                  INT                 NOT NULL COMMENT '생성자',
+    created_at                  DATETIME            NOT NULL COMMENT '생성일',
+    updated_by                  INT                     NULL COMMENT '수정자',
+    updated_at                  DATETIME                NULL COMMENT '수정일',
+    client_id                   INT                 NOT NULL COMMENT '회사아이디',
+    UNIQUE KEY UK1_TB_GROUP(client_id, grp_cd)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='그룹';
+
+create table cmm_group_mapping(
+    id                          bigint         auto_increment comment 'ID' primary key,
+
+    data_gbn                    char(1)             not null comment 'E:직원,D:부서',
+    data_no                     int                 not null comment '직원,부서번호',
+    use_yn                      char(1) default 'Y' not null comment '사용여부',
+    sort                        int     default 0   not null comment '정렬순서',
+    created_by                  INT                 NOT NULL COMMENT '생성자',
+    created_at                  DATETIME            default current_timestamp COMMENT '등록일시',
+    group_id                    bigint              not null comment '그룹번호',
+    CONSTRAINT FK1_CMM_GROUP FOREIGN KEY (group_id) REFERENCES cmm_group (id),
+    UNIQUE KEY UK1_cmm_GROUP_MAP(group_id, data_gbn, data_no)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='그룹맵핑';
+
+create table cmm_group_mapping_history(
+    id                          bigint         auto_increment comment 'ID' primary key,
+
+    group_id                    bigint                 not null comment '그룹번호',
+    group_mapping_id            int                 not null comment '매핑번호',
+
+    data_gbn                    char(1)             not null comment 'E:직원,D:부서',
+    data_no                     int                 not null comment '직원,부서번호',
+    action                      char                not null comment '액션CRUD',
+    reg_ip                      varchar(100)            null comment '등록자IP',
+
+    created_by                  INT                 NOT NULL COMMENT '생성자',
+    created_at                  DATETIME            default current_timestamp COMMENT '등록일시',
+    client_id                   INT                 NOT NULL COMMENT '회사아이디',
+    INDEX IX1_cmm_GROUP_MAP_HST (created_at, client_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='그룹맵핑 히스토리';
 

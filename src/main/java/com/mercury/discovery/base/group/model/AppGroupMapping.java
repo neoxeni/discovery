@@ -9,7 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 
 /**
- * tb_cmm_app_group_map
+ * cmm_app_group_map
  */
 
 @Alias("AppGroupMapping")
@@ -23,8 +23,8 @@ public class AppGroupMapping {
     private Integer dataNo;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime regDt;
-    private Integer regUserNo;
+    private LocalDateTime createdAt;
+    private Integer createdBy;
     private String useYn;
     private Integer sort;
     private String updEnableYn;

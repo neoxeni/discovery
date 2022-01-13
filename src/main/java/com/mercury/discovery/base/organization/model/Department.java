@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * tb_cmm_dept
+ * cmm_dept
  */
 
 @Alias("Department")
@@ -27,16 +27,16 @@ public class Department {
     private Integer pDeptNo;
 
 
-    private Integer regEmpNo;
+    private Integer createdBy;
 
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime regDt;
-    private Integer updEmpNo;
+    private LocalDateTime createdAt;
+    private Integer updatedBy;
 
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime updDt;
+    private LocalDateTime updatedAt;
 
     private List<UserRole> roles;
     private List<UserRole> parentsRoles;

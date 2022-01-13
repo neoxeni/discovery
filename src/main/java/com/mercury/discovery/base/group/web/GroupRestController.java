@@ -36,14 +36,13 @@ public class GroupRestController {
 
     @PostMapping("/base/groups")
     public ResponseEntity<?> postGroups(AppUser appUser, @RequestBody Group group) {
-        group.setRegDt(LocalDateTime.now());
-        group.setRegUserNo(appUser.getId());
+        group.setCreatedAt(LocalDateTime.now());
+        group.setCreatedBy(appUser.getId());
         group.setClientId(appUser.getClientId());
 
         if(StringUtils.isEmpty(group.getUpdEnableYn())) {
             group.setUpdEnableYn("Y");
         }
-        group.setCallcenterYn("N");
 
         int affected = groupService.insertGroup(group);
 
@@ -52,22 +51,22 @@ public class GroupRestController {
 
     @PatchMapping("/base/groups")
     public ResponseEntity<?> patchGroups(AppUser appUser, @RequestBody Group group) {
-        group.setUpdDt(LocalDateTime.now());
-        group.setUpdUserNo(appUser.getId());
+        group.setUpdatedAt(LocalDateTime.now());
+        group.setUpdatedBy(appUser.getId());
         group.setClientId(appUser.getClientId());
         int affected = groupService.updateGroup(group);
         return ResponseEntity.ok(new SimpleResponseModel(affected, MessagesUtils.getMessage("sentence.update")));
     }
 
-    @DeleteMapping("/base/groups/{grpNo}")
-    public ResponseEntity<?> deleteGroups(AppUser appUser, @PathVariable Integer grpNo) {
-        int affected = groupService.deleteGroup(appUser.getClientId(), grpNo);
+    @DeleteMapping("/base/groups/{id}")
+    public ResponseEntity<?> deleteGroups(AppUser appUser, @PathVariable Long id) {
+        int affected = groupService.deleteGroup(appUser.getClientId(), id);
         return ResponseEntity.ok(new SimpleResponseModel(affected, MessagesUtils.getMessage("sentence.delete")));
     }
 
     @DeleteMapping("/base/groups")
     public ResponseEntity<?> deleteGroups(AppUser appUser, @RequestBody Group group) {
-        int affected = groupService.deleteGroup(appUser.getClientId(), group.getGrpNo());
+        int affected = groupService.deleteGroup(appUser.getClientId(), group.getId());
         return ResponseEntity.ok(new SimpleResponseModel(affected, MessagesUtils.getMessage("sentence.delete")));
     }
 
@@ -104,8 +103,8 @@ public class GroupRestController {
 
             int idx = 1;
             for (GroupMapping groupMapping : groupMappings) {
-                groupMapping.setRegDt(now);
-                groupMapping.setRegEmpNo(appUser.getId());
+                groupMapping.setCreatedAt(now);
+                groupMapping.setCreatedBy(appUser.getId());
                 groupMapping.setUseYn("Y");
                 groupMapping.setSort(idx++);
             }
@@ -124,7 +123,7 @@ public class GroupRestController {
                                                   @RequestPart("grpNo") String grpNo,
                                                   @RequestPart("groupMappings") List<GroupMapping> groupMappings) {
 
-        groupService.updateGroupMapping(appUser, Integer.parseInt(grpNo), groupMappings);
+        groupService.updateGroupMapping(appUser, Long.parseLong(grpNo), groupMappings);
         return ResponseEntity.ok().build();
     }
 
@@ -140,9 +139,9 @@ public class GroupRestController {
             if ("N".equals(groupMapping.getUseYn())) {
                 deleteMappings.add(groupMapping);
             } else {
-                if (groupMapping.getMapNo() == null) {
-                    groupMapping.setRegDt(now);
-                    groupMapping.setRegEmpNo(appUser.getId());
+                if (groupMapping.getId() == null) {
+                    groupMapping.setCreatedAt(now);
+                    groupMapping.setCreatedBy(appUser.getId());
                     groupMapping.setUseYn("Y");
                     groupMapping.setSort(index++);
 
@@ -180,8 +179,8 @@ public class GroupRestController {
 
         int affected = groupService.deleteAppGroupMappings(appUser.getClientId(), groupMappings);
 
-        List<GroupMappingHistory> groupMappingHistories = groupService.genAppGroupMappingHistories(appUser, groupMappings, "D");
-        groupService.insertGroupMappingsHistory(groupMappingHistories);
+        //List<GroupMappingHistory> groupMappingHistories = groupService.genAppGroupMappingHistories(appUser, groupMappings, "D");
+        //groupService.insertGroupMappingsHistory(groupMappingHistories);
 
         return ResponseEntity.ok(new SimpleResponseModel(affected, MessagesUtils.getMessage("sentence.delete")));
     }
@@ -217,7 +216,7 @@ public class GroupRestController {
 
             return value;
         }).build());
-        columns.add(ExcelUtils.column("regDt", "변경일시", 165, "CENTER"));
+        columns.add(ExcelUtils.column("createdAt", "변경일시", 165, "CENTER"));
         columns.add(ExcelUtils.column("regIp", "접속아이피", 130));
 
         ResultExcelDataHandler<?> resultExcelDataHandler = ExcelUtils.getResultExcelDataHandler("권한변경이력조회", columns);

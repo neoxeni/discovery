@@ -256,8 +256,8 @@ public class FileService {
                 LocalDateTime lastModified = LocalDateTime.now();
 
                 attachFile.setFileNm(fileName);
-                attachFile.setRegDt(lastModified);
-                attachFile.setUpdDt(lastModified);
+                attachFile.setCreatedAt(lastModified);
+                attachFile.setUpdatedAt(lastModified);
 
                 insertFileList.add(attachFile);
             } else if ("DELETE".equals(attachFile.getWorkType())) {
@@ -282,7 +282,7 @@ public class FileService {
 
 
         if (updateFileList.size() > 0) {
-            updateFileList.forEach(e -> e.setUpdDt(LocalDateTime.now()));
+            updateFileList.forEach(e -> e.setUpdatedAt(LocalDateTime.now()));
             fileRepository.update(updateFileList);
         }
 

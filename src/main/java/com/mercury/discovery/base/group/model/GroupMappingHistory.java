@@ -1,43 +1,37 @@
 package com.mercury.discovery.base.group.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
 /**
- * tb_cmm_group_map_hst
+ * cmm_group_mapping_history
  */
 
 @Data
 public class GroupMappingHistory {
-    private Integer seqNo;
-    private Integer mapNo;
-    private Integer grpNo;
+    private Long id;
+
+    private Long groupId;
+    private Long groupMappingId;
+
     private String dataGbn;
     private Integer dataNo;
-
     private String action;
-
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime regDt;
-    private Integer regEmpNo;
     private String regIp;
+
+    private Integer createdBy;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createdAt;
+
     private Integer clientId;
 
-    public void of(GroupMapping groupMapping){
-        this.mapNo = groupMapping.getMapNo();
-        this.grpNo = groupMapping.getGrpNo();
-        this.dataGbn = groupMapping.getDataGbn();
-        this.dataNo = groupMapping.getDataNo();
-    }
-
-    public void of(AppGroupMapping groupMapping){
-        this.mapNo = groupMapping.getMapNo();
-        this.grpNo = groupMapping.getAppGrpNo();
+    public void of(GroupMapping groupMapping) {
+        this.groupMappingId = groupMapping.getGroupId();
+        this.groupId = groupMapping.getGroupId();
         this.dataGbn = groupMapping.getDataGbn();
         this.dataNo = groupMapping.getDataNo();
     }

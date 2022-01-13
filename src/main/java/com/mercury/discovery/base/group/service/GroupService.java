@@ -37,8 +37,8 @@ public class GroupService {
     }
 
     @Transactional(readOnly = true)
-    public Group findGroup(int clientId, int grpNo) {
-        return groupRepository.findGroup(clientId, grpNo);
+    public Group findGroup(int clientId, Long id) {
+        return groupRepository.findGroup(clientId, id);
     }
 
     @Transactional(readOnly = true)
@@ -54,13 +54,8 @@ public class GroupService {
         return groupRepository.updateGroup(group);
     }
 
-    public int deleteGroup(Integer clientId, Integer grpNo) {
-        int affected = groupRepository.deleteGroup(clientId, grpNo);
-        if (affected > 0) {
-            groupRepository.deleteGroupMappingsByGrpNo(clientId, grpNo);
-        }
-
-        return affected;
+    public int deleteGroup(Integer clientId, Long grpNo) {
+        return groupRepository.deleteGroup(clientId, grpNo);
     }
 
     @Transactional(readOnly = true)
@@ -88,9 +83,9 @@ public class GroupService {
         int affected = 0;
         if (deleteGroupMapping != null && deleteGroupMapping.size() > 0) {
 
-            List<Integer> deleteGroupMappingNos = new ArrayList<>();
+            List<Long> deleteGroupMappingNos = new ArrayList<>();
             deleteGroupMapping.forEach(groupMapping -> {
-                deleteGroupMappingNos.add(groupMapping.getMapNo());
+                deleteGroupMappingNos.add(groupMapping.getId());
             });
 
             affected += groupRepository.deleteGroupMappings(clientId, deleteGroupMappingNos);
@@ -105,9 +100,9 @@ public class GroupService {
 
     public int deleteGroupMappings(Integer clientId, List<GroupMapping> deleteGroupMapping) {
         if (deleteGroupMapping != null && deleteGroupMapping.size() > 0) {
-            List<Integer> deleteGroupMappingNos = new ArrayList<>();
+            List<Long> deleteGroupMappingNos = new ArrayList<>();
             deleteGroupMapping.forEach(groupMapping -> {
-                deleteGroupMappingNos.add(groupMapping.getMapNo());
+                deleteGroupMappingNos.add(groupMapping.getId());
             });
 
             return groupRepository.deleteGroupMappings(clientId, deleteGroupMappingNos);
@@ -151,15 +146,15 @@ public class GroupService {
     }
 
     public int insertAppGroup(AppGroup appGroup, AppUser appUser) {
-        appGroup.setRegDt(LocalDateTime.now());
-        appGroup.setRegUserNo(appUser.getId());
+        appGroup.setCreatedAt(LocalDateTime.now());
+        appGroup.setCreatedBy(appUser.getId());
         appGroup.setClientId(appUser.getClientId());
         return groupRepository.insertAppGroup(appGroup);
     }
 
     public int updateAppGroup(AppGroup appGroup, AppUser appUser) {
-        appGroup.setUpdDt(LocalDateTime.now());
-        appGroup.setUpdUserNo(appUser.getId());
+        appGroup.setUpdatedAt(LocalDateTime.now());
+        appGroup.setUpdatedBy(appUser.getId());
         appGroup.setClientId(appUser.getClientId());
         return groupRepository.updateAppGroup(appGroup);
     }
@@ -178,8 +173,8 @@ public class GroupService {
     }
 
     public int insertAppGroupMapping(AppUser appUser, AppGroupMapping appGroupMapping) {
-        appGroupMapping.setRegDt(LocalDateTime.now());
-        appGroupMapping.setRegUserNo(appUser.getId());
+        appGroupMapping.setCreatedAt(LocalDateTime.now());
+        appGroupMapping.setCreatedBy(appUser.getId());
         return groupRepository.insertAppGroupMapping(appGroupMapping);
     }
 
@@ -200,7 +195,7 @@ public class GroupService {
             return;
         }
         for (AppGroupMapping appGroupMapping : appGroupMappings) {
-            appGroupMapping.setRegUserNo(appUser.getId());
+            appGroupMapping.setCreatedBy(appUser.getId());
             groupRepository.insertAppGroupMapping(appGroupMapping);
 
             deleteMappings.remove(appGroupMapping);
@@ -212,15 +207,14 @@ public class GroupService {
         // null 체거
         CollectionUtils.filter(deleteMappings, PredicateUtils.notNullPredicate());
 
-        groupMappingHistories.addAll(this.genAppGroupMappingHistories(appUser, createMappings, "C"));
-        groupMappingHistories.addAll(this.genAppGroupMappingHistories(appUser, deleteMappings, "D"));
+
 
         if (groupMappingHistories.size() > 0) {
             this.insertGroupMappingsHistory(groupMappingHistories);
         }
     }
 
-    public void updateGroupMapping(AppUser appUser, Integer grpNo, List<GroupMapping> groupNewMappings) {
+    public void updateGroupMapping(AppUser appUser, Long grpNo, List<GroupMapping> groupNewMappings) {
 
         GroupMappingRequestDto groupMappingRequestDto = new GroupMappingRequestDto();
         groupMappingRequestDto.setClientId(appUser.getClientId());
@@ -229,7 +223,7 @@ public class GroupService {
                 = this.findGroupMappingsByGrpNo(groupMappingRequestDto, null)
                 .stream().map(e -> {
                     GroupMapping _groupMapping = new GroupMapping();
-                    _groupMapping.setGrpNo(e.getGrpNo());
+                    _groupMapping.setGroupId(e.getGroupId());
                     _groupMapping.setDataGbn(e.getDataGbn());
                     _groupMapping.setDataNo(e.getDataNo());
                     return _groupMapping;
@@ -241,9 +235,9 @@ public class GroupService {
 
 
         for (GroupMapping groupMapping : groupNewMappings) {
-            groupMapping.setRegEmpNo(appUser.getId());
-            groupMapping.setGrpNo(grpNo);
-            groupMapping.setRegDt(LocalDateTime.now());
+            groupMapping.setCreatedBy(appUser.getId());
+            groupMapping.setGroupId(grpNo);
+            groupMapping.setCreatedAt(LocalDateTime.now());
             deleteMappings.remove(groupMapping);
             if(!currentMappings.contains(groupMapping)) {
                 createMappings.add(groupMapping);
@@ -276,13 +270,13 @@ public class GroupService {
 
             groupMappingHistory.of(groupMapping);
             groupMappingHistory.setAction(action);
-            groupMappingHistory.setRegEmpNo(appUser.getId());
-            groupMappingHistory.setRegDt(now);
+            groupMappingHistory.setCreatedBy(appUser.getId());
+            groupMappingHistory.setCreatedAt(now);
             groupMappingHistory.setRegIp(ip);
             groupMappingHistory.setClientId(appUser.getClientId());
 
-            if (groupMappingHistory.getMapNo() == null) {
-                groupMappingHistory.setMapNo(0);
+            if (groupMappingHistory.getGroupMappingId() == null) {
+                groupMappingHistory.setGroupMappingId(0L);
             }
 
             groupMappingHistories.add(groupMappingHistory);
@@ -291,28 +285,6 @@ public class GroupService {
         return groupMappingHistories;
     }
 
-    public List<GroupMappingHistory> genAppGroupMappingHistories(AppUser appUser, List<AppGroupMapping> groupMappings, String action) {
-        List<GroupMappingHistory> groupMappingHistories = new ArrayList<>();
-        LocalDateTime now = LocalDateTime.now();
-        String ip = HttpUtils.getRemoteAddr();
-        groupMappings.forEach(groupMapping -> {
-            GroupMappingHistory groupMappingHistory = new GroupMappingHistory();
 
-            groupMappingHistory.of(groupMapping);
-            groupMappingHistory.setAction(action);
-            groupMappingHistory.setRegEmpNo(appUser.getId());
-            groupMappingHistory.setRegDt(now);
-            groupMappingHistory.setRegIp(ip);
-            groupMappingHistory.setClientId(appUser.getClientId());
-
-            if (groupMappingHistory.getMapNo() == null) {
-                groupMappingHistory.setMapNo(0);
-            }
-
-            groupMappingHistories.add(groupMappingHistory);
-        });
-
-        return groupMappingHistories;
-    }
 }
 

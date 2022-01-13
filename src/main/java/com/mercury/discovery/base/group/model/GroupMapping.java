@@ -1,32 +1,32 @@
 package com.mercury.discovery.base.group.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.ibatis.type.Alias;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
 /**
- * tb_cmm_group_map
+ * cmm_group_mapping
  */
 
 @Alias("GroupMapping")
 @Data
-@EqualsAndHashCode(of = {"grpNo", "dataGbn", "dataNo"})
+@EqualsAndHashCode(of = {"groupId", "dataGbn", "dataNo"})
 public class GroupMapping {
-    private Integer mapNo;
-    private Integer grpNo;
+    private Long id;
+
     private String dataGbn;
     private Integer dataNo;
-
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime regDt;
-    private Integer regEmpNo;
-
     private String useYn;
     private Integer sort;
+
+    private Integer createdBy;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createdAt;
+
+    private Long groupId;
 }

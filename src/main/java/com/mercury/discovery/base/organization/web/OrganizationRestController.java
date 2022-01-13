@@ -101,8 +101,8 @@ public class OrganizationRestController {
     @PostMapping("/base/organizations/departments")
     public ResponseEntity<?> postDepartment(AppUser appUser, @RequestBody Department department) {
         department.setClientId(appUser.getClientId());
-        department.setRegEmpNo(appUser.getId());
-        department.setRegDt(LocalDateTime.now());
+        department.setCreatedBy(appUser.getId());
+        department.setCreatedAt(LocalDateTime.now());
 
         if(!StringUtils.hasLength(department.getDeptCd())){
             department.setDeptCd(IDGenerator.getUUID());
@@ -120,8 +120,8 @@ public class OrganizationRestController {
     @PatchMapping("/base/organizations/departments")
     public ResponseEntity<?> patchDepartment(AppUser appUser, @RequestBody Department department) {
         department.setClientId(appUser.getClientId());
-        department.setUpdEmpNo(appUser.getId());
-        department.setUpdDt(LocalDateTime.now());
+        department.setUpdatedBy(appUser.getId());
+        department.setUpdatedAt(LocalDateTime.now());
         int affected = organizationService.updateDepartment(department);
         return ResponseEntity.ok(new SimpleResponseModel(affected, MessagesUtils.getMessage("sentence.update")));
     }
@@ -151,8 +151,8 @@ public class OrganizationRestController {
     @PatchMapping("/base/organizations/departments/change")
     public ResponseEntity<?> patchMoveDeptEmp(AppUser appUser, @RequestBody ChangeDepartmentDto changeDepartmentDto) {
         changeDepartmentDto.setClientId(appUser.getClientId());
-        changeDepartmentDto.setUpdEmpNo(appUser.getId());
-        changeDepartmentDto.setUpdDt(LocalDateTime.now());
+        changeDepartmentDto.setUpdatedBy(appUser.getId());
+        changeDepartmentDto.setUpdatedAt(LocalDateTime.now());
 
         String moveType = changeDepartmentDto.getMoveType();
         int affected = 0;
