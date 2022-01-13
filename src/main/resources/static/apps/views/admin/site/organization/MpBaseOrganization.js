@@ -110,7 +110,7 @@ export default {
                                     
                                     <template v-if="control.group">
                                         <v-col cols="12" md="12">
-                                            <mp-base-group-combo :items="roles" :selected-items.sync="companyRoles" label="그룹"></mp-base-group-combo>
+                                            <mp-base-group-combo :items="groups" :selected-items.sync="companyRoles" label="그룹"></mp-base-group-combo>
                                         </v-col>
             
                                         <v-col cols="12" md="12" class="text-right">
@@ -167,10 +167,10 @@ export default {
                                     
                                     <template v-if="control.group">
                                         <v-col cols="12" md="12">
-                                            <mp-base-group-combo :items="roles" :selected-items.sync="department.parentsRoles" readonly label="상위그룹"></mp-base-group-combo>
+                                            <mp-base-group-combo :items="groups" :selected-items.sync="department.parentsRoles" readonly label="상위그룹"></mp-base-group-combo>
                                         </v-col>
                                         <v-col cols="12" md="12">
-                                            <mp-base-group-combo :items="roles" :selected-items.sync="departmentRoles" label="그룹"></mp-base-group-combo>
+                                            <mp-base-group-combo :items="groups" :selected-items.sync="departmentRoles" label="그룹"></mp-base-group-combo>
                                         </v-col>
 
                                         <v-col cols="12" md="12" class="text-right">
@@ -251,10 +251,10 @@ export default {
                                     
                                     <template v-if="control.group">
                                         <v-col cols="12" md="12">
-                                            <mp-base-group-combo :items="roles" :selected-items.sync="employeeDepartmentRoles" readonly label="상위그룹"></mp-base-group-combo>
+                                            <mp-base-group-combo :items="groups" :selected-items.sync="employeeDepartmentRoles" readonly label="상위그룹"></mp-base-group-combo>
                                         </v-col>
                                         <v-col cols="12" md="12">
-                                            <mp-base-group-combo :items="roles" :selected-items.sync="employeeRoles" label="그룹"></mp-base-group-combo>
+                                            <mp-base-group-combo :items="groups" :selected-items.sync="employeeRoles" label="그룹"></mp-base-group-combo>
                                         </v-col>
                                         <v-col cols="12" md="12" class="text-right">
                                             <v-btn class="ml-1" color="warning" @click="saveGroupItem" outlined small text>
@@ -366,7 +366,7 @@ export default {
                     type: 'v-object'
                 })
             },
-            roles: [],
+            groups: [],
             validation: {
                 valid: false
             },
@@ -438,7 +438,7 @@ export default {
         xAjax({
             url: '/base/groups'
         }).then(resp => {
-            this.roles = resp;
+            this.groups = resp;
         });
     },
     methods: {
@@ -572,59 +572,61 @@ export default {
             let target = '';
             let targetId = '';
             let targets = [];
-            const originGroupMapByGrpNo = {}; // grpNo: {data}
-            // grpNo: {data}
+            const originGroupMapById = {}; // id: {data}
             if (this.type === 'employee') {
                 target = 'E';
-                targetId = this.employee.empNo;
-                this.employee.roles.forEach(role => {
-                    if (role.target === 'E') {
-                        originGroupMapByGrpNo[role.grpNo] = role;
+                targetId = this.employee.id;
+                this.employee.groups.forEach(group => {
+                    if (group.target === target) {
+                        originGroupMapById[group.id] = group;
                     }
                 });
                 targets = this.employeeRoles;
             } else if (this.type === 'department') {
                 target = 'D';
-                targetId = this.department.deptNo;
-                this.department.roles.forEach(role => {
-                    originGroupMapByGrpNo[role.grpNo] = role;
+                targetId = this.department.id;
+                this.department.groups.forEach(group => {
+                    originGroupMapById[group.id] = group;
                 });
                 targets = this.departmentRoles;
             } else if (this.type === 'company') {
                 target = 'D';
-                targetId = this.company.rootDepartment.deptNo;
-                this.company.rootDepartment.roles.forEach(role => {
-                    originGroupMapByGrpNo[role.grpNo] = role;
+                targetId = this.company.rootDepartment.id;
+                this.company.rootDepartment.groups.forEach(group => {
+                    originGroupMapById[group.id] = group;
                 });
                 targets = this.companyRoles;
             }
             const groupMappings = []; //삭제할 목록을 찾는다.
             //삭제할 목록을 찾는다.
-            for (let grpNo in originGroupMapByGrpNo) {
-                if (originGroupMapByGrpNo.hasOwnProperty(grpNo)) {
-                    const oriItem = originGroupMapByGrpNo[grpNo];
+            for (let id in originGroupMapById) {
+                if (originGroupMapById.hasOwnProperty(id)) {
+                    const oriItem = originGroupMapById[id];
                     const oriItemInTarget = targets.find(item => {
-                        return item.grpNo === oriItem['grpNo'];
+                        return item.id === oriItem['id'];
                     });
                     if (oriItemInTarget === undefined) {
-                        oriItem['useYn'] = 'N'; //삭제할 항목은 N으로
                         //삭제할 항목은 N으로
-                        groupMappings.push(oriItem);
+                        groupMappings.push({
+                            id: oriItem['groupMappingId'],
+                            groupId: oriItem['id'],
+                            target: oriItem['target'],
+                            targetId: oriItem['targetId'],
+                            useYn: 'N'  //삭제할 항목은 N으로
+                        });
                     }
                 }
             } //추가할 항목을 찾는다.
             targets.forEach(item => {
-                const mapNo = item.mapNo;
-                const oriItem = originGroupMapByGrpNo[item.grpNo];
+                const groupId = item.id;
+                const oriItem = originGroupMapById[groupId];
                 if (oriItem === undefined) {
                     groupMappings.push({
+                        id: null, //새로 추가되어야 함
+                        groupId: groupId,
                         target: target,
                         targetId: targetId,
-                        code: item.code,
-                        name: item.name,
-                        grpNo: item.grpNo,
-                        useYn: 'Y',
-                        mapNo: null //새로 추가되어야 함
+                        useYn: 'Y'
                     });
                 }
             }); //새로 추가되어야 함
@@ -663,8 +665,8 @@ export default {
                 }).then(resp => {
                     mercury.base.lib.notify(resp.message);
                     resp.object.forEach((data)=>{
-                        data['text'] = data.cdNm;
-                        data['value'] = data.cd;
+                        data['text'] = data.name;
+                        data['value'] = data.code;
                     });
                     this.codes.postnCd = resp.object;
                 });
@@ -687,8 +689,8 @@ export default {
                 }).then(resp => {
                     mercury.base.lib.notify(resp.message);
                     resp.object.forEach((data)=>{
-                        data['text'] = data.cdNm;
-                        data['value'] = data.cd;
+                        data['text'] = data.name;
+                        data['value'] = data.code;
                     });
                     this.codes.dutyCd = resp.object;
                 });
@@ -719,7 +721,7 @@ export default {
                     });
                 }).then(resp => {
                     this.$set(this.company, 'rootDepartment', resp);
-                    this.companyRoles = resp.roles.slice();
+                    this.companyRoles = resp.groups.slice();
                 });
             } else {
                 const prePath = instance.get_path(node.parent, ' > ');
@@ -744,9 +746,9 @@ export default {
                         url: mercury.base.util.bindPath('/base/organizations/employees/{userKey}',{userKey:this.item.userKey})
                     }).then(resp => {
                         this.employee = resp;
-                        if (resp.roles !== null) {
-                            this.employeeRoles = resp.roles.filter(role => role.target === 'E');
-                            this.employeeDepartmentRoles = resp.roles.filter(role => role.target === 'D');
+                        if (resp.groups !== null) {
+                            this.employeeRoles = resp.groups.filter(group => group.target === 'E');
+                            this.employeeDepartmentRoles = resp.groups.filter(group => group.target === 'D');
                         } else {
                             this.employeeRoles = [];
                             this.employeeDepartmentRoles = [];

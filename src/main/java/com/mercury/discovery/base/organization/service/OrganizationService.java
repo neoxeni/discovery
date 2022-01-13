@@ -130,11 +130,6 @@ public class OrganizationService {
         return organizationRepository.changeDepartmentDepartment(changeDepartmentDto);
     }
 
-    @Transactional(readOnly = true)
-    public List<UserRole> findDepartmentsRoles(Integer clientId, Long id) {
-        return organizationRepository.findDepartmentsRoles(clientId, id);
-    }
-
     @Caching(evict = {
             @CacheEvict(cacheNames = "deptEmpListForTreeAll", key = "#clientId")
     })

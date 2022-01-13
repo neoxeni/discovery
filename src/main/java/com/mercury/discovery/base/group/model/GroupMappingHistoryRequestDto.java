@@ -11,7 +11,7 @@ public class GroupMappingHistoryRequestDto {
     private LocalDateTime endedAt;
 
     private String action;
-    private Integer grpNo;
+    private Integer groupId;
     private String target;
     private String dataNm;
     private String regEmpNm;

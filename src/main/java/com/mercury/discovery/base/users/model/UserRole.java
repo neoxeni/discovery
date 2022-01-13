@@ -12,7 +12,7 @@ public class UserRole implements Serializable {
     private static final long serialVersionUID = -5343591561182333422L;
 
     //Group 객체와 동일한 이름:S
-    private Integer grpNo;
+    private Integer groupId;
     private String code;
     private String name;
     //Group 객체와 동일한 이름:E

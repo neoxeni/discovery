@@ -1,9 +1,9 @@
 package com.mercury.discovery.base.organization.service;
 
+import com.mercury.discovery.base.group.model.Group;
 import com.mercury.discovery.base.organization.model.ChangeDepartmentDto;
 import com.mercury.discovery.base.organization.model.Department;
-import com.mercury.discovery.base.organization.model.OrganizationSearchDto;
-import com.mercury.discovery.base.users.model.UserAppRole;
+import com.mercury.discovery.base.users.model.UserGroup;
 import com.mercury.discovery.base.users.model.UserRole;
 import com.mercury.discovery.common.model.CamelMap;
 import org.apache.ibatis.annotations.Mapper;
@@ -30,9 +30,7 @@ public interface OrganizationRepository {
 
     int changeDepartmentDepartment(ChangeDepartmentDto changeDepartmentDto);
 
-    List<UserRole> findDepartmentsRoles(Integer clientId, Long id);
-
-    Set<UserAppRole> findDepartmentsAppRoles(Integer clientId, Long deptNo);
+    List<UserGroup> findDepartmentsRoles(Integer clientId, Long id);
 
     Department findDepartmentByDepartmentKey(Integer clientId, String departmentKey);
 }

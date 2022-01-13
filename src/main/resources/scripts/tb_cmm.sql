@@ -159,7 +159,7 @@ create table cmm_group_mapping(
     created_at                  DATETIME            default current_timestamp COMMENT '등록일시',
     group_id                    bigint              not null comment '그룹번호',
     CONSTRAINT FK1_CMM_GROUP FOREIGN KEY (group_id) REFERENCES cmm_group (id),
-    UNIQUE KEY UK1_cmm_GROUP_MAP(group_id, target, target_id)
+    UNIQUE KEY UK1_CMM_GROUP_MAP(group_id, target, target_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='그룹맵핑';
 
 create table cmm_group_mapping_history(

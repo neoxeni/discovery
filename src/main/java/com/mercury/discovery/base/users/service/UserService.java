@@ -1,9 +1,11 @@
 package com.mercury.discovery.base.users.service;
 
 import com.mercury.discovery.base.BaseTopic;
+import com.mercury.discovery.base.group.model.Group;
 import com.mercury.discovery.base.organization.service.OrganizationRepository;
 import com.mercury.discovery.base.users.model.AppUser;
 import com.mercury.discovery.base.users.model.TokenUser;
+import com.mercury.discovery.base.users.model.UserGroup;
 import com.mercury.discovery.base.users.model.UserRole;
 import com.mercury.discovery.config.websocket.message.MessagePublisher;
 import com.mercury.discovery.utils.JwtTokenProvider;
@@ -55,34 +57,28 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public void setAppUserRoles(AppUser appUser) {
-        List<UserRole> roleList = getUserRoles(appUser);
-        appUser.setRoles(roleList);
+        List<UserGroup> groups = getUserGroups(appUser);
+        appUser.setGroups(groups);
         List<GrantedAuthority> authorities = new ArrayList<>();
         if (appUser.getAuthorities() != null) {
             authorities.addAll(appUser.getAuthorities());
         }
-        roleList.forEach(userRole -> {
-            authorities.add(new SimpleGrantedAuthority("ROLE_" + userRole.getCode()));
+        groups.forEach(group -> {
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + group.getCode()));
         });
-
-        /*List<UserAppRole> appRoleList = getUserAppRoles(appUser);
-        appUser.setAppRoles(appRoleList);
-        appRoleList.forEach(userRole -> {
-            authorities.add(new SimpleGrantedAuthority("ROLE_$APP$_" + userRole.getAppGrpCd()));
-        });*/
 
         appUser.setAuthorities(authorities);
     }
 
     @Transactional(readOnly = true)
-    public List<UserRole> getUserRoles(AppUser appUser) {
-        List<UserRole> roles = userRepository.findRolesByUserId(appUser.getId());
+    public List<UserGroup> getUserGroups(AppUser appUser) {
+        List<UserGroup> groups = userRepository.findGroupsByUserId(appUser.getId());
         if (appUser.getDepartmentId() != null) {
-            List<UserRole> departmentsRoles = organizationRepository.findDepartmentsRoles(appUser.getClientId(), appUser.getDepartmentId());
-            roles.addAll(departmentsRoles);
+            List<UserGroup> departmentsGroups = organizationRepository.findDepartmentsRoles(appUser.getClientId(), appUser.getDepartmentId());
+            groups.addAll(departmentsGroups);
         }
 
-        return roles;
+        return groups;
     }
 
     public AppUser getUser(String userKey) {

@@ -87,7 +87,7 @@ public class GroupRestController {
         columns.add(ExcelUtils.column("dataNm", "이름", 150));
         columns.add(ExcelUtils.column("useYn", "사용여부", 100));
 
-        Group group = groupService.findGroup(appUser.getClientId(), groupMappingRequestDto.getGrpNo());
+        Group group = groupService.findGroup(appUser.getClientId(), groupMappingRequestDto.getGroupId());
 
         ResultExcelDataHandler<?> resultExcelDataHandler = ExcelUtils.getResultExcelDataHandler(group.getName() + " 그룹 구성원", columns);
         groupService.downloadExcelGroupMappingsByGrpNo(groupMappingRequestDto, pageable, resultExcelDataHandler);
@@ -120,10 +120,10 @@ public class GroupRestController {
 
     @PatchMapping("/base/group/mappings")
     public ResponseEntity<?> patchGroupsMappings(AppUser appUser,
-                                                 @RequestPart("grpNo") String grpNo,
+                                                 @RequestPart("groupId") String groupId,
                                                  @RequestPart("groupMappings") List<GroupMapping> groupMappings) {
 
-        groupService.updateGroupMapping(appUser, Long.parseLong(grpNo), groupMappings);
+        groupService.updateGroupMapping(appUser, Long.parseLong(groupId), groupMappings);
         return ResponseEntity.ok().build();
     }
 
@@ -144,7 +144,6 @@ public class GroupRestController {
                     groupMapping.setCreatedBy(appUser.getId());
                     groupMapping.setUseYn("Y");
                     groupMapping.setSort(index++);
-
                     mergeMappings.add(groupMapping);
                 }
             }
@@ -158,7 +157,6 @@ public class GroupRestController {
         if (groupMappingHistories.size() > 0) {
             groupService.insertGroupMappingsHistory(groupMappingHistories);
         }
-
 
         return ResponseEntity.ok(new SimpleResponseModel(affected, MessagesUtils.getMessage("sentence.update")));
     }

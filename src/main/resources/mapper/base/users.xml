@@ -127,7 +127,7 @@
                     SELECT
                         b.target_id as emp_no
                     FROM cmm_group a
-                        JOIN cmm_group_map b on a.grp_no  = b.grp_no
+                        JOIN cmm_group_mapping b on a.group_id  = b.group_id
                     WHERE a.client_id = #{clientId}
                     AND a.code = #{code}
                     AND b.target = 'E'
@@ -141,7 +141,7 @@
                         SELECT
                             b.target_id
                         FROM cmm_group a
-                            JOIN cmm_group_map b on a.grp_no  = b.grp_no
+                            JOIN cmm_group_mapping b on a.group_id  = b.group_id
                         WHERE a.client_id = #{clientId}
                         AND a.code = #{code}
                         AND b.target = 'D'
@@ -155,18 +155,11 @@
         </if>
     </select>
 
-    <select id="findRolesByUserId" resultType="UserRole">
-        SELECT cg.grp_no, cg.code, cg.name, cgm.map_no, cgm.target, cgm.target_id, cg.client_id
-        FROM cmm_group_map cgm JOIN cmm_group cg ON cgm.grp_no = cg.grp_no
+    <select id="findGroupsByUserId" resultType="UserGroup">
+        SELECT cg.*, cgm.target, cgm.target_id, cgm.id as group_mapping_id
+        FROM cmm_group_mapping cgm JOIN cmm_group cg ON cgm.group_id = cg.id
         WHERE target = 'E'
         AND target_id = #{userId}
-    </select>
-
-    <select id="findAppRolesByEmpNo" resultType="UserAppRole">
-        SELECT ag.app_grp_no, ag.app_code, ag.app_name, agm.map_no, agm.target, agm.target_id, ag.client_id
-        FROM cmm_app_group_map agm JOIN cmm_app_group ag ON agm.app_grp_no = ag.app_grp_no
-        WHERE target = 'E'
-        AND target_id = #{empNo}
     </select>
 
     <insert id="insertLogin">

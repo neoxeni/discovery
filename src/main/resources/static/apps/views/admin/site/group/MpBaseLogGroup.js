@@ -5,7 +5,7 @@ export default {
             <mp-search>
                 <mp-calendar mode="range" :model.sync="search.range" label="기간"></mp-calendar>
                 <div>
-                    <v-select label="그룹" v-model="search.grpNo" :items="group.items" item-text="name" item-value="grpNo" outlined dense hide-details clearable>
+                    <v-select label="그룹" v-model="search.groupId" :items="group.items" item-text="name" item-value="groupId" outlined dense hide-details clearable>
                         <template v-slot:selection="data">
                             {{ data.item.name }}
                         </template>
@@ -46,7 +46,7 @@ export default {
     data: function() {
         return {
             search: {
-                grpNo: undefined,
+                groupId: undefined,
                 action: undefined,
                 target: undefined,
                 dataNm: undefined,

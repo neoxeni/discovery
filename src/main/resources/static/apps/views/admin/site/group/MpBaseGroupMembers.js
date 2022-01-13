@@ -37,7 +37,7 @@ export default {
         </div>
     `,
     props: {
-        grpNo: Number
+        groupId: Number
     },
     data: function() {
         return {
@@ -85,7 +85,7 @@ export default {
             handler: 'fetchData',
             deep: true
         },
-        'grpNo': {
+        'groupId': {
             handler: function() {
                 this.fetchData(true);
             }
@@ -96,16 +96,16 @@ export default {
     },
     methods: {
         fetchData(isSearchFirst) {
-            const grpNo = this.grpNo;
+            const groupId = this.groupId;
             this.tbl.search.target = '';
             this.tbl.search.dataNm = '';
-            if (grpNo === undefined) {
+            if (groupId === undefined) {
                 this.tbl.items = [];
                 this.tbl.total = 0;
                 return;
             }
             let query = mercury.base.vue.dataTablesParam(this.tbl.options, {
-                grpNo: grpNo
+                groupId: groupId
             });
             xAjax({
                 url: '/base/groups/mappings',
@@ -125,7 +125,7 @@ export default {
             const param = {
                 target: this.tbl.search.target,
                 dataNm: this.tbl.search.dataNm,
-                grpNo: this.grpNo
+                groupId: this.groupId
             }
 
 
@@ -166,7 +166,7 @@ export default {
             this.mappings.forEach((mapping, index) => {
                 if (existMap[mapping.type + '_' + mapping.no] === undefined) {
                     mappings.push({
-                        grpNo: this.grpNo,
+                        groupId: this.groupId,
                         target: mapping.type,
                         targetId: mapping.no,
                         useYn: 'Y',

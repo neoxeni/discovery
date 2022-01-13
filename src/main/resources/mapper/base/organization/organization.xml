@@ -65,7 +65,7 @@
           AND client_id = #{clientId}
     </update>
 
-    <select id="findDepartmentsRoles" resultType="UserRole">
+    <select id="findDepartmentsRoles" resultType="Group">
         <include refid="common.sql.with" /> cte(dept_no, p_dept_no, dept_nm) AS (
         SELECT
         a.dept_no,
@@ -81,19 +81,19 @@
         a.dept_no,
         a.p_dept_no,
         a.dept_nm
-        FROM cmm_dept a JOIN cte b ON b.p_dept_no = a.dept_no
+        FROM client_department a JOIN cte b ON b.p_dept_no = a.dept_no
         AND a.client_id = #{clientId}
         )
 
         SELECT
-        g.grp_no,
+        g.group_id,
         g.code,
         g.name,
         cgm.map_no,
         'D' as target,
         cgm.target_id,
         g.client_id
-        FROM cmm_group_map cgm JOIN cmm_group g ON cgm.grp_no = g.grp_no
+        FROM cmm_group_mapping cgm JOIN cmm_group g ON cgm.group_id = g.group_id
         WHERE target='D'
         AND target_id IN (
         SELECT dept_no
@@ -101,45 +101,4 @@
         )
 
     </select>
-
-
-    <select id="findDepartmentsAppRoles" resultType="UserAppRole">
-        <include refid="common.sql.with" /> cte(dept_no, p_dept_no, dept_nm) AS (
-        SELECT
-        a.dept_no,
-        a.p_dept_no,
-        a.dept_nm
-        FROM cmm_dept a
-        WHERE a.dept_no = #{deptNo}
-        AND a.client_id = #{clientId}
-
-        UNION ALL
-
-        SELECT
-        a.dept_no,
-        a.p_dept_no,
-        a.dept_nm
-        FROM cmm_dept a JOIN cte b ON b.p_dept_no = a.dept_no
-        AND a.client_id = #{clientId}
-        )
-
-        SELECT
-        g.app_grp_no,
-        g.app_code,
-        g.app_name,
-        cgm.map_no,
-        'D' as target,
-        cgm.target_id,
-        g.client_id
-        FROM cmm_app_group_map cgm JOIN cmm_app_group g ON cgm.app_grp_no = g.app_grp_no
-        WHERE target='D'
-        AND target_id IN (
-        SELECT dept_no
-        FROM cte
-        )
-
-    </select>
-
-
-
 </mapper>

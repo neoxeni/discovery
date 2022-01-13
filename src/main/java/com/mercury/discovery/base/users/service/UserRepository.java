@@ -1,7 +1,9 @@
 package com.mercury.discovery.base.users.service;
 
 
+import com.mercury.discovery.base.group.model.Group;
 import com.mercury.discovery.base.users.model.AppUser;
+import com.mercury.discovery.base.users.model.UserGroup;
 import com.mercury.discovery.base.users.model.UserRole;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
@@ -15,7 +17,7 @@ public interface UserRepository {
     //로그인 전용으로 password 정보를 포함한다.
     AppUser findByUsernameForLogin(String username, String clientId);
 
-    List<UserRole> findRolesByUserId(Integer userId);
+    List<UserGroup> findGroupsByUserId(Integer userId);
 
     AppUser findById(Integer id);
 

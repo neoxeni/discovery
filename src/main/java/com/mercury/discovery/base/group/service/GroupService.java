@@ -52,8 +52,8 @@ public class GroupService {
         return groupRepository.updateGroup(group);
     }
 
-    public int deleteGroup(Integer clientId, Long grpNo) {
-        return groupRepository.deleteGroup(clientId, grpNo);
+    public int deleteGroup(Integer clientId, Long groupId) {
+        return groupRepository.deleteGroup(clientId, groupId);
     }
 
     @Transactional(readOnly = true)
@@ -125,11 +125,11 @@ public class GroupService {
         groupRepository.findGroupMappingsHistory(groupMappingHistoryRequestDto, pageable, resultHandler);
     }
 
-    public void updateGroupMapping(AppUser appUser, Long grpNo, List<GroupMapping> groupNewMappings) {
+    public void updateGroupMapping(AppUser appUser, Long groupId, List<GroupMapping> groupNewMappings) {
 
         GroupMappingRequestDto groupMappingRequestDto = new GroupMappingRequestDto();
         groupMappingRequestDto.setClientId(appUser.getClientId());
-        groupMappingRequestDto.setGrpNo(grpNo);
+        groupMappingRequestDto.setGroupId(groupId);
         List<GroupMapping> currentMappings
                 = this.findGroupMappingsByGrpNo(groupMappingRequestDto, null)
                 .stream().map(e -> {
@@ -147,7 +147,7 @@ public class GroupService {
 
         for (GroupMapping groupMapping : groupNewMappings) {
             groupMapping.setCreatedBy(appUser.getId());
-            groupMapping.setGroupId(grpNo);
+            groupMapping.setGroupId(groupId);
             groupMapping.setCreatedAt(LocalDateTime.now());
             deleteMappings.remove(groupMapping);
             if (!currentMappings.contains(groupMapping)) {
@@ -157,7 +157,7 @@ public class GroupService {
         // null 체거
         CollectionUtils.filter(deleteMappings, PredicateUtils.notNullPredicate());
 
-        groupRepository.deleteGroupMappingsByGrpNo(appUser.getClientId(), grpNo);
+        groupRepository.deleteGroupMappingsByGroupId(appUser.getClientId(), groupId);
         if (groupNewMappings.size() > 0) {
             groupRepository.insertGroupMappings(groupNewMappings);
         }

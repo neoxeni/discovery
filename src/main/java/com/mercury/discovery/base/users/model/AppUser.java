@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mercury.discovery.base.group.model.Group;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.ibatis.type.Alias;
@@ -70,8 +71,8 @@ public class AppUser extends TokenUser implements UserDetails {
     private String positionName;
     private String dutyName;
 
-    private List<UserRole> roles = new ArrayList<>();
-    private List<UserAppRole> appRoles = new ArrayList<>();
+    private List<UserGroup> groups = new ArrayList<>();
+
     private Set<String> rolesSet;
 
     public boolean hasAnyRole(String... roles) {
@@ -85,22 +86,6 @@ public class AppUser extends TokenUser implements UserDetails {
             }
         }
         return false;
-    }
-
-    public String getRolesJson() throws JsonProcessingException {
-        Map<String, String> rolePairs = new HashMap<>();
-        if (roles != null) {
-            for (UserRole role : roles) {
-                rolePairs.put(role.getCode(), role.getName());
-            }
-        }
-
-        if (appRoles != null) {
-            for (UserAppRole role : appRoles) {
-                rolePairs.put("$APP$_" + role.getAppGrpCd(), role.getAppGrpNm());
-            }
-        }
-        return new ObjectMapper().writeValueAsString(rolePairs);
     }
 
     @Override

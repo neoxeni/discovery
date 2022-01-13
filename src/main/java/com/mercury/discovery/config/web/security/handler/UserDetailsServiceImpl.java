@@ -43,7 +43,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         userService.successLoginInfo(appUser);
 
         //사용자 role 세팅
-        //userService.setAppUserRoles(appUser);
+        userService.setAppUserRoles(appUser);
 
         //api 서버 토큰발행
         String token = userService.getApiToken(appUser);

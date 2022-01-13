@@ -20,7 +20,7 @@ public interface GroupRepository {
 
     int updateGroup(Group group);
 
-    int deleteGroup(Integer clientId, Long grpNo);
+    int deleteGroup(Integer clientId, Long groupId);
 
     Page<GroupMappingResponseDto> findGroupMappingsByGrpNo(GroupMappingRequestDto groupMappingRequestDto, Pageable pageable);
 
@@ -30,9 +30,7 @@ public interface GroupRepository {
 
     int deleteGroupMappings(Integer clientId, List<Long> groupMappingNos);
 
-    int deleteAppGroupMappings(Integer clientId, List<Integer> groupMappingNos);
-
-    void deleteGroupMappingsByGrpNo(Integer clientId, Long grpNo);
+    void deleteGroupMappingsByGroupId(Integer clientId, Long groupId);
 
     int insertGroupMappingsHistory(GroupMappingHistory groupMappingHistory);
 

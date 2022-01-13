@@ -5,6 +5,7 @@ import lombok.Data;
 import org.apache.ibatis.type.Alias;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -13,7 +14,9 @@ import java.time.LocalDateTime;
 
 @Alias("Group")
 @Data
-public class Group {
+public class Group implements Serializable {
+    private static final long serialVersionUID = -1098364535659804213L;
+
     private Long id;
     private GroupType type;
     private String code;
