@@ -1,10 +1,8 @@
 package com.mercury.discovery.base.users.service;
 
 
-import com.mercury.discovery.base.group.model.Group;
 import com.mercury.discovery.base.users.model.AppUser;
 import com.mercury.discovery.base.users.model.UserGroup;
-import com.mercury.discovery.base.users.model.UserRole;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 

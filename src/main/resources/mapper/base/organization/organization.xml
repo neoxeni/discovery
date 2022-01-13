@@ -65,7 +65,7 @@
           AND client_id = #{clientId}
     </update>
 
-    <select id="findDepartmentsRoles" resultType="Group">
+    <select id="findDepartmentGroups" resultType="UserGroup">
         <include refid="common.sql.with" /> cte(dept_no, p_dept_no, dept_nm) AS (
         SELECT
         a.dept_no,

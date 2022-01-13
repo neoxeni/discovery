@@ -167,7 +167,7 @@ export default {
                                     
                                     <template v-if="control.group">
                                         <v-col cols="12" md="12">
-                                            <mp-base-group-combo :items="groups" :selected-items.sync="department.parentsRoles" readonly label="상위그룹"></mp-base-group-combo>
+                                            <mp-base-group-combo :items="groups" :selected-items.sync="department.parentsGroups" readonly label="상위그룹"></mp-base-group-combo>
                                         </v-col>
                                         <v-col cols="12" md="12">
                                             <mp-base-group-combo :items="groups" :selected-items.sync="departmentRoles" label="그룹"></mp-base-group-combo>

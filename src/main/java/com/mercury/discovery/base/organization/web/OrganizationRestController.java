@@ -6,7 +6,7 @@ import com.mercury.discovery.base.organization.model.ChangeDepartmentDto;
 import com.mercury.discovery.base.organization.model.Department;
 import com.mercury.discovery.base.organization.service.OrganizationService;
 import com.mercury.discovery.base.users.model.AppUser;
-import com.mercury.discovery.base.users.model.UserRole;
+import com.mercury.discovery.base.users.model.UserGroup;
 import com.mercury.discovery.base.users.service.UserService;
 import com.mercury.discovery.common.model.JsTree;
 import com.mercury.discovery.common.web.SimpleResponseModel;
@@ -48,22 +48,22 @@ public class OrganizationRestController {
     public ResponseEntity<?> getDepartment(AppUser appUser, @PathVariable String departmentKey) {
         Department department = organizationService.findDepartmentByDepartmentKey(appUser.getClientId(), departmentKey);
 
-        List<UserRole> roles = new ArrayList<>();
-        List<UserRole> parentsRoles = new ArrayList<>();
+        List<UserGroup> groups = new ArrayList<>();
+        List<UserGroup> parentsGroups = new ArrayList<>();
 
-        /*
-        List<UserRole> list = organizationService.findDepartmentsRoles(appUser.getClientId(), department.getId());
+
+        List<UserGroup> list = organizationService.findDepartmentGroups(appUser.getClientId(), department.getId());
         list.forEach(userRole -> {
-            if (userRole.getDataNo().equals(department.getId())) {
-                roles.add(userRole);
+            if (userRole.getTargetId().equals(department.getId())) {
+                groups.add(userRole);
             } else {
-                parentsRoles.add(userRole);
+                parentsGroups.add(userRole);
             }
         });
-        */
 
-        department.setRoles(roles);
-        department.setParentsRoles(parentsRoles);
+
+        department.setGroups(groups);
+        department.setParentsGroups(parentsGroups);
 
         return ResponseEntity.ok(department);
     }

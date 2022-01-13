@@ -1,12 +1,10 @@
 package com.mercury.discovery.base.users.service;
 
 import com.mercury.discovery.base.BaseTopic;
-import com.mercury.discovery.base.group.model.Group;
 import com.mercury.discovery.base.organization.service.OrganizationRepository;
 import com.mercury.discovery.base.users.model.AppUser;
 import com.mercury.discovery.base.users.model.TokenUser;
 import com.mercury.discovery.base.users.model.UserGroup;
-import com.mercury.discovery.base.users.model.UserRole;
 import com.mercury.discovery.config.websocket.message.MessagePublisher;
 import com.mercury.discovery.utils.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -74,7 +72,7 @@ public class UserService {
     public List<UserGroup> getUserGroups(AppUser appUser) {
         List<UserGroup> groups = userRepository.findGroupsByUserId(appUser.getId());
         if (appUser.getDepartmentId() != null) {
-            List<UserGroup> departmentsGroups = organizationRepository.findDepartmentsRoles(appUser.getClientId(), appUser.getDepartmentId());
+            List<UserGroup> departmentsGroups = organizationRepository.findDepartmentGroups(appUser.getClientId(), appUser.getDepartmentId());
             groups.addAll(departmentsGroups);
         }
 

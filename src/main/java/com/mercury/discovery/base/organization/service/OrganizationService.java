@@ -2,7 +2,7 @@ package com.mercury.discovery.base.organization.service;
 
 import com.mercury.discovery.base.organization.model.ChangeDepartmentDto;
 import com.mercury.discovery.base.organization.model.Department;
-import com.mercury.discovery.base.users.model.UserRole;
+import com.mercury.discovery.base.users.model.UserGroup;
 import com.mercury.discovery.common.model.CamelMap;
 import com.mercury.discovery.common.model.JsTree;
 import lombok.RequiredArgsConstructor;
@@ -98,6 +98,11 @@ public class OrganizationService {
         });
 
         return root;
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserGroup> findDepartmentGroups(Integer clientId, Long id) {
+        return organizationRepository.findDepartmentGroups(clientId, id);
     }
 
     @Transactional(readOnly = true)
