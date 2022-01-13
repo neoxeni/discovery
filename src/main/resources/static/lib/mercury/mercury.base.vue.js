@@ -849,7 +849,7 @@
             showAll() {
                 this.instance.show_all();
             },
-            rename_node(node, text) {
+            renameNode(node, text) {
                 this.instance.rename_node(node, text);
             },
             getInstance() {

@@ -31,37 +31,31 @@
         ${e}.department_id
     </sql>
 
+    <sql id="get_user">
+        SELECT
+        <include refid="user_all">
+            <property name="e" value="e"/>
+            <property name="l" value="l"/>
+        </include>
+        FROM client_user e JOIN client_user_login l ON e.id = l.user_id
+        LEFT OUTER JOIN client_department dept ON e.department_id = dept.id
+        LEFT OUTER JOIN cmm_code postn ON e.position_cd = postn.code AND postn.client_id = e.client_id  AND postn.div_cd = 'OR02'
+        LEFT OUTER JOIN cmm_code duty ON e.duty_cd = duty.code  AND duty.client_id = e.client_id AND duty.div_cd = 'OR01'
+    </sql>
+
     <!--로그인 전용-->
     <select id="findByUserIdForLogin" resultType="AppUser">
-        SELECT
-        <include refid="user_all">
-            <property name="e" value="e"/>
-            <property name="l" value="l"/>
-        </include>
-        FROM client_user e JOIN client_user_login l ON e.id = l.user_id
-        WHERE l.username = #{userId}
+        <include refid="get_user"/>
+        WHERE l.username = #{username}
     </select>
 
-    <select id="findByUserId" resultType="AppUser">
-        SELECT
-        <include refid="user_all">
-            <property name="e" value="e"/>
-            <property name="l" value="l"/>
-        </include>
-        FROM client_user e JOIN client_user_login l ON e.id = l.user_id
+    <select id="findById" resultType="AppUser">
+        <include refid="get_user"/>
         WHERE e.id = #{id}
     </select>
 
     <select id="findByUserKey" resultType="AppUser">
-        SELECT
-        <include refid="user_all">
-            <property name="e" value="e"/>
-            <property name="l" value="l"/>
-        </include>
-        FROM client_user e JOIN client_user_login l ON e.id = l.user_id
-            LEFT OUTER JOIN client_department dept ON e.department_id = dept.id
-            LEFT OUTER JOIN cmm_code postn ON e.position_cd = postn.code AND postn.client_id = e.client_id  AND postn.div_cd = 'OR02'
-            LEFT OUTER JOIN cmm_code duty ON e.duty_cd = duty.code  AND duty.client_id = e.client_id AND duty.div_cd = 'OR01'
+        <include refid="get_user"/>
         WHERE e.user_key = #{userKey}
     </select>
 
@@ -154,11 +148,11 @@
         </if>
     </select>
 
-    <select id="findRolesByEmpNo" resultType="UserRole">
+    <select id="findRolesByUserId" resultType="UserRole">
         SELECT cg.grp_no, cg.grp_cd, cg.grp_nm, cgm.map_no, cgm.data_gbn, cgm.data_no, cg.client_id
         FROM cmm_group_map cgm JOIN cmm_group cg ON cgm.grp_no = cg.grp_no
         WHERE data_gbn = 'E'
-        AND data_no = #{empNo}
+        AND data_no = #{userId}
     </select>
 
     <select id="findAppRolesByEmpNo" resultType="UserAppRole">

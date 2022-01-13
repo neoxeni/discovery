@@ -23,12 +23,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private HttpServletRequest request;
 
     @Override
-    public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         String clientId = request.getParameter("clientId");
-        AppUser appUser = userService.getUserForLogin(userId, clientId);
+        AppUser appUser = userService.getUserForLogin(username, clientId);
 
         if (appUser == null) {
-            throw new UsernameNotFoundException(userId);
+            throw new UsernameNotFoundException(username);
         }
 
         return appUser;

@@ -2,7 +2,9 @@ package com.mercury.discovery.base.users.service;
 
 import com.mercury.discovery.base.BaseTopic;
 import com.mercury.discovery.base.organization.service.OrganizationRepository;
-import com.mercury.discovery.base.users.model.*;
+import com.mercury.discovery.base.users.model.AppUser;
+import com.mercury.discovery.base.users.model.TokenUser;
+import com.mercury.discovery.base.users.model.UserRole;
 import com.mercury.discovery.config.websocket.message.MessagePublisher;
 import com.mercury.discovery.utils.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -42,15 +43,10 @@ public class UserService {
 
     private final MessagePublisher messagePublisher;
 
-    @Value("${apps.mode:on-premise}")
-    private String appMode;
-
-
     @Transactional(readOnly = true)
-    public AppUser getUserForLogin(String userId, String clientId) {
-        return userRepository.findByUserIdForLogin(userId, clientId);
+    public AppUser getUserForLogin(String username, String clientId) {
+        return userRepository.findByUserIdForLogin(username, clientId);
     }
-
 
     @Nullable
     public String getApiToken(TokenUser tokenUser) {
@@ -61,47 +57,33 @@ public class UserService {
     @Transactional(readOnly = true)
     public void setAppUserRoles(AppUser appUser) {
         List<UserRole> roleList = getUserRoles(appUser);
-        List<UserAppRole> appRoleList = getUserAppRoles(appUser);
         appUser.setRoles(roleList);
-        appUser.setAppRoles(appRoleList);
-
-        //spring security authorities
         List<GrantedAuthority> authorities = new ArrayList<>();
         if (appUser.getAuthorities() != null) {
             authorities.addAll(appUser.getAuthorities());
         }
-
         roleList.forEach(userRole -> {
             authorities.add(new SimpleGrantedAuthority("ROLE_" + userRole.getGrpCd()));
         });
 
+        /*List<UserAppRole> appRoleList = getUserAppRoles(appUser);
+        appUser.setAppRoles(appRoleList);
         appRoleList.forEach(userRole -> {
             authorities.add(new SimpleGrantedAuthority("ROLE_$APP$_" + userRole.getAppGrpCd()));
-        });
+        });*/
 
         appUser.setAuthorities(authorities);
     }
 
     @Transactional(readOnly = true)
     public List<UserRole> getUserRoles(AppUser appUser) {
-        List<UserRole> roles = userRepository.findRolesByEmpNo(appUser.getId());
+        List<UserRole> roles = userRepository.findRolesByUserId(appUser.getId());
         if (appUser.getDepartmentId() != null) {
             List<UserRole> departmentsRoles = organizationRepository.findDepartmentsRoles(appUser.getClientId(), appUser.getDepartmentId());
             roles.addAll(departmentsRoles);
         }
 
         return roles;
-    }
-
-    @Transactional(readOnly = true)
-    public List<UserAppRole> getUserAppRoles(AppUser appUser) {
-        Set<UserAppRole> roles = userRepository.findAppRolesByEmpNo(appUser.getId());
-        if (appUser.getDepartmentId() != null) {
-            Set<UserAppRole> departmentsRoles = organizationRepository.findDepartmentsAppRoles(appUser.getClientId(), appUser.getDepartmentId());
-            roles.addAll(departmentsRoles);
-        }
-        return new ArrayList<>(roles);
-
     }
 
     public AppUser getUser(String userKey) {
@@ -197,13 +179,13 @@ public class UserService {
         return userRepository.resetPassword(empNo, encPassword, now);
     }
 
-    public int plusPasswordErrorCount(String username){
+    public int plusPasswordErrorCount(String username) {
         return userRepository.plusPasswordErrorCount(username);
     }
 
     @Transactional(readOnly = true)
     public AppUser findByUserId(Integer id) {
-        return userRepository.findByUserId(id);
+        return userRepository.findById(id);
     }
 
     public void sendActiveSignal(String userKey, String uuid) {
