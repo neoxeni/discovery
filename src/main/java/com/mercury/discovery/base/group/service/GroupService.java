@@ -3,8 +3,6 @@ package com.mercury.discovery.base.group.service;
 import com.github.pagehelper.Page;
 import com.mercury.discovery.base.group.model.*;
 import com.mercury.discovery.base.users.model.AppUser;
-import com.mercury.discovery.common.error.BusinessException;
-import com.mercury.discovery.common.error.ErrorCode;
 import com.mercury.discovery.utils.HttpUtils;
 import com.mercury.discovery.utils.PagesUtils;
 import lombok.RequiredArgsConstructor;
@@ -110,18 +108,6 @@ public class GroupService {
         return 0;
     }
 
-    public int deleteAppGroupMappings(Integer clientId, List<AppGroupMapping> deleteAppGroupMapping) {
-        if (deleteAppGroupMapping != null && deleteAppGroupMapping.size() > 0) {
-            List<Integer> deleteGroupMappingNos = new ArrayList<>();
-            deleteAppGroupMapping.forEach(groupMapping -> {
-                deleteGroupMappingNos.add(groupMapping.getMapNo());
-            });
-
-            return groupRepository.deleteAppGroupMappings(clientId, deleteGroupMappingNos);
-        }
-        return 0;
-    }
-
 
     @Transactional(readOnly = true)
     public Page<GroupMappingHistoryResponseDto> findGroupMappingsHistory(GroupMappingHistoryRequestDto groupMappingHistoryRequestDto, Pageable pageable) {
@@ -137,81 +123,6 @@ public class GroupService {
     public void downloadExcelHistory(GroupMappingHistoryRequestDto groupMappingHistoryRequestDto, Pageable pageable, ResultHandler<?> resultHandler) {
         //excel은 setPageableIfNotNull을 하지 않는다. 하지만 sorting은 사용할 수 있기 때문에 여전히 필요하다.
         groupRepository.findGroupMappingsHistory(groupMappingHistoryRequestDto, pageable, resultHandler);
-    }
-
-
-    @Transactional(readOnly = true)
-    public List<AppGroup> selectAppGroup(Integer clientId, Integer cateId) {
-        return groupRepository.selectAppGroup(clientId, cateId);
-    }
-
-    public int insertAppGroup(AppGroup appGroup, AppUser appUser) {
-        appGroup.setCreatedAt(LocalDateTime.now());
-        appGroup.setCreatedBy(appUser.getId());
-        appGroup.setClientId(appUser.getClientId());
-        return groupRepository.insertAppGroup(appGroup);
-    }
-
-    public int updateAppGroup(AppGroup appGroup, AppUser appUser) {
-        appGroup.setUpdatedAt(LocalDateTime.now());
-        appGroup.setUpdatedBy(appUser.getId());
-        appGroup.setClientId(appUser.getClientId());
-        return groupRepository.updateAppGroup(appGroup);
-    }
-
-    public int deleteAppGroup(AppGroup appGroup, AppUser appUser) {
-        int len = groupRepository.selectUsedAppGroupMapping(appUser.getClientId(), appGroup.getAppGrpNo());
-        if (len > 0) {
-            throw new BusinessException("사용중인 어플리케이션 그룹은 삭제할수 없습니다.", ErrorCode.CANNOT_DELETE);
-        }
-        return groupRepository.deleteAppGroup(appUser.getClientId(), appGroup.getAppGrpNo());
-    }
-
-    @Transactional(readOnly = true)
-    public List<AppGroupMapping> selectAppGroupMapping(Integer clientId, Integer appGrpNo) {
-        return groupRepository.selectAppGroupMapping(clientId, appGrpNo);
-    }
-
-    public int insertAppGroupMapping(AppUser appUser, AppGroupMapping appGroupMapping) {
-        appGroupMapping.setCreatedAt(LocalDateTime.now());
-        appGroupMapping.setCreatedBy(appUser.getId());
-        return groupRepository.insertAppGroupMapping(appGroupMapping);
-    }
-
-    public int deleteAppGroupMapping(Integer appGrpNo) {
-        return groupRepository.deleteAppGroupMapping(appGrpNo);
-    }
-
-    public void updateAppGroupMapping(AppUser appUser, Integer appGrpNo, List<AppGroupMapping> appGroupMappings) {
-
-        List<AppGroupMapping> currentMappings = groupRepository.selectAppGroupMapping(appUser.getClientId(), appGrpNo);
-
-        List<AppGroupMapping> createMappings = new ArrayList<>();
-        List<AppGroupMapping> deleteMappings = new ArrayList<>(currentMappings);
-        List<GroupMappingHistory> groupMappingHistories = new ArrayList<>();
-
-        groupRepository.deleteAppGroupMapping(appGrpNo);
-        if (appGroupMappings == null || appGroupMappings.size() == 0) {
-            return;
-        }
-        for (AppGroupMapping appGroupMapping : appGroupMappings) {
-            appGroupMapping.setCreatedBy(appUser.getId());
-            groupRepository.insertAppGroupMapping(appGroupMapping);
-
-            deleteMappings.remove(appGroupMapping);
-            if(!currentMappings.contains(appGroupMapping)) {
-                createMappings.add(appGroupMapping);
-            }
-        }
-
-        // null 체거
-        CollectionUtils.filter(deleteMappings, PredicateUtils.notNullPredicate());
-
-
-
-        if (groupMappingHistories.size() > 0) {
-            this.insertGroupMappingsHistory(groupMappingHistories);
-        }
     }
 
     public void updateGroupMapping(AppUser appUser, Long grpNo, List<GroupMapping> groupNewMappings) {
@@ -239,7 +150,7 @@ public class GroupService {
             groupMapping.setGroupId(grpNo);
             groupMapping.setCreatedAt(LocalDateTime.now());
             deleteMappings.remove(groupMapping);
-            if(!currentMappings.contains(groupMapping)) {
+            if (!currentMappings.contains(groupMapping)) {
                 createMappings.add(groupMapping);
             }
         }
@@ -247,7 +158,7 @@ public class GroupService {
         CollectionUtils.filter(deleteMappings, PredicateUtils.notNullPredicate());
 
         groupRepository.deleteGroupMappingsByGrpNo(appUser.getClientId(), grpNo);
-        if(groupNewMappings.size() > 0) {
+        if (groupNewMappings.size() > 0) {
             groupRepository.insertGroupMappings(groupNewMappings);
         }
 

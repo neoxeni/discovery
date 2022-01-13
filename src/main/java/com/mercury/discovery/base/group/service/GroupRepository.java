@@ -39,16 +39,4 @@ public interface GroupRepository {
     Page<GroupMappingHistoryResponseDto> findGroupMappingsHistory(GroupMappingHistoryRequestDto groupMappingHistoryRequestDto, Pageable pageable);
 
     void findGroupMappingsHistory(GroupMappingHistoryRequestDto groupMappingHistoryRequestDto, Pageable pageable, ResultHandler<?> resultHandler);
-
-
-
-    List<AppGroup> selectAppGroup(Integer clientId, Integer cateId);
-    int insertAppGroup(AppGroup appGroup);
-    int updateAppGroup(AppGroup appGroup);
-    int deleteAppGroup(Integer clientId, Integer appGrpNo);
-    List<AppGroupMapping> selectAppGroupMapping(Integer clientId, Integer appGrpNo);
-    int selectUsedAppGroupMapping(Integer clientId, Integer appGrpNo);
-    int insertAppGroupMapping(AppGroupMapping appGroupMapping);
-    int deleteAppGroupMapping(Integer appGrpNo);
-
 }

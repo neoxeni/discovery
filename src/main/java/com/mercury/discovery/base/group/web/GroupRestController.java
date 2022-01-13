@@ -4,11 +4,11 @@ import com.github.pagehelper.Page;
 import com.mercury.discovery.base.group.model.*;
 import com.mercury.discovery.base.group.service.GroupService;
 import com.mercury.discovery.base.users.model.AppUser;
-import com.mercury.discovery.common.web.SimpleResponseModel;
 import com.mercury.discovery.common.excel.ExcelUtils;
 import com.mercury.discovery.common.excel.ResultExcelDataHandler;
 import com.mercury.discovery.common.excel.model.ExcelColumn;
 import com.mercury.discovery.common.model.date.DateRange;
+import com.mercury.discovery.common.web.SimpleResponseModel;
 import com.mercury.discovery.utils.MessagesUtils;
 import com.mercury.discovery.utils.PagesUtils;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +40,7 @@ public class GroupRestController {
         group.setCreatedBy(appUser.getId());
         group.setClientId(appUser.getClientId());
 
-        if(StringUtils.isEmpty(group.getUpdEnableYn())) {
+        if (StringUtils.isEmpty(group.getUpdEnableYn())) {
             group.setUpdEnableYn("Y");
         }
 
@@ -120,8 +120,8 @@ public class GroupRestController {
 
     @PatchMapping("/base/group/mappings")
     public ResponseEntity<?> patchGroupsMappings(AppUser appUser,
-                                                  @RequestPart("grpNo") String grpNo,
-                                                  @RequestPart("groupMappings") List<GroupMapping> groupMappings) {
+                                                 @RequestPart("grpNo") String grpNo,
+                                                 @RequestPart("groupMappings") List<GroupMapping> groupMappings) {
 
         groupService.updateGroupMapping(appUser, Long.parseLong(grpNo), groupMappings);
         return ResponseEntity.ok().build();
@@ -174,16 +174,6 @@ public class GroupRestController {
         return ResponseEntity.ok(new SimpleResponseModel(affected, MessagesUtils.getMessage("sentence.delete")));
     }
 
-    @DeleteMapping("/base/appGroup/mapping")
-    public ResponseEntity<?> deleteAppGroupsMappings(AppUser appUser, @RequestBody List<AppGroupMapping> groupMappings) {
-
-        int affected = groupService.deleteAppGroupMappings(appUser.getClientId(), groupMappings);
-
-        //List<GroupMappingHistory> groupMappingHistories = groupService.genAppGroupMappingHistories(appUser, groupMappings, "D");
-        //groupService.insertGroupMappingsHistory(groupMappingHistories);
-
-        return ResponseEntity.ok(new SimpleResponseModel(affected, MessagesUtils.getMessage("sentence.delete")));
-    }
 
     @GetMapping("/base/groups/mappings/histories")
     public ResponseEntity<?> getGroupsMappingsHistories(AppUser appUser, DateRange dateRange, GroupMappingHistoryRequestDto groupMappingHistoryRequestDto, Pageable pageable) {
@@ -223,109 +213,4 @@ public class GroupRestController {
         groupService.downloadExcelHistory(groupMappingHistoryRequestDto, pageable, resultExcelDataHandler);
         resultExcelDataHandler.download();
     }
-
-
-    @GetMapping("/base/appGroup")
-    public ResponseEntity<?> getAppGroup(AppUser appUser,
-                                          @RequestParam Integer cateId) {
-
-        List<AppGroup> appGroups = groupService.selectAppGroup(appUser.getClientId(), cateId);
-        return ResponseEntity.ok(appGroups);
-    }
-
-    @PostMapping("/base/appGroup")
-    public ResponseEntity<?> postAppGroup(AppUser appUser, @RequestBody AppGroup appGroup) {
-        groupService.insertAppGroup(appGroup, appUser);
-        return ResponseEntity.ok(appGroup);
-    }
-
-    @PatchMapping("/base/appGroup")
-    public ResponseEntity<?> patchAppGroup(AppUser appUser, @RequestBody AppGroup appGroup) {
-        groupService.updateAppGroup(appGroup, appUser);
-        return ResponseEntity.ok(appGroup);
-    }
-
-    @DeleteMapping("/base/appGroup")
-    public ResponseEntity<?> deleteAppGroup(AppUser appUser, @RequestBody AppGroup appGroup) {
-        groupService.deleteAppGroup(appGroup, appUser);
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/base/appGroup/mapping")
-    public ResponseEntity<?> getAppGroupMapping(AppUser appUser, @RequestParam Integer appGrpNo) {
-        List<AppGroupMapping> list = groupService.selectAppGroupMapping(appUser.getClientId(), appGrpNo);
-        return ResponseEntity.ok(list);
-    }
-
-    @PostMapping("/base/appGroup/mapping")
-    public ResponseEntity<?> postAppGroupMapping(AppUser appUser, @RequestBody AppGroupMapping appGroupMapping) {
-        groupService.insertAppGroupMapping(appUser, appGroupMapping);
-        return ResponseEntity.ok(appGroupMapping);
-    }
-
-    @PatchMapping("/base/appGroup/mapping")
-    public ResponseEntity<?> patchAppGroupMapping(AppUser appUser,
-                                                  @RequestPart("appGrpNo") String appGrpNo,
-                                                  @RequestPart("appGroupMappings") List<AppGroupMapping> appGroupMappings) {
-        groupService.updateAppGroupMapping(appUser, Integer.parseInt(appGrpNo), appGroupMappings);
-        return ResponseEntity.ok().build();
-    }
-
-
-
-    /*
-    *  메뉴 권한 그룹 시작
-    * */
-
-    /*@GetMapping("/base/menuGroups")
-    public ResponseEntity<?> getMenuGroups(AppUser appUser,
-                                          @RequestParam Integer cateId) {
-
-        List<AppGroup> appGroups = groupService.selectAppGroup(appUser.getClientId(), cateId);
-        return ResponseEntity.ok(appGroups);
-    }
-
-    @PostMapping("/base/menuGroup")
-    public ResponseEntity<?> postMenuGroup(AppUser appUser, @RequestBody AppGroup appGroup) {
-        groupService.insertAppGroup(appGroup, appUser);
-        return ResponseEntity.ok(appGroup);
-    }
-
-    @PatchMapping("/base/menuGroup")
-    public ResponseEntity<?> patchMenuGroup(AppUser appUser, @RequestBody AppGroup appGroup) {
-        groupService.updateAppGroup(appGroup, appUser);
-        return ResponseEntity.ok(appGroup);
-    }
-
-    @DeleteMapping("/base/menuGroup")
-    public ResponseEntity<?> deleteMenuGroup(AppUser appUser, @RequestBody AppGroup appGroup) {
-        groupService.deleteAppGroup(appGroup, appUser);
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/base/menuGroup/mapping")
-    public ResponseEntity<?> getMenuGroupMapping(AppUser appUser, @RequestParam Integer appGrpNo) {
-        List<AppGroupMapping> list = groupService.selectAppGroupMapping(appUser.getClientId(), appGrpNo);
-        return ResponseEntity.ok(list);
-    }
-
-    @PostMapping("/base/menuGroup/mapping")
-    public ResponseEntity<?> postMenuGroupMapping(AppUser appUser, @RequestBody AppGroupMapping appGroupMapping) {
-        groupService.insertAppGroupMapping(appUser, appGroupMapping);
-        return ResponseEntity.ok(appGroupMapping);
-    }
-
-    @PatchMapping("/base/menuGroup/mapping")
-    public ResponseEntity<?> patchMenuGroupMapping(AppUser appUser,
-                                                  @RequestPart("appGrpNo") String appGrpNo,
-                                                  @RequestPart("appGroupMappings") List<AppGroupMapping> appGroupMappings) {
-        groupService.updateAppGroupMapping(appUser, Integer.parseInt(appGrpNo), appGroupMappings);
-        return ResponseEntity.ok().build();
-    }
-
-    @DeleteMapping("/base/menuGroup/mapping")
-    public ResponseEntity<?> deleteMenuGroupMapping(@RequestParam Integer appGrpNo) {
-        groupService.deleteAppGroupMapping(appGrpNo);
-        return ResponseEntity.ok(appGrpNo);
-    }*/
 }
