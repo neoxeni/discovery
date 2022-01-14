@@ -2,6 +2,11 @@ package com.mercury.discovery.config.web.security;
 
 import com.mercury.discovery.config.web.security.handler.CustomAuthenticationFailureHandler;
 import com.mercury.discovery.config.web.security.handler.CustomAuthenticationSuccessHandler;
+import com.mercury.discovery.config.web.security.oauth.filter.TokenAuthenticationFilter;
+import com.mercury.discovery.config.web.security.oauth.handler.OAuth2AuthenticationFailureHandler;
+import com.mercury.discovery.config.web.security.oauth.handler.OAuth2AuthenticationSuccessHandler;
+import com.mercury.discovery.config.web.security.oauth.repository.OAuth2AuthorizationRequestBasedOnCookieRepository;
+import com.mercury.discovery.config.web.security.oauth.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +25,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,6 +44,11 @@ import java.util.List;
 @RequiredArgsConstructor
 @EnableWebSecurity
 public class SecurityContextConfig extends WebSecurityConfigurerAdapter {
+    private final TokenAuthenticationFilter tokenAuthenticationFilter;
+    private final OAuth2AuthorizationRequestBasedOnCookieRepository oAuth2AuthorizationRequestBasedOnCookieRepository;
+    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
+    private final CustomOAuth2UserService oAuth2UserService;
 
     // favicon 요청등 정적인 요청 처리 시 필터 등록 제외
     @Override
@@ -61,24 +72,20 @@ public class SecurityContextConfig extends WebSecurityConfigurerAdapter {
                 .httpBasic()
                 .authenticationEntryPoint(new NoPopupBasicAuthenticationEntryPoint())
                 .and()
-
-                //.exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint())
-                .csrf().disable() // rest api이므로 csrf 보안이 필요없으므로 disable처리.
-                .headers()
-                .frameOptions().sameOrigin() // SockJS는 기본적으로 HTML iframe 요소를 통한 전송을 허용하지 않도록 설정되는데 해당 내용을 해제한다.
-
+                    //.exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+                    .csrf().disable() // rest api이므로 csrf 보안이 필요없으므로 disable처리.
+                    .headers()
+                    .frameOptions().sameOrigin() // SockJS는 기본적으로 HTML iframe 요소를 통한 전송을 허용하지 않도록 설정되는데 해당 내용을 해제한다.
                 .and()
-
-                .cors()
-                .configurationSource(corsConfigurationSource())
+                    .cors()
+                    .configurationSource(corsConfigurationSource())
                 .and()
-
-                .authorizeRequests()
-                .antMatchers("/static/**").permitAll()
-                .mvcMatchers("/changePassword", "/changePasswordOk", "/login", "/logout", "/health/*").permitAll()
-                // .requestMatchers(CorsUtils::isPreFlightRequest, endpointsMatcher).permitAll()
-                .anyRequest().authenticated(); // 나머지 리소스에 대한 접근 설정
-
+                    .authorizeRequests()
+                    .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+                    .antMatchers("/static/**").permitAll()
+                    .mvcMatchers("/changePassword", "/changePasswordOk", "/login", "/logout", "/health/*").permitAll()
+                    // .requestMatchers(CorsUtils::isPreFlightRequest, endpointsMatcher).permitAll()
+                    .anyRequest().authenticated(); // 나머지 리소스에 대한 접근 설정
 
         // 2. 로그인 설정
         http.formLogin()// 권한없이 페이지 접근하면 로그인 페이지로 이동한다.
@@ -98,11 +105,27 @@ public class SecurityContextConfig extends WebSecurityConfigurerAdapter {
                 ;
          */
 
+        // 4. Oauth2
+        http
+                .oauth2Login().permitAll()
+                .loginPage("/login")
+                .authorizationEndpoint()
+                .baseUri("/oauth2/authorization")
+                .authorizationRequestRepository(oAuth2AuthorizationRequestBasedOnCookieRepository)
+            .and()
+                .redirectionEndpoint()
+                .baseUri("/*/oauth2/code/*")
+            .and()
+                .userInfoEndpoint()
+                .userService(oAuth2UserService)
+            .and()
+                .successHandler(oAuth2AuthenticationSuccessHandler)
+                .failureHandler(oAuth2AuthenticationFailureHandler)
+            .and()
+                .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);;
+
         //@Async를 처리하는 쓰레드에서도 SecurityContext를 공유받을 수 있다.
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
-
-
-        //http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
     @Bean
@@ -120,6 +143,15 @@ public class SecurityContextConfig extends WebSecurityConfigurerAdapter {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    /*
+     * auth 매니저 설정
+     * */
+    @Override
+    @Bean(BeanIds.AUTHENTICATION_MANAGER)
+    protected AuthenticationManager authenticationManager() throws Exception {
+        return super.authenticationManager();
     }
 
 

@@ -49,6 +49,7 @@ create table client_user(
 
 create table client_user_login(
     id                          INT       auto_increment COMMENT 'ID' PRIMARY KEY,
+    provider_type               VARCHAR(20)     NOT NULL DEFAULT 'LOCAL' COMMENT '로그인 프로바이더',
     username                    VARCHAR(100)    NOT NULL COMMENT '사용자아이디'
     password                    VARCHAR(100)    NOT NULL COMMENT '패스워드',
     password_err_count          INT             NOT NULL default 0 COMMENT '패스워드오류횟수',
@@ -56,7 +57,6 @@ create table client_user_login(
     last_login_at               DATETIME            NULL COMMENT '최종로그인일시',
     last_logout_at              DATETIME            NULL COMMENT '최종로그아웃일시',
     last_ip_address             VARCHAR(40)         NULL COMMENT '최종접속아이피',
-
     user_id                     INT             NOT NULL COMMENT '사번',
     CONSTRAINT FK1_CLIENT_USER_USER_ID FOREIGN KEY (user_id) REFERENCES client_user (id),
     UNIQUE UK1_CLIENT_USER_LOGIN(username)

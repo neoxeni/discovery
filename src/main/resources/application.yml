@@ -7,7 +7,7 @@ server:
             enabled: true
 spring:
     profiles:
-        active: discovery, local         #discovery는 필수, 나머지는 상황에 따라..
+        active: discovery, oauth2, local         #discovery는 필수, 나머지는 상황에 따라..
     main:
         allow-circular-references: true
 

@@ -2,6 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.mercury.discovery.base.users.service.UserRepository">
     <sql id="user_all">
+        ${l}.provider_type,
         ${l}.username,
         ${l}.password,
         ${l}.password_err_count,
@@ -163,10 +164,10 @@
     </select>
 
     <insert id="insertLogin">
-        INSERT INTO client_user_login
-            ( username, password, password_err_count, user_id )
-        VALUES(
-            #{username}, #{password}, 0 , #{id}
+        INSERT INTO client_user_login(
+            provider_type, username, password, password_err_count, password_updated_at, user_id
+        ) VALUES(
+            #{providerType}, #{username}, #{password}, 0 , now(),#{id}
         )
     </insert>
 

@@ -2,12 +2,17 @@ package com.mercury.discovery.base.users.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.mercury.discovery.config.web.security.oauth.entity.ProviderType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.ibatis.type.Alias;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.oidc.OidcIdToken;
+import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -15,7 +20,7 @@ import java.util.*;
 @Alias("AppUser")
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class AppUser extends TokenUser implements UserDetails {
+public class AppUser extends TokenUser implements OAuth2User, UserDetails, OidcUser {
     private static final long serialVersionUID = -4937821332640048273L;
 
     @JsonIgnore
@@ -38,10 +43,12 @@ public class AppUser extends TokenUser implements UserDetails {
     private LocalDateTime lastLogoutAt;
 
     private String lastIpAddress;
+    private ProviderType providerType;
 
     private String nickname;
     private String phone;
     private String email;
+    private String avatarUrl;
 
     private String identification;
     private String extensionNo;
@@ -59,7 +66,7 @@ public class AppUser extends TokenUser implements UserDetails {
     private Integer updatedBy;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime updatedAt;
+    private LocalDateTime modifiedAt;
 
     private Long departmentId;
 
@@ -84,6 +91,9 @@ public class AppUser extends TokenUser implements UserDetails {
         }
         return false;
     }
+
+
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -122,5 +132,27 @@ public class AppUser extends TokenUser implements UserDetails {
     public boolean isEnabled() {
         //org.springframework.security.authentication.DisabledException: 유효하지 않은 사용자입니다.
         return status == UserStatus.ACTIVE;
+    }
+
+    @Override
+    public Map<String, Object> getClaims() {
+        return attributes;
+    }
+
+    @Override
+    public OidcUserInfo getUserInfo() {
+        return null;
+    }
+
+    @Override
+    public OidcIdToken getIdToken() {
+        return null;
+    }
+
+    private Map<String, Object> attributes = new HashMap<>();
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return attributes;
     }
 }

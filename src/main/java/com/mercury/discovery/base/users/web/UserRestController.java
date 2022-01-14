@@ -62,7 +62,7 @@ public class UserRestController {
     public ResponseEntity<?> patchUser(AppUser appUser, @RequestBody AppUser employee) {
         employee.setClientId(appUser.getClientId());
         employee.setUpdatedBy(appUser.getId());
-        employee.setUpdatedAt(LocalDateTime.now());
+        employee.setModifiedAt(LocalDateTime.now());
 
         int affected = userService.update(employee);
         return ResponseEntity.ok(new SimpleResponseModel(affected, MessagesUtils.getMessage("sentence.update")));

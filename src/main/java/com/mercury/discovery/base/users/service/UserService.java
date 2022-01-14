@@ -6,6 +6,7 @@ import com.mercury.discovery.base.users.model.AppUser;
 import com.mercury.discovery.base.users.model.TokenUser;
 import com.mercury.discovery.base.users.model.UserGroup;
 import com.mercury.discovery.config.websocket.message.MessagePublisher;
+import com.mercury.discovery.utils.IDGenerator;
 import com.mercury.discovery.utils.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -85,7 +86,8 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public AppUser getUser(int clientId, String userKey) {
-        AppUser appUser = null;
+        return userRepository.findByUserKey(userKey);
+        /*AppUser appUser = null;
         Cache cache = cacheManager.getCache("users");
         if (cache != null) {
             String cacheKey = "";
@@ -105,7 +107,7 @@ public class UserService {
             }
         }
 
-        return appUser;
+        return appUser;*/
     }
 
     public void cacheUser(AppUser appUser) {
@@ -128,8 +130,12 @@ public class UserService {
 
     })
     public int insert(AppUser appUser) {
+        if (appUser.getUserKey() == null) {
+            appUser.setUserKey(IDGenerator.getUUID());
+        }
+
         if (appUser.getPassword() == null) {
-            appUser.setPassword(appUser.getUsername());
+            appUser.setPassword("NO_PASS");
         }
 
         int affected = userRepository.insert(appUser);

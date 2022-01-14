@@ -19,6 +19,6 @@ public class TokenUser implements Serializable {
 
     //아래의 정보는 JWT 관련 정보
     private String jwt;
-    private long issuedAt;
-    private long expiredAt;
+    private long issuedMillis;
+    private long expiredMillis;
 }

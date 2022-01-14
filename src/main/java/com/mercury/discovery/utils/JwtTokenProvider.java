@@ -71,8 +71,8 @@ public class JwtTokenProvider {
     }
 
     public String getJwtFromUser(TokenUser tokenUser, boolean isRefresh) {
-        Date createdAt = isRefresh ? new Date() : new Date(tokenUser.getIssuedAt());
-        Date expiredAt = isRefresh ? new Date(createdAt.getTime() + tokenValidMillisecond) : new Date(tokenUser.getExpiredAt());
+        Date createdAt = isRefresh ? new Date() : new Date(tokenUser.getIssuedMillis());
+        Date expiredAt = isRefresh ? new Date(createdAt.getTime() + tokenValidMillisecond) : new Date(tokenUser.getExpiredMillis());
 
 
         String jwt = Jwts.builder()
@@ -86,8 +86,8 @@ public class JwtTokenProvider {
                 .compact();
 
         if (isRefresh) {
-            tokenUser.setIssuedAt(createdAt.getTime());
-            tokenUser.setExpiredAt(expiredAt.getTime());
+            tokenUser.setIssuedMillis(createdAt.getTime());
+            tokenUser.setExpiredMillis(expiredAt.getTime());
             tokenUser.setJwt(jwt);
         }
 
@@ -129,8 +129,8 @@ public class JwtTokenProvider {
         user.setName(claims.getAudience());
 
         user.setJwt(jwt);
-        user.setExpiredAt(claims.getExpiration().getTime());
-        user.setIssuedAt(claims.getIssuedAt().getTime());
+        user.setExpiredMillis(claims.getExpiration().getTime());
+        user.setIssuedMillis(claims.getIssuedAt().getTime());
 
         return user;
     }

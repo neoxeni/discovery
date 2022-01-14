@@ -1,0 +1,56 @@
+spring:
+    security:
+        oauth2.client:
+            registration:
+                google:
+                    clientId: 808022776988-pu7gml66ncd1ho20e0te608htip026m5.apps.googleusercontent.com
+                    clientSecret: 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
+                    scope:
+                        - email
+                        - profile
+                facebook:
+                    clientId: '{페이스북 client-id}'
+                    clientSecret: '{페이스북 client-secret}'
+                    scope:
+                        - email
+                        - public_profile
+                naver:
+                    clientId: '{네이버 client-id}'
+                    clientSecret: '{네이버 client-secret}'
+                    clientAuthenticationMethod: post
+                    authorizationGrantType: authorization_code
+                    redirectUri: "{baseUrl}/{action}/oauth2/code/{registrationId}"
+                    scope:
+                        - nickname
+                        - email
+                        - profile_image
+                    clientName: Naver
+                kakao:
+                    clientId: '{카카오 client-id}'
+                    clientSecret: '{카카오 client-secret}'
+                    clientAuthenticationMethod: post
+                    authorizationGrantType: authorization_code
+                    redirectUri: "{baseUrl}/{action}/oauth2/code/{registrationId}"
+                    scope:
+                        - profile_nickname
+                        - profile_image
+                        - account_email
+                    clientName: Kakao
+            # Provider 설정
+            provider:
+                naver:
+                    authorizationUri: https://nid.naver.com/oauth2.0/authorize
+                    tokenUri: https://nid.naver.com/oauth2.0/token
+                    userInfoUri: https://openapi.naver.com/v1/nid/me
+                    userNameAttribute: response
+                kakao:
+                    authorizationUri: https://kauth.kakao.com/oauth/authorize
+                    tokenUri: https://kauth.kakao.com/oauth/token
+                    userInfoUri: https://kapi.kakao.com/v2/user/me
+                    userNameAttribute: id
+
+apps:
+    api:
+        oauth2:
+            authorizedRedirectUris:
+                - http://localhost:3000/oauth/redirect
