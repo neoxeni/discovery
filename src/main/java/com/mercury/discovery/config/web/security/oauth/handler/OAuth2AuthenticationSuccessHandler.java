@@ -16,7 +16,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
-import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.ServletException;
@@ -30,14 +29,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-
-@Component
 @RequiredArgsConstructor
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
-
-
-
-
     @Value("${apps.api.jwt.token:926D96C90030DD58429D2751AC1BDBBC}")   // default defaultSecretKey
     private String tokenSecretKey;
 

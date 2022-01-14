@@ -1,6 +1,5 @@
 package com.mercury.discovery.config.web.resolver;
 
-
 import com.mercury.discovery.base.users.model.AppUser;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
@@ -26,12 +25,13 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
     }
 
     @Override
-    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
 
         Object principal = null;
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if(authentication != null){
+        if (authentication != null) {
             principal = authentication.getPrincipal();
         }
         if (!(principal instanceof UserDetails)) {

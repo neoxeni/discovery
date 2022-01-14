@@ -2,7 +2,6 @@ package com.mercury.discovery.base.users.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.mercury.discovery.config.web.security.oauth.entity.ProviderType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.ibatis.type.Alias;
@@ -12,7 +11,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -20,7 +18,7 @@ import java.util.*;
 @Alias("AppUser")
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class AppUser extends TokenUser implements OAuth2User, UserDetails, OidcUser {
+public class AppUser extends TokenUser implements UserDetails, OidcUser {
     private static final long serialVersionUID = -4937821332640048273L;
 
     @JsonIgnore
@@ -43,7 +41,7 @@ public class AppUser extends TokenUser implements OAuth2User, UserDetails, OidcU
     private LocalDateTime lastLogoutAt;
 
     private String lastIpAddress;
-    private ProviderType providerType;
+    private String providerType;
 
     private String nickname;
     private String phone;
@@ -91,9 +89,6 @@ public class AppUser extends TokenUser implements OAuth2User, UserDetails, OidcU
         }
         return false;
     }
-
-
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

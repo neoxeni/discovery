@@ -1,7 +1,5 @@
 package com.mercury.discovery.config.web.security.oauth.info.impl;
 
-
-
 import com.mercury.discovery.config.web.security.oauth.info.OAuth2UserInfo;
 
 import java.util.Map;

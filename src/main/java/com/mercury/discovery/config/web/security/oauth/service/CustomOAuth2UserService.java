@@ -45,7 +45,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         AppUser savedUser = userService.getUserForLogin(userInfo.getId(), null);
 
         if (savedUser != null) {
-            if (providerType != savedUser.getProviderType()) {
+            if (providerType != ProviderType.valueOf(savedUser.getProviderType())) {
                 throw new OAuthProviderMissMatchException(
                         "Looks like you're signed up with " + providerType +
                         " account. Please use your " + savedUser.getProviderType() + " account to login."
@@ -68,7 +68,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         user.setName(userInfo.getName());
         user.setEmail(userInfo.getEmail());
         user.setAvatarUrl(userInfo.getImageUrl());
-        user.setProviderType(providerType);
+        user.setProviderType(providerType.name());
         user.setCreatedBy(0);
         user.setCreatedAt(now);
         user.setUpdatedBy(0);
