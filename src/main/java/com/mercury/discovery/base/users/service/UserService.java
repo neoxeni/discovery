@@ -7,7 +7,6 @@ import com.mercury.discovery.base.users.model.TokenUser;
 import com.mercury.discovery.base.users.model.UserGroup;
 import com.mercury.discovery.config.websocket.message.MessagePublisher;
 import com.mercury.discovery.utils.IDGenerator;
-import com.mercury.discovery.utils.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
@@ -39,8 +38,6 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
 
-    private final JwtTokenProvider jwtTokenProvider;
-
     private final MessagePublisher messagePublisher;
 
     @Transactional(readOnly = true)
@@ -50,7 +47,9 @@ public class UserService {
 
     @Nullable
     public String getApiToken(TokenUser tokenUser) {
-        return jwtTokenProvider.getJwtFromUser(tokenUser, true);
+        //TODO jwtToken 연결
+        //return jwtTokenProvider.getJwtFromUser(tokenUser, true);
+        return null;
     }
 
 

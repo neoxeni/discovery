@@ -3,7 +3,7 @@ package com.mercury.discovery.config.websocket;
 
 import com.mercury.discovery.base.users.model.AppUser;
 import com.mercury.discovery.config.websocket.handler.StompHandler;
-import com.mercury.discovery.utils.JwtTokenProvider;
+import io.jsonwebtoken.JwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,9 +34,6 @@ import java.util.List;
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
-
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
 
     @Autowired
     private MessageChannel clientOutboundChannel;
@@ -89,7 +86,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Bean
     public StompHandler stompHandler() {
-        return new StompHandler(clientOutboundChannel, jwtTokenProvider);
+        //TODO jwtToken 연결
+        return new StompHandler(clientOutboundChannel);
     }
 
     /**
@@ -114,10 +112,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
             String authorization = accessor.getFirstNativeHeader(HttpHeaders.AUTHORIZATION);
 
             if (StringUtils.hasLength(authorization) && authorization.startsWith("bearer ")) {
-                return jwtTokenProvider.getUserFromJwt(authorization);
+                //TODO jwtToken 연결
+                //return jwtTokenProvider.getUserFromJwt(authorization);
+                return null;
             }
 
-            return jwtTokenProvider.triggerException(authorization);
+            throw new JwtException("authorization header required. must follow the scheme 'authorization bearer jwt'. yours:" + authorization);
         }
     }
 }

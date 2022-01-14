@@ -1,7 +1,7 @@
 package com.mercury.discovery.config.websocket.handler;
 
 import com.mercury.discovery.base.users.model.TokenUser;
-import com.mercury.discovery.utils.JwtTokenProvider;
+
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ import org.springframework.messaging.support.MessageBuilder;
 @RequiredArgsConstructor
 public class StompHandler implements ChannelInterceptor {
     private final MessageChannel clientOutboundChannel;
-    private final JwtTokenProvider jwtTokenProvider;
+
 
     // websocket을 통해 들어온 요청이 처리 되기전 실행된다.
     @Override
@@ -35,7 +35,8 @@ public class StompHandler implements ChannelInterceptor {
             }
 
             try {
-                tokenUser = jwtTokenProvider.getUserFromJwt(jwt);
+                //TODO jwtToken 연결
+                //tokenUser = jwtTokenProvider.getUserFromJwt(jwt);
             } catch (JwtException e) {
                 String errMessage = "request token이 유효하지 않습니다.";
                 if (e instanceof ExpiredJwtException) {
@@ -44,7 +45,6 @@ public class StompHandler implements ChannelInterceptor {
                 sendErrorMessageToClient(errMessage, accessor.getSessionId());
                 return null;
             }
-
         }
 
         printPreSendLog(message, accessor, tokenUser);
