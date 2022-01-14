@@ -5,6 +5,8 @@ import com.mercury.discovery.config.web.security.handler.CustomAuthenticationSuc
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -14,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -97,6 +100,9 @@ public class SecurityContextConfig extends WebSecurityConfigurerAdapter {
 
         //@Async를 처리하는 쓰레드에서도 SecurityContext를 공유받을 수 있다.
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
+
+
+        //http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
     @Bean
@@ -109,8 +115,8 @@ public class SecurityContextConfig extends WebSecurityConfigurerAdapter {
         configuration.setAllowedOrigins(all);
         configuration.setAllowedMethods(all);
         configuration.setAllowedHeaders(all);
-
         configuration.setMaxAge(3600L);
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
@@ -133,8 +139,7 @@ public class SecurityContextConfig extends WebSecurityConfigurerAdapter {
      */
     public static class NoPopupBasicAuthenticationEntryPoint implements AuthenticationEntryPoint {
         @Override
-        public void commence(HttpServletRequest request, HttpServletResponse response,
-                             AuthenticationException authException) throws IOException {
+        public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage());
         }
     }
