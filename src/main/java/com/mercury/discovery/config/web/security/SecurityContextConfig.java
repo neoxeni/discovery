@@ -1,11 +1,11 @@
 package com.mercury.discovery.config.web.security;
 
-import com.mercury.discovery.config.web.security.handler.CustomAuthenticationFailureHandler;
-import com.mercury.discovery.config.web.security.handler.CustomAuthenticationSuccessHandler;
+import com.mercury.discovery.config.web.security.form.handler.CustomAuthenticationFailureHandler;
+import com.mercury.discovery.config.web.security.form.handler.CustomAuthenticationSuccessHandler;
 import com.mercury.discovery.config.web.security.oauth.filter.TokenAuthenticationFilter;
 import com.mercury.discovery.config.web.security.oauth.handler.OAuth2AuthenticationFailureHandler;
 import com.mercury.discovery.config.web.security.oauth.handler.OAuth2AuthenticationSuccessHandler;
-import com.mercury.discovery.config.web.security.oauth.repository.OAuth2AuthorizationRequestBasedOnCookieRepository;
+import com.mercury.discovery.config.web.security.oauth.service.OAuth2AuthorizationRequestBasedOnCookieRepository;
 import com.mercury.discovery.config.web.security.oauth.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -49,6 +49,15 @@ public class SecurityContextConfig extends WebSecurityConfigurerAdapter {
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
     private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
     private final CustomOAuth2UserService oAuth2UserService;
+
+    /*
+     * auth 매니저 설정
+     * */
+    @Override
+    @Bean(BeanIds.AUTHENTICATION_MANAGER)
+    protected AuthenticationManager authenticationManager() throws Exception {
+        return super.authenticationManager();
+    }
 
     // favicon 요청등 정적인 요청 처리 시 필터 등록 제외
     @Override
@@ -103,11 +112,11 @@ public class SecurityContextConfig extends WebSecurityConfigurerAdapter {
                 .logoutSuccessUrl("/") // 로그아웃 성공시
                 .invalidateHttpSession(true)
                 ;
-         */
+        */
 
         // 4. Oauth2
-        http
-                .oauth2Login().permitAll()
+        http.oauth2Login()
+                .permitAll()
                 .loginPage("/login")
                 .authorizationEndpoint()
                 .baseUri("/oauth2/authorization")
@@ -144,16 +153,6 @@ public class SecurityContextConfig extends WebSecurityConfigurerAdapter {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-
-    /*
-     * auth 매니저 설정
-     * */
-    @Override
-    @Bean(BeanIds.AUTHENTICATION_MANAGER)
-    protected AuthenticationManager authenticationManager() throws Exception {
-        return super.authenticationManager();
-    }
-
 
     @Bean
     public AuthenticationSuccessHandler customAuthenticationSuccessHandler() {

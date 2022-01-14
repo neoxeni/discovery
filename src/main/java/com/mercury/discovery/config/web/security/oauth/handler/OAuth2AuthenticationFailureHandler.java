@@ -1,7 +1,7 @@
 package com.mercury.discovery.config.web.security.oauth.handler;
 
 
-import com.mercury.discovery.config.web.security.oauth.repository.OAuth2AuthorizationRequestBasedOnCookieRepository;
+import com.mercury.discovery.config.web.security.oauth.service.OAuth2AuthorizationRequestBasedOnCookieRepository;
 import com.mercury.discovery.utils.HttpUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.AuthenticationException;

@@ -1,4 +1,4 @@
-package com.mercury.discovery.config.web.security.handler;
+package com.mercury.discovery.config.web.security.form.service;
 
 import com.mercury.discovery.base.users.model.AppUser;
 import com.mercury.discovery.base.users.service.UserService;

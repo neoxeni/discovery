@@ -5,7 +5,7 @@ import com.mercury.discovery.config.web.security.oauth.entity.ProviderType;
 import com.mercury.discovery.config.web.security.oauth.entity.RoleType;
 import com.mercury.discovery.config.web.security.oauth.info.OAuth2UserInfo;
 import com.mercury.discovery.config.web.security.oauth.info.OAuth2UserInfoFactory;
-import com.mercury.discovery.config.web.security.oauth.repository.OAuth2AuthorizationRequestBasedOnCookieRepository;
+import com.mercury.discovery.config.web.security.oauth.service.OAuth2AuthorizationRequestBasedOnCookieRepository;
 import com.mercury.discovery.config.web.security.oauth.token.AuthToken;
 import com.mercury.discovery.config.web.security.oauth.token.AuthTokenProvider;
 import com.mercury.discovery.utils.HttpUtils;
