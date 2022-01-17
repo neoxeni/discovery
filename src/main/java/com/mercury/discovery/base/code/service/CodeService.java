@@ -182,15 +182,17 @@ public class CodeService {
     }
 
     private List<Code> getData(Code code) {
-        int clientId = code.getClientId();
-
         List<Code> items = new ArrayList<>();
-        Cache cache = cacheManager.getCache("code");
-        if (cache != null) {
-            items = cache.get(clientId, List.class);
-            if (items == null) {
-                items = findAll(code);
-                cache.put(clientId, items);
+
+        Integer clientId = code.getClientId();
+        if(clientId != null){
+            Cache cache = cacheManager.getCache("code");
+            if (cache != null) {
+                items = cache.get(clientId, List.class);
+                if (items == null) {
+                    items = findAll(code);
+                    cache.put(clientId, items);
+                }
             }
         }
 

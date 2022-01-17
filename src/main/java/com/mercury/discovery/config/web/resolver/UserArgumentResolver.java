@@ -34,9 +34,6 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
         if (authentication != null) {
             principal = authentication.getPrincipal();
         }
-        if (!(principal instanceof UserDetails)) {
-            return null;
-        }
 
         return principal;
     }

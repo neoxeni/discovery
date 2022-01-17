@@ -37,11 +37,6 @@ public class UserService {
     private final MessagePublisher messagePublisher;
 
     @Transactional(readOnly = true)
-    public AppUser getUserForLogin(String username, String clientId) {
-        return userRepository.findByUsernameForLogin(username, clientId);
-    }
-
-    @Transactional(readOnly = true)
     public AppUser findById(Integer id) {
         AppUser appUser = userRepository.findById(id);
         setAppUserRoles(appUser);

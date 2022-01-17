@@ -52,8 +52,16 @@
     </sql>
 
     <!--로그인 전용-->
-    <select id="findByUsernameForLogin" resultType="AppUser">
-        <include refid="get_user"/>
+    <select id="findByUsernameForLogin" resultType="UserLogin">
+        SELECT
+            l.user_id,
+            l.provider_type,
+            l.username,
+            l.password,
+            l.password_err_count,
+            l.password_updated_at,
+            u.status
+        FROM client_user_login l JOIN client_user u ON l.user_id = u.id
         WHERE l.username = #{username}
     </select>
 
