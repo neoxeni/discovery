@@ -23,9 +23,6 @@ public class GroupMapping {
     private String target;
     private Long targetId;
 
-    private String useYn;
-    private Integer sort;
-
     private Integer createdBy;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

@@ -153,8 +153,6 @@ create table cmm_group_mapping(
 
     target                      varchar(10)         not null comment 'E:직원,D:부서',
     target_id                   bigint              not null comment '직원,부서번호',
-    use_yn                      char(1) default 'Y' not null comment '사용여부',
-    sort                        int     default 0   not null comment '정렬순서',
     created_by                  INT                 NOT NULL COMMENT '생성자',
     created_at                  DATETIME            default current_timestamp COMMENT '등록일시',
     group_id                    bigint              not null comment '그룹번호',

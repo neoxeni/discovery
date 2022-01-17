@@ -602,13 +602,11 @@ export default {
                         return item.id === oriItem['id'];
                     });
                     if (oriItemInTarget === undefined) {
-                        //삭제할 항목은 N으로
                         groupMappings.push({
                             id: oriItem['groupMappingId'],
                             groupId: oriItem['id'],
                             target: oriItem['target'],
-                            targetId: oriItem['targetId'],
-                            useYn: 'N'  //삭제할 항목은 N으로
+                            targetId: oriItem['targetId']
                         });
                     }
                 }
@@ -621,8 +619,7 @@ export default {
                         id: null, //새로 추가되어야 함
                         groupId: groupId,
                         target: target,
-                        targetId: targetId,
-                        useYn: 'Y'
+                        targetId: targetId
                     });
                 }
             }); //새로 추가되어야 함

@@ -100,13 +100,9 @@ public class GroupRestController {
 
         if (groupMappings.size() > 0) {
             LocalDateTime now = LocalDateTime.now();
-
-            int idx = 1;
             for (GroupMapping groupMapping : groupMappings) {
                 groupMapping.setCreatedAt(now);
                 groupMapping.setCreatedBy(appUser.getId());
-                groupMapping.setUseYn("Y");
-                groupMapping.setSort(idx++);
             }
 
             affected = groupService.insertGroupMappings(groupMappings);
@@ -134,18 +130,13 @@ public class GroupRestController {
         List<GroupMapping> mergeMappings = new ArrayList<>();
         List<GroupMapping> deleteMappings = new ArrayList<>();
 
-        int index = 1;
         for (GroupMapping groupMapping : groupMappings) {
-            if ("N".equals(groupMapping.getUseYn())) {
+            if (groupMapping.getId() == null) {
+                groupMapping.setCreatedAt(now);
+                groupMapping.setCreatedBy(appUser.getId());
+                mergeMappings.add(groupMapping);
+            }else{
                 deleteMappings.add(groupMapping);
-            } else {
-                if (groupMapping.getId() == null) {
-                    groupMapping.setCreatedAt(now);
-                    groupMapping.setCreatedBy(appUser.getId());
-                    groupMapping.setUseYn("Y");
-                    groupMapping.setSort(index++);
-                    mergeMappings.add(groupMapping);
-                }
             }
         }
 

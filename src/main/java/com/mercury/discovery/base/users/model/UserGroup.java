@@ -1,15 +1,18 @@
 package com.mercury.discovery.base.users.model;
 
-import com.mercury.discovery.base.group.model.Group;
+import com.mercury.discovery.base.group.model.GroupType;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import org.apache.ibatis.type.Alias;
 
-@EqualsAndHashCode(callSuper = true)
 @Alias("UserGroup")
 @Data
-public class UserGroup extends Group {
-    private Long targetId;
+public class UserGroup {
+    private Long id;
+    private GroupType type;
+    private String code;
+    private String name;
+
     private String target;
+    private Long targetId;
     private Long groupMappingId;
 }

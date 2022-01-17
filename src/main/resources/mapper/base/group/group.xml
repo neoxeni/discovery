@@ -49,7 +49,7 @@
 
     <select id="findGroupMappingsByGrpNo" resultType="GroupMappingResponseDto">
         WITH wd AS(
-        SELECT map_no, group_id, target, target_id, created_by, created_at, use_yn, sort
+        SELECT map_no, group_id, target, target_id, created_by, created_at
         FROM cmm_group_mapping
         WHERE group_id = #{groupMappingRequestDto.groupId}
         ORDER BY target
@@ -90,10 +90,10 @@
 
     <insert id="insertGroupMappings" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO cmm_group_mapping
-        (target, target_id, use_yn, sort, created_by, created_at, group_id)
+        (target, target_id, created_by, created_at, group_id)
         VALUES
         <foreach collection="collection" item="item" index="index" separator=",">
-            (#{item.target}, #{item.targetId}, #{item.useYn}, #{item.sort}, #{item.createdBy}, #{item.createdAt}, #{item.groupId})
+            (#{item.target}, #{item.targetId}, #{item.createdBy}, #{item.createdAt}, #{item.groupId})
         </foreach>
     </insert>
 
