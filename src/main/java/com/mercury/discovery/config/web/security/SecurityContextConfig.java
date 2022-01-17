@@ -69,20 +69,20 @@ public class SecurityContextConfig extends WebSecurityConfigurerAdapter {
                 .httpBasic()
                 .authenticationEntryPoint(new SecurityAuthenticationEntryPoint())
                 .and()
-                //.exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint())
-                .csrf().disable() // rest api이므로 csrf 보안이 필요없으므로 disable처리.
-                .headers()
-                .frameOptions().sameOrigin() // SockJS는 기본적으로 HTML iframe 요소를 통한 전송을 허용하지 않도록 설정되는데 해당 내용을 해제한다.
+                    //.exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+                    .csrf().disable() // rest api이므로 csrf 보안이 필요없으므로 disable처리.
+                    .headers()
+                    .frameOptions().sameOrigin() // SockJS는 기본적으로 HTML iframe 요소를 통한 전송을 허용하지 않도록 설정되는데 해당 내용을 해제한다.
                 .and()
-                .cors()
-                .configurationSource(corsConfigurationSource())
+                    .cors()
+                    .configurationSource(corsConfigurationSource())
                 .and()
-                .authorizeRequests()
-                .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
-                .antMatchers("/static/**").permitAll()
-                .mvcMatchers("/changePassword", "/changePasswordOk", "/login", "/logout", "/health/*").permitAll()
-                // .requestMatchers(CorsUtils::isPreFlightRequest, endpointsMatcher).permitAll()
-                .anyRequest().authenticated(); // 나머지 리소스에 대한 접근 설정
+                    .authorizeRequests()
+                    .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+                    .antMatchers("/static/**").permitAll()
+                    .mvcMatchers("/changePassword", "/changePasswordOk", "/login", "/logout", "/health/*").permitAll()
+                    // .requestMatchers(CorsUtils::isPreFlightRequest, endpointsMatcher).permitAll()
+                    .anyRequest().authenticated(); // 나머지 리소스에 대한 접근 설정
 
         // 2. 로그인 설정
         http.formLogin()// 권한없이 페이지 접근하면 로그인 페이지로 이동한다.
@@ -99,7 +99,7 @@ public class SecurityContextConfig extends WebSecurityConfigurerAdapter {
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                 .logoutSuccessUrl("/") // 로그아웃 성공시
                 .invalidateHttpSession(true)
-                ;
+        ;
         */
 
         // 4. Oauth2
@@ -109,21 +109,21 @@ public class SecurityContextConfig extends WebSecurityConfigurerAdapter {
                 .authorizationEndpoint()
                 .baseUri("/oauth2/authorization")
                 .authorizationRequestRepository(oAuth2AuthorizationRequestBasedOnCookieRepository)
-                .and()
+            .and()
                 .redirectionEndpoint()
                 .baseUri("/*/oauth2/code/*")
-                .and()
+            .and()
                 .userInfoEndpoint()
                 .userService(oAuth2UserService)
-                .and()
+            .and()
                 .successHandler(oAuth2AuthenticationSuccessHandler)
                 .failureHandler(oAuth2AuthenticationFailureHandler)
         ;
 
         // 5. Token 기반 설정
         http
-                .addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-        //.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)   //세션 사용안함
+            .addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+            //.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)   //세션 사용안함
         ;
 
         //@Async를 처리하는 쓰레드에서도 SecurityContext를 공유받을 수 있다.
