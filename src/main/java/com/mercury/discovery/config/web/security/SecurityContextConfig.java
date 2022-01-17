@@ -7,6 +7,7 @@ import com.mercury.discovery.config.web.security.oauth.handler.OAuth2Authenticat
 import com.mercury.discovery.config.web.security.oauth.handler.OAuth2AuthenticationSuccessHandler;
 import com.mercury.discovery.config.web.security.oauth.service.OAuth2AuthorizationRequestBasedOnCookieRepository;
 import com.mercury.discovery.config.web.security.oauth.service.OAuth2UserServiceImpl;
+import com.mercury.discovery.common.web.token.AuthTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -44,7 +45,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @EnableWebSecurity
 public class SecurityContextConfig extends WebSecurityConfigurerAdapter {
-    private final TokenAuthenticationFilter tokenAuthenticationFilter;
+    private final AuthTokenProvider authTokenProvider;
+
     private final OAuth2AuthorizationRequestBasedOnCookieRepository oAuth2AuthorizationRequestBasedOnCookieRepository;
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
     private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
@@ -131,10 +133,20 @@ public class SecurityContextConfig extends WebSecurityConfigurerAdapter {
                 .successHandler(oAuth2AuthenticationSuccessHandler)
                 .failureHandler(oAuth2AuthenticationFailureHandler)
             .and()
-                .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);;
+                .addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);;
 
         //@Async를 처리하는 쓰레드에서도 SecurityContext를 공유받을 수 있다.
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
+    }
+
+
+
+    /*
+     * 토큰 필터 설정
+     * */
+    @Bean
+    public TokenAuthenticationFilter tokenAuthenticationFilter() {
+        return new TokenAuthenticationFilter(authTokenProvider);
     }
 
     @Bean

@@ -1,8 +1,8 @@
 package com.mercury.discovery.config.web.security.oauth.filter;
 
 
-import com.mercury.discovery.config.web.security.oauth.token.AuthToken;
-import com.mercury.discovery.config.web.security.oauth.token.AuthTokenProvider;
+import com.mercury.discovery.common.web.token.AuthToken;
+import com.mercury.discovery.common.web.token.AuthTokenProvider;
 import com.mercury.discovery.utils.HttpUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

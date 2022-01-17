@@ -1,4 +1,4 @@
-package com.mercury.discovery.config.web.security.oauth.token;
+package com.mercury.discovery.common.web.token;
 
 import io.jsonwebtoken.*;
 import lombok.Getter;
@@ -9,7 +9,6 @@ import java.security.Key;
 import java.util.Date;
 
 @Slf4j
-@RequiredArgsConstructor
 public class AuthToken {
 
     @Getter
@@ -18,12 +17,12 @@ public class AuthToken {
 
     private static final String AUTHORITIES_KEY = "role";
 
-    AuthToken(String id, Date expiry, Key key) {
+    public AuthToken(String id, Date expiry, Key key) {
         this.key = key;
         this.token = createAuthToken(id, expiry);
     }
 
-    AuthToken(String id, String role, Date expiry, Key key) {
+    public AuthToken(String id, String role, Date expiry, Key key) {
         this.key = key;
         this.token = createAuthToken(id, role, expiry);
     }
