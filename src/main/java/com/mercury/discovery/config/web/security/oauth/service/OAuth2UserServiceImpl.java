@@ -66,7 +66,7 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
         user.setNickname(userInfo.getName());
         user.setName(userInfo.getName());
         user.setEmail(userInfo.getEmail());
-        user.setAvatarUrl(userInfo.getImageUrl());
+        user.setAvatar(userInfo.getImageUrl());
         user.setProviderType(providerType.name());
         user.setCreatedBy(0);
         user.setCreatedAt(now);
@@ -84,8 +84,8 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
             user.setName(userInfo.getName());
         }
 
-        if (userInfo.getImageUrl() != null && !userInfo.getImageUrl().equals(user.getAvatarUrl())) {
-            user.setAvatarUrl(userInfo.getImageUrl());
+        if (userInfo.getImageUrl() != null && !userInfo.getImageUrl().equals(user.getAvatar())) {
+            user.setAvatar(userInfo.getImageUrl());
         }
     }
 }
