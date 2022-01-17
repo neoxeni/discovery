@@ -1,7 +1,8 @@
-package com.mercury.discovery.common.web.token;
+package com.mercury.discovery.config.web.security.oauth.token;
 
 
 import com.mercury.discovery.config.web.security.oauth.exception.TokenValidFailedException;
+import com.mercury.discovery.config.web.security.oauth.token.AuthToken;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;

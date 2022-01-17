@@ -7,7 +7,7 @@ import com.mercury.discovery.config.web.security.oauth.handler.OAuth2Authenticat
 import com.mercury.discovery.config.web.security.oauth.handler.OAuth2AuthenticationSuccessHandler;
 import com.mercury.discovery.config.web.security.oauth.service.OAuth2AuthorizationRequestBasedOnCookieRepository;
 import com.mercury.discovery.config.web.security.oauth.service.OAuth2UserServiceImpl;
-import com.mercury.discovery.common.web.token.AuthTokenProvider;
+import com.mercury.discovery.config.web.security.oauth.token.AuthTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
