@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class CustomOAuth2UserService extends DefaultOAuth2UserService {
+public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
     private final UserService userService;
 
     @Override

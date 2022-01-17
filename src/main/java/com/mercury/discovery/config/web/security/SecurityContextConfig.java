@@ -6,7 +6,7 @@ import com.mercury.discovery.config.web.security.oauth.filter.TokenAuthenticatio
 import com.mercury.discovery.config.web.security.oauth.handler.OAuth2AuthenticationFailureHandler;
 import com.mercury.discovery.config.web.security.oauth.handler.OAuth2AuthenticationSuccessHandler;
 import com.mercury.discovery.config.web.security.oauth.service.OAuth2AuthorizationRequestBasedOnCookieRepository;
-import com.mercury.discovery.config.web.security.oauth.service.CustomOAuth2UserService;
+import com.mercury.discovery.config.web.security.oauth.service.OAuth2UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -48,7 +48,7 @@ public class SecurityContextConfig extends WebSecurityConfigurerAdapter {
     private final OAuth2AuthorizationRequestBasedOnCookieRepository oAuth2AuthorizationRequestBasedOnCookieRepository;
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
     private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
-    private final CustomOAuth2UserService oAuth2UserService;
+    private final OAuth2UserServiceImpl oAuth2UserService;
 
     /*
      * auth 매니저 설정
