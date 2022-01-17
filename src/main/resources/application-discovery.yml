@@ -132,9 +132,9 @@ apps:
         jwt:
             issuer: ${ENV.APPS_API_JWT_ISSURE:localhost}  #localhost 인경우 moca-nexus로 가지 않음    (localhost||external)
             secret: ${ENV.APPS_API_JWT_SECRET:8sknjlO3NPTBqo319DHLNqsQAfRJEdKsETOds}  #issuer 가 localhost인 경우 secret이 moca-nexus와 동일해야 함
-            token : ${ENV.APPS_API_JWT_TOKEN:926D96C90030DD58429D2751AC1BDBBC}
             expire: ${ENV.APPS_API_JWT_EXPIRE:86400000}    #1시간(3600000), 1일(86400000)
             refresh: ${ENV.APPS_API_JWT_REFRESH:604800000}
+            token : ${ENV.APPS_API_JWT_TOKEN:926D96C90030DD58429D2751AC1BDBBC}  # refresh token에서 사용하는 값
     encryption:
         key: ${ENV.APPS_ENCRYPTION_KEY}
     email:

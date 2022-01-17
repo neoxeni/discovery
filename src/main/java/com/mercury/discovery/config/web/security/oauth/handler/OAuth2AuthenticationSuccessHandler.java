@@ -3,13 +3,13 @@ package com.mercury.discovery.config.web.security.oauth.handler;
 
 import com.mercury.discovery.base.users.model.AppUser;
 import com.mercury.discovery.base.users.service.UserService;
+import com.mercury.discovery.common.web.token.AuthToken;
+import com.mercury.discovery.common.web.token.AuthTokenProvider;
 import com.mercury.discovery.config.web.security.oauth.entity.ProviderType;
 import com.mercury.discovery.config.web.security.oauth.entity.RoleType;
 import com.mercury.discovery.config.web.security.oauth.info.OAuth2UserInfo;
 import com.mercury.discovery.config.web.security.oauth.info.OAuth2UserInfoFactory;
 import com.mercury.discovery.config.web.security.oauth.service.OAuth2AuthorizationRequestBasedOnCookieRepository;
-import com.mercury.discovery.common.web.token.AuthToken;
-import com.mercury.discovery.common.web.token.AuthTokenProvider;
 import com.mercury.discovery.utils.HttpUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,14 +34,6 @@ import java.util.Optional;
 
 
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
-    @Value("${apps.api.jwt.token:926D96C90030DD58429D2751AC1BDBBC}")   // default defaultSecretKey
-    private String tokenSecretKey;
-
-    @Value("${apps.api.jwt.expire:3600000}")           // default 1시간(3600000) 1일(86400000)
-    private long tokenValidMillisecond; // 1시간만 토큰 유효
-
-    @Value("${apps.api.jwt.refresh:604800000}")           // default 1시간(3600000) 1일(86400000)
-    private long tokenRefreshMillisecond; // 1시간만 토큰 유효
 
     @Value("${apps.api.oauth2.authorizedRedirectUris:}")
     private List<String> authorizedRedirectUris;
@@ -51,8 +43,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
     @Autowired
     UserService userService;
-
-    //private final UserRefreshTokenRepository userRefreshTokenRepository;
 
     @Autowired
     OAuth2AuthorizationRequestBasedOnCookieRepository authorizationRequestRepository;
@@ -91,17 +81,22 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         OAuth2UserInfo userInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(providerType, user.getAttributes());
         Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
 
+
+        String tokenRefreshToken = tokenProvider.getTokenProperties().getToken();
+        long tokenRefreshMillisecond = tokenProvider.getTokenProperties().getRefresh();
+        long tokenExpireMillisecond = tokenProvider.getTokenProperties().getExpire();
+
         RoleType roleType = hasAuthority(authorities, RoleType.ADMIN.getCode()) ? RoleType.ADMIN : RoleType.USER;
 
         Date now = new Date();
         AuthToken accessToken = tokenProvider.createAuthToken(
                 userInfo.getId(),
                 roleType.getCode(),
-                new Date(now.getTime() + tokenValidMillisecond)
+                new Date(now.getTime() + tokenExpireMillisecond)
         );
 
         // refresh 토큰 설정
-        AuthToken refreshToken = tokenProvider.createAuthToken(tokenSecretKey, new Date(now.getTime() + tokenRefreshMillisecond));
+        AuthToken refreshToken = tokenProvider.createAuthToken(tokenRefreshToken, new Date(now.getTime() + tokenRefreshMillisecond));
 
         // DB 저장
         /*UserRefreshToken userRefreshToken = userRefreshTokenRepository.findByUserId(userInfo.getId());
@@ -148,11 +143,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 .anyMatch(authorizedRedirectUri -> {
                     // Only validate host and port. Let the clients use different paths if they want to
                     URI authorizedURI = URI.create(authorizedRedirectUri);
-                    if (authorizedURI.getHost().equalsIgnoreCase(clientRedirectUri.getHost())
-                            && authorizedURI.getPort() == clientRedirectUri.getPort()) {
-                        return true;
-                    }
-                    return false;
+                    return authorizedURI.getHost().equalsIgnoreCase(clientRedirectUri.getHost())
+                            && authorizedURI.getPort() == clientRedirectUri.getPort();
                 });
     }
 }

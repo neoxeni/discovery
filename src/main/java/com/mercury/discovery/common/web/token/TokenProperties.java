@@ -1,6 +1,5 @@
 package com.mercury.discovery.common.web.token;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -16,4 +15,6 @@ public class TokenProperties {
     private Long expire;
 
     private Long refresh;
+
+    private String token;
 }
