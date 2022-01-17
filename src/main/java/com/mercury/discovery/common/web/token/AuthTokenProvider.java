@@ -46,12 +46,12 @@ public class AuthTokenProvider {
         return new AuthToken(id, role, expiry, secretKey);
     }
 
-    public JwtBuilder getBuilder(){
-        return Jwts.builder().signWith(secretKey);
-    }
-
     public AuthToken convertAuthToken(String token) {
         return new AuthToken(token, secretKey);
+    }
+
+    public JwtBuilder getBuilder(){
+        return Jwts.builder().signWith(secretKey).setHeaderParam("typ","JWT");
     }
 
     public Authentication getAuthentication(AuthToken authToken) {

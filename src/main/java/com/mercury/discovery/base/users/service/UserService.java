@@ -10,14 +10,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -89,17 +86,7 @@ public class UserService {
             List<UserGroup> departmentsGroups = organizationRepository.findDepartmentGroups(appUser.getClientId(), appUser.getDepartmentId());
             groups.addAll(departmentsGroups);
         }
-
         appUser.setGroups(groups);
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        if (appUser.getAuthorities() != null) {
-            authorities.addAll(appUser.getAuthorities());
-        }
-        groups.forEach(group -> {
-            authorities.add(new SimpleGrantedAuthority("ROLE_" + group.getCode()));
-        });
-
-        appUser.setAuthorities(authorities);
     }
 
     public void cacheUser(AppUser appUser) {

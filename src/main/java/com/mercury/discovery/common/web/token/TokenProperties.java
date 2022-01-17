@@ -15,6 +15,4 @@ public class TokenProperties {
     private Long expire;
 
     private Long refresh;
-
-    private String token;   // refresh 용 토큰
 }

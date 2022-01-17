@@ -17,9 +17,6 @@ import java.util.*;
 public class AppUser extends TokenUser {
     private static final long serialVersionUID = -4937821332640048273L;
 
-    @JsonIgnore
-    private Collection<? extends GrantedAuthority> authorities;
-
     private String username;
     @JsonIgnore
     private String password;
@@ -64,50 +61,18 @@ public class AppUser extends TokenUser {
 
     private Long departmentId;
 
-
     private String departmentName;
     private String positionName;
     private String dutyName;
 
     private List<UserGroup> groups = new ArrayList<>();
+    public void setGroups(List<UserGroup> groups) {
+        this.groups = groups;
 
-    private Set<String> rolesSet;
-
-    public boolean hasAnyRole(String... roles) {
-        if (rolesSet == null) {
-            return false;
-        }
-
-        for (String role : roles) {
-            if (rolesSet.contains("ROLE_" + role) || rolesSet.contains(role)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean hasAuthority(Collection<? extends GrantedAuthority> authorities, String authority) {
-        if (authorities == null) {
-            return false;
-        }
-
-        for (GrantedAuthority grantedAuthority : authorities) {
-            if (grantedAuthority.getAuthority().equals(authority)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
-    }
-
-    public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
-        if (authorities != null) {
-            this.authorities = authorities;
-            this.rolesSet = new HashSet<>();
-            new ArrayList<GrantedAuthority>(authorities).forEach(grantedAuthority -> rolesSet.add(grantedAuthority.getAuthority()));
-        }
+        Set<String> roles = new HashSet<>();
+        groups.forEach(group -> {
+            roles.add(group.getCode());
+        });
+        setRoles(roles);
     }
 }

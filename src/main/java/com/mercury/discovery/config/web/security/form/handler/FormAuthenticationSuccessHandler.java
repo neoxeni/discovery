@@ -60,20 +60,17 @@ public class FormAuthenticationSuccessHandler implements AuthenticationSuccessHa
             request.setAttribute("username", user.getUsername());
             request.getRequestDispatcher("/changePassword").forward(request, response);
         } else {
-            userAuthService.afterLoginSuccess(request, response);
-
+            String targetUrl = defaultTargetUrl;
             SavedRequest savedRequest = requestCache.getRequest(request, response);
             if (savedRequest != null) {
-                String targetUrl = savedRequest.getRedirectUrl();
+                targetUrl = savedRequest.getRedirectUrl();
                 if (targetUrl.endsWith("/error") || targetUrl.contains("/ws-stomp")) {
-                    log.error("savedRequest.getRedirectUrl() is {}", targetUrl);
                     targetUrl = defaultTargetUrl;
                 }
-
-                redirectStrategy.sendRedirect(request, response, targetUrl);
-            } else {
-                redirectStrategy.sendRedirect(request, response, defaultTargetUrl);
             }
+
+            userAuthService.afterLoginSuccess(request, response);
+            redirectStrategy.sendRedirect(request, response, targetUrl);
         }
     }
 }

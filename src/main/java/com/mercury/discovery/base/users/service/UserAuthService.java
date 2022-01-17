@@ -4,11 +4,15 @@ package com.mercury.discovery.base.users.service;
 import com.mercury.discovery.base.users.model.AppUser;
 import com.mercury.discovery.base.users.model.UserLogin;
 import com.mercury.discovery.base.users.model.UserStatus;
+import com.mercury.discovery.common.web.token.AuthTokenProvider;
+import com.mercury.discovery.common.web.token.TokenProperties;
 import com.mercury.discovery.utils.HttpUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,6 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -31,6 +38,8 @@ public class UserAuthService {
     private final UserRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
+
+    private final AuthTokenProvider authTokenProvider;
 
     @Transactional(readOnly = true)
     public UserLogin getUserForLogin(String username, String clientId) {
@@ -47,13 +56,45 @@ public class UserAuthService {
         appUser.setPasswordErrCount(0);
         appUser.setLastLoginAt(LocalDateTime.now());
         userService.updateLoginInfo(appUser);
-        userService.setAppUserRoles(appUser);
 
-        //cacheUser(appUser);
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(appUser, null, appUser.getAuthorities());
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        appUser.getRoles().forEach(role -> {
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
+        });
+
+        processToken(appUser, request, response);
+
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(appUser, null, authorities);
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
+        //cacheUser(appUser);
         return authenticationToken;
+    }
+
+    private void processToken(AppUser appUser, HttpServletRequest request, HttpServletResponse response) {
+        Date now = new Date();
+        TokenProperties tokenProperties = authTokenProvider.getTokenProperties();
+        String accessToken = authTokenProvider.getBuilder()
+                .setId(appUser.getUserKey())
+                .setSubject(appUser.getClientId() + ":" + appUser.getId())
+                .setAudience(appUser.getName())
+                .setIssuedAt(now)
+                .claim("authorities", appUser.getRoles())
+                .setExpiration(new Date(now.getTime() + tokenProperties.getExpire()))
+                .compact();
+
+        appUser.setToken(accessToken);
+
+        String refreshToken = authTokenProvider.getBuilder()
+                .setId(appUser.getUserKey())
+                .setExpiration(new Date(now.getTime() + tokenProperties.getRefresh()))
+                .compact();
+
+        //refreshToken DB 저장 로직 추가
+
+        int cookieMaxAge = (int) (tokenProperties.getRefresh() / 60);
+        HttpUtils.deleteCookie(request, response, "refresh_token");
+        HttpUtils.addCookie(response, "refresh_token", refreshToken, cookieMaxAge);
     }
 
     public void logout(HttpServletRequest request, HttpServletResponse response) {
