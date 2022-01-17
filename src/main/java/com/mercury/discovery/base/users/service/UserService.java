@@ -11,8 +11,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -51,7 +49,6 @@ public class UserService {
         //return jwtTokenProvider.getJwtFromUser(tokenUser, true);
         return null;
     }
-
 
     @Transactional(readOnly = true)
     public void setAppUserRoles(AppUser appUser) {
@@ -123,11 +120,7 @@ public class UserService {
         }
     }
 
-    @Caching(evict = {
-            @CacheEvict(cacheNames = "deptEmpListForTreeAll", key = "#appUser.clientId.toString()"),
-            @CacheEvict(cacheNames = "users", key = "#appUser.clientId.toString().concat(':').concat(#appUser.userKey)")
 
-    })
     public int insert(AppUser appUser) {
         if (appUser.getUserKey() == null) {
             appUser.setUserKey(IDGenerator.getUUID());
@@ -145,18 +138,10 @@ public class UserService {
         return affected;
     }
 
-    @Caching(evict = {
-            @CacheEvict(cacheNames = "deptEmpListForTreeAll", key = "#appUser.clientId.toString()"),
-            @CacheEvict(cacheNames = "users", key = "#appUser.clientId.toString().concat(':').concat(#appUser.userKey)")
-    })
     public int update(AppUser appUser) {
         return userRepository.update(appUser);
     }
 
-    @Caching(evict = {
-            @CacheEvict(cacheNames = "deptEmpListForTreeAll", key = "#appUser.clientId.toString()"),
-            @CacheEvict(cacheNames = "users", key = "#appUser.clientId.toString().concat(':').concat(#appUser.userKey)")
-    })
     public int delete(AppUser appUser) {
         return userRepository.delete(appUser.getClientId(), appUser.getId());
     }

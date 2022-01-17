@@ -29,12 +29,12 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     @Autowired
     PasswordEncoder passwordEncoder;
 
-    private String defaultUrl = "/";
+    private String defaultTargetUrl = "/";
     private final RequestCache requestCache = new HttpSessionRequestCache();
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
-    public CustomAuthenticationSuccessHandler(String defaultUrl) {
-        this.defaultUrl = defaultUrl;
+    public CustomAuthenticationSuccessHandler(String defaultTargetUrl) {
+        this.defaultTargetUrl = defaultTargetUrl;
     }
 
     @Override
@@ -76,12 +76,12 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 String targetUrl = savedRequest.getRedirectUrl();
                 if (targetUrl.endsWith("/error") || targetUrl.contains("/ws-stomp")) {
                     log.error("savedRequest.getRedirectUrl() is {}", targetUrl);
-                    targetUrl = defaultUrl;
+                    targetUrl = defaultTargetUrl;
                 }
 
                 redirectStrategy.sendRedirect(request, response, targetUrl);
             } else {
-                redirectStrategy.sendRedirect(request, response, defaultUrl);
+                redirectStrategy.sendRedirect(request, response, defaultTargetUrl);
             }
         }
     }

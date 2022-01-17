@@ -1,6 +1,5 @@
 package com.mercury.discovery.config.web.security.oauth.service;
 
-
 import com.mercury.discovery.base.users.model.AppUser;
 import com.mercury.discovery.base.users.model.UserStatus;
 import com.mercury.discovery.base.users.service.UserService;
@@ -27,13 +26,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User user = super.loadUser(userRequest);
-
         try {
             return this.process(userRequest, user);
         } catch (AuthenticationException ex) {
             throw ex;
         } catch (Exception ex) {
-            ex.printStackTrace();
             throw new InternalAuthenticationServiceException(ex.getMessage(), ex.getCause());
         }
     }
@@ -55,6 +52,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         } else {
             savedUser = createUser(userInfo, providerType);
         }
+
+        savedUser.setAttributes(user.getAttributes());
 
         return savedUser;
     }
@@ -80,15 +79,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         return user;
     }
 
-    private AppUser updateUser(AppUser user, OAuth2UserInfo userInfo) {
-        if (userInfo.getName() != null && !user.getUsername().equals(userInfo.getName())) {
-            user.setUsername(userInfo.getName());
+    private void updateUser(AppUser user, OAuth2UserInfo userInfo) {
+        if (userInfo.getName() != null && !userInfo.getName().equals(user.getName())) {
+            user.setName(userInfo.getName());
         }
 
         if (userInfo.getImageUrl() != null && !userInfo.getImageUrl().equals(user.getAvatarUrl())) {
             user.setAvatarUrl(userInfo.getImageUrl());
         }
-
-        return user;
     }
 }

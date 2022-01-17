@@ -156,8 +156,7 @@ public class SecurityContextConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public AuthenticationSuccessHandler customAuthenticationSuccessHandler() {
-        String defaultUrl = "/";
-        return new CustomAuthenticationSuccessHandler(defaultUrl);
+        return new CustomAuthenticationSuccessHandler("/");
     }
 
     @Bean
