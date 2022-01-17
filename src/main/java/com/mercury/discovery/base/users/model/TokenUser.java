@@ -12,6 +12,8 @@ import java.io.Serializable;
 public class TokenUser implements Serializable {
     private static final long serialVersionUID = -3098368111659804213L;
 
+    private UserType userType;
+
     private Integer id;
     private String name;
     private String userKey;

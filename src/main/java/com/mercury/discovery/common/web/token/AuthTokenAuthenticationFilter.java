@@ -2,12 +2,10 @@ package com.mercury.discovery.common.web.token;
 
 
 import com.mercury.discovery.utils.HttpUtils;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -18,9 +16,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Slf4j
-
 public class AuthTokenAuthenticationFilter extends OncePerRequestFilter {
-
+    //[Access Token & Refresh Token 인증 구현](https://cotak.tistory.com/102)
     @Autowired
     AuthTokenProvider authTokenProvider;
 

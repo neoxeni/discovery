@@ -16,5 +16,5 @@ public class TokenProperties {
 
     private Long refresh;
 
-    private String token;
+    private String token;   // refresh 용 토큰
 }

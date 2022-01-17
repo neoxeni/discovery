@@ -2,6 +2,8 @@ package com.mercury.discovery.common.web.token;
 
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtBuilder;
+import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,13 +25,13 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 public class AuthTokenProvider {
-    private Key key;
+    private Key secretKey;
     private final TokenProperties tokenProperties;
     private static final String AUTHORITIES_KEY = "role";
 
     @PostConstruct
     public void init() {
-        this.key = Keys.hmacShaKeyFor(tokenProperties.getSecret().getBytes());
+        this.secretKey = Keys.hmacShaKeyFor(tokenProperties.getSecret().getBytes());
     }
 
     public TokenProperties getTokenProperties() {
@@ -37,19 +39,23 @@ public class AuthTokenProvider {
     }
 
     public AuthToken createAuthToken(String id, Date expiry) {
-        return new AuthToken(id, expiry, key);
+        return new AuthToken(id, expiry, secretKey);
     }
 
     public AuthToken createAuthToken(String id, String role, Date expiry) {
-        return new AuthToken(id, role, expiry, key);
+        return new AuthToken(id, role, expiry, secretKey);
+    }
+
+    public JwtBuilder getBuilder(){
+        return Jwts.builder().signWith(secretKey);
     }
 
     public AuthToken convertAuthToken(String token) {
-        return new AuthToken(token, key);
+        return new AuthToken(token, secretKey);
     }
 
     public Authentication getAuthentication(AuthToken authToken) {
-        if(authToken.validate()) {
+        if (authToken.validate()) {
             Claims claims = authToken.getTokenClaims();
             Collection<? extends GrantedAuthority> authorities =
                     Arrays.stream(new String[]{claims.get(AUTHORITIES_KEY).toString()})

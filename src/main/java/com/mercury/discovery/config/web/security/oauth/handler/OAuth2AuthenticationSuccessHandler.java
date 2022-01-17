@@ -6,7 +6,6 @@ import com.mercury.discovery.base.users.service.UserService;
 import com.mercury.discovery.common.web.token.AuthToken;
 import com.mercury.discovery.common.web.token.AuthTokenProvider;
 import com.mercury.discovery.config.web.security.oauth.entity.ProviderType;
-import com.mercury.discovery.config.web.security.oauth.entity.RoleType;
 import com.mercury.discovery.config.web.security.oauth.info.OAuth2UserInfo;
 import com.mercury.discovery.config.web.security.oauth.info.OAuth2UserInfoFactory;
 import com.mercury.discovery.config.web.security.oauth.service.OAuth2AuthorizationRequestBasedOnCookieRepository;
@@ -86,12 +85,12 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         long tokenRefreshMillisecond = tokenProvider.getTokenProperties().getRefresh();
         long tokenExpireMillisecond = tokenProvider.getTokenProperties().getExpire();
 
-        RoleType roleType = hasAuthority(authorities, RoleType.ADMIN.getCode()) ? RoleType.ADMIN : RoleType.USER;
+
 
         Date now = new Date();
         AuthToken accessToken = tokenProvider.createAuthToken(
                 userInfo.getId(),
-                roleType.getCode(),
+                null,
                 new Date(now.getTime() + tokenExpireMillisecond)
         );
 

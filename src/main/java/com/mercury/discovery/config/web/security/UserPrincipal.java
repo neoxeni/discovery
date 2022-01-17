@@ -1,4 +1,4 @@
-package com.mercury.discovery.config.web.security.oauth.entity;
+package com.mercury.discovery.config.web.security;
 
 import com.mercury.discovery.base.users.model.AppUser;
 import lombok.AllArgsConstructor;
@@ -6,14 +6,12 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 
 @Getter
@@ -23,9 +21,8 @@ import java.util.Map;
 public class UserPrincipal implements UserDetails, OidcUser {
     private final String userId;
     private final String password;
-    private final ProviderType providerType;
-    private final RoleType roleType;
-    private final Collection<GrantedAuthority> authorities;
+    private final Collection<? extends GrantedAuthority> authorities;
+
     private Map<String, Object> attributes;
 
     @Override
@@ -87,9 +84,7 @@ public class UserPrincipal implements UserDetails, OidcUser {
         return new UserPrincipal(
                 user.getUsername(),
                 user.getPassword(),
-                ProviderType.valueOf(user.getProviderType()),
-                RoleType.USER,
-                Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getCode()))
+                user.getAuthorities()
         );
     }
 
