@@ -14,13 +14,8 @@ public class TokenUser implements Serializable {
 
     private UserType userType;
 
-    private Integer id;
-    private String name;
-    private String userKey;
     private Integer clientId;
-
-    //아래의 정보는 JWT 관련 정보
-    private String jwt;
-    private long issuedMillis;
-    private long expiredMillis;
+    private Integer id;
+    private String userKey;
+    private String name;
 }

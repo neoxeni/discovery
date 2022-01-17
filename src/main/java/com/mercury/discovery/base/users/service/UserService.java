@@ -3,7 +3,6 @@ package com.mercury.discovery.base.users.service;
 import com.mercury.discovery.base.BaseTopic;
 import com.mercury.discovery.base.organization.service.OrganizationRepository;
 import com.mercury.discovery.base.users.model.AppUser;
-import com.mercury.discovery.base.users.model.TokenUser;
 import com.mercury.discovery.base.users.model.UserGroup;
 import com.mercury.discovery.config.websocket.message.MessagePublisher;
 import com.mercury.discovery.utils.IDGenerator;
@@ -11,11 +10,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.lang.Nullable;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -148,6 +144,13 @@ public class UserService {
         return userRepository.delete(appUser.getClientId(), appUser.getId());
     }
 
+
+    public void updateLoginInfo(AppUser appUser) {
+        //성공시 사용자 정보업데이트 passwordErrCount, lastLoginAt, lastIpAddress 등등
+        userRepository.updateLoginInfo(appUser);
+        userRepository.insertLoginHistory(appUser);
+    }
+
     public void updateLogoutInfo(AppUser appUser) {
         appUser.setLastLogoutAt(LocalDateTime.now());
         userRepository.updateLogoutInfo(appUser);
@@ -165,22 +168,5 @@ public class UserService {
 
     public void sendActiveSignal(String userKey, String uuid) {
         messagePublisher.convertAndSend(BaseTopic.ACTIVE.getBindTopic(userKey), uuid);
-    }
-
-    public void afterLoginSuccess(AppUser appUser) {
-        appUser.setPassword("");
-        appUser.setPasswordErrCount(0);
-        appUser.setLastLoginAt(LocalDateTime.now());
-
-        //성공시 사용자 정보업데이트 passwordErrCount, lastLoginAt, lastIpAddress 등등
-        userRepository.updateLoginInfo(appUser);
-        userRepository.insertLoginHistory(appUser);
-
-        //사용자 role 세팅
-        setAppUserRoles(appUser);
-
-        //cacheUser(appUser);
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(appUser, null, appUser.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
     }
 }

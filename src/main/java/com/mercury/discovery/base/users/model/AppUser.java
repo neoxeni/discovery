@@ -90,6 +90,19 @@ public class AppUser extends TokenUser implements UserDetails, OidcUser {
         return false;
     }
 
+    private boolean hasAuthority(Collection<? extends GrantedAuthority> authorities, String authority) {
+        if (authorities == null) {
+            return false;
+        }
+
+        for (GrantedAuthority grantedAuthority : authorities) {
+            if (grantedAuthority.getAuthority().equals(authority)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;

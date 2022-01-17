@@ -1,17 +1,14 @@
 package com.mercury.discovery.config.web.security.form.handler;
 
-import com.mercury.discovery.base.users.model.AppUser;
-import com.mercury.discovery.base.users.service.UserService;
-import com.mercury.discovery.utils.HttpUtils;
+import com.mercury.discovery.base.users.service.UserAuthService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
@@ -24,10 +21,7 @@ import java.io.IOException;
 @Slf4j
 public class FormAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
     @Autowired
-    UserService userService;
-
-    @Autowired
-    PasswordEncoder passwordEncoder;
+    UserAuthService userAuthService;
 
     private String defaultTargetUrl = "/";
     private final RequestCache requestCache = new HttpSessionRequestCache();
@@ -39,9 +33,7 @@ public class FormAuthenticationSuccessHandler implements AuthenticationSuccessHa
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        AppUser appUser = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        appUser.setLastIpAddress(HttpUtils.getRemoteAddr(request));
-
+        UserDetails user = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         int errorNum;
 
         /*
@@ -58,18 +50,17 @@ public class FormAuthenticationSuccessHandler implements AuthenticationSuccessHa
         }
         */
 
-        if (appUser.getPasswordErrCount() > 6) {
-            this.logout(request, response);
+        if (!user.isAccountNonLocked()) {
             errorNum = 2;
+            userAuthService.logout(request, response);
             redirectStrategy.sendRedirect(request, response, "/login?error=" + errorNum);
-        } else if (appUser.getPassword().equals(passwordEncoder.encode(appUser.getUsername()))) {
+        } else if (userAuthService.isTemporaryPassword(user)) {
             errorNum = 6;
             request.setAttribute("error", errorNum);
-            request.setAttribute("userId", appUser.getId());
-            request.setAttribute("username", appUser.getUsername());
+            request.setAttribute("username", user.getUsername());
             request.getRequestDispatcher("/changePassword").forward(request, response);
         } else {
-            userService.afterLoginSuccess(appUser);
+            userAuthService.afterLoginSuccess(request, response);
 
             SavedRequest savedRequest = requestCache.getRequest(request, response);
             if (savedRequest != null) {
@@ -83,13 +74,6 @@ public class FormAuthenticationSuccessHandler implements AuthenticationSuccessHa
             } else {
                 redirectStrategy.sendRedirect(request, response, defaultTargetUrl);
             }
-        }
-    }
-
-    public void logout(HttpServletRequest request, HttpServletResponse response) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null) {
-            new SecurityContextLogoutHandler().logout(request, response, auth);
         }
     }
 }

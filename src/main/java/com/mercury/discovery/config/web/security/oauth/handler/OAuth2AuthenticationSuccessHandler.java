@@ -2,6 +2,7 @@ package com.mercury.discovery.config.web.security.oauth.handler;
 
 
 import com.mercury.discovery.base.users.model.AppUser;
+import com.mercury.discovery.base.users.service.UserAuthService;
 import com.mercury.discovery.base.users.service.UserService;
 import com.mercury.discovery.common.web.token.AuthToken;
 import com.mercury.discovery.common.web.token.AuthTokenProvider;
@@ -41,7 +42,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     AuthTokenProvider tokenProvider;
 
     @Autowired
-    UserService userService;
+    UserAuthService userAuthService;
 
     @Autowired
     OAuth2AuthorizationRequestBasedOnCookieRepository authorizationRequestRepository;
@@ -56,9 +57,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         }
         clearAuthenticationAttributes(request, response);
 
-        AppUser appUser = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        appUser.setLastIpAddress(HttpUtils.getRemoteAddr(request));
-        userService.afterLoginSuccess(appUser);
+        userAuthService.afterLoginSuccess(request, response);
 
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
@@ -107,7 +106,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         }*/
 
         int cookieMaxAge = (int) tokenRefreshMillisecond / 60;
-
         HttpUtils.deleteCookie(request, response, OAuth2AuthorizationRequestBasedOnCookieRepository.REFRESH_TOKEN);
         HttpUtils.addCookie(response, OAuth2AuthorizationRequestBasedOnCookieRepository.REFRESH_TOKEN, refreshToken.getToken(), cookieMaxAge);
 
@@ -119,19 +117,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     protected void clearAuthenticationAttributes(HttpServletRequest request, HttpServletResponse response) {
         super.clearAuthenticationAttributes(request);
         authorizationRequestRepository.removeAuthorizationRequestCookies(request, response);
-    }
-
-    private boolean hasAuthority(Collection<? extends GrantedAuthority> authorities, String authority) {
-        if (authorities == null) {
-            return false;
-        }
-
-        for (GrantedAuthority grantedAuthority : authorities) {
-            if (authority.equals(grantedAuthority.getAuthority())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private boolean isAuthorizedRedirectUri(String uri) {
