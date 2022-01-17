@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class UserDetailsServiceImpl implements UserDetailsService {
+public class FormUserDetailsServiceImpl implements UserDetailsService {
     private final UserService userService;
 
     @Autowired

@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Slf4j
-public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+public class FormAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
     @Autowired
     UserService userService;
 
@@ -33,7 +33,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     private final RequestCache requestCache = new HttpSessionRequestCache();
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
-    public CustomAuthenticationSuccessHandler(String defaultTargetUrl) {
+    public FormAuthenticationSuccessHandler(String defaultTargetUrl) {
         this.defaultTargetUrl = defaultTargetUrl;
     }
 

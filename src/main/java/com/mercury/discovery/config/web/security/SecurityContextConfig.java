@@ -1,8 +1,8 @@
 package com.mercury.discovery.config.web.security;
 
 import com.mercury.discovery.common.web.token.AuthTokenAuthenticationFilter;
-import com.mercury.discovery.config.web.security.form.handler.CustomAuthenticationFailureHandler;
-import com.mercury.discovery.config.web.security.form.handler.CustomAuthenticationSuccessHandler;
+import com.mercury.discovery.config.web.security.form.handler.FormAuthenticationFailureHandler;
+import com.mercury.discovery.config.web.security.form.handler.FormAuthenticationSuccessHandler;
 import com.mercury.discovery.config.web.security.oauth.handler.OAuth2AuthenticationFailureHandler;
 import com.mercury.discovery.config.web.security.oauth.handler.OAuth2AuthenticationSuccessHandler;
 import com.mercury.discovery.config.web.security.oauth.service.OAuth2AuthorizationRequestBasedOnCookieRepository;
@@ -140,12 +140,12 @@ public class SecurityContextConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public AuthenticationSuccessHandler customAuthenticationSuccessHandler() {
-        return new CustomAuthenticationSuccessHandler("/");
+        return new FormAuthenticationSuccessHandler("/");
     }
 
     @Bean
     public AuthenticationFailureHandler customAuthenticationFailureHandler() {
-        return new CustomAuthenticationFailureHandler();
+        return new FormAuthenticationFailureHandler();
     }
 
 

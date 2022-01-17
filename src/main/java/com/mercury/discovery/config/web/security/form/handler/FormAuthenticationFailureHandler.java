@@ -22,7 +22,7 @@ import java.io.IOException;
 //org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler
 
 @Slf4j
-public class CustomAuthenticationFailureHandler implements AuthenticationFailureHandler, ApplicationListener<AuthenticationFailureBadCredentialsEvent> {
+public class FormAuthenticationFailureHandler implements AuthenticationFailureHandler, ApplicationListener<AuthenticationFailureBadCredentialsEvent> {
     @Autowired
     UserService userService;
 
