@@ -1,13 +1,13 @@
-package com.mercury.discovery.config.web.security.oauth.filter;
+package com.mercury.discovery.common.web.token;
 
 
-import com.mercury.discovery.config.web.security.oauth.token.AuthToken;
-import com.mercury.discovery.config.web.security.oauth.token.AuthTokenProvider;
 import com.mercury.discovery.utils.HttpUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -18,9 +18,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Slf4j
-@RequiredArgsConstructor
-public class TokenAuthenticationFilter extends OncePerRequestFilter {
-    private final AuthTokenProvider tokenProvider;
+
+public class AuthTokenAuthenticationFilter extends OncePerRequestFilter {
+
+    @Autowired
+    AuthTokenProvider authTokenProvider;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -28,9 +30,9 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
         String tokenStr = HttpUtils.getAccessToken(request);
         if (StringUtils.hasLength(tokenStr)) {
-            AuthToken token = tokenProvider.convertAuthToken(tokenStr);
+            AuthToken token = authTokenProvider.convertAuthToken(tokenStr);
             if (token.validate()) {
-                Authentication authentication = tokenProvider.getAuthentication(token);
+                Authentication authentication = authTokenProvider.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }

@@ -1,4 +1,4 @@
-package com.mercury.discovery.config.web.security.oauth.token;
+package com.mercury.discovery.common.web.token;
 
 import io.jsonwebtoken.*;
 import lombok.Getter;

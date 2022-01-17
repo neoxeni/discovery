@@ -1,12 +1,10 @@
-package com.mercury.discovery.config.web.security.oauth.token;
+package com.mercury.discovery.common.web.token;
 
 
-import com.mercury.discovery.config.web.security.oauth.exception.TokenValidFailedException;
-import com.mercury.discovery.config.web.security.oauth.token.AuthToken;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,6 +12,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
@@ -22,12 +21,19 @@ import java.util.stream.Collectors;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class AuthTokenProvider {
-    private final Key key;
+    private Key key;
+    private final TokenProperties tokenProperties;
     private static final String AUTHORITIES_KEY = "role";
 
-    public AuthTokenProvider(@Value("${apps.api.jwt.secret:8sknjlO3NPTBqo319DHLNqsQAfRJEdKsETOds}") String secret) {
-        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+    @PostConstruct
+    public void init() {
+        this.key = Keys.hmacShaKeyFor(tokenProperties.getSecret().getBytes());
+    }
+
+    public TokenProperties getTokenProperties() {
+        return tokenProperties;
     }
 
     public AuthToken createAuthToken(String id, Date expiry) {

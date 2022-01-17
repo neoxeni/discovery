@@ -1,4 +1,4 @@
-package com.mercury.discovery.config.web.security.oauth.exception;
+package com.mercury.discovery.common.web.token;
 
 public class TokenValidFailedException extends RuntimeException {
 
