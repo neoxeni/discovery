@@ -148,9 +148,9 @@ public class UserService {
         return userRepository.delete(appUser.getClientId(), appUser.getId());
     }
 
-    public int updateLogoutInfo(AppUser appUser) {
+    public void updateLogoutInfo(AppUser appUser) {
         appUser.setLastLogoutAt(LocalDateTime.now());
-        return userRepository.updateLogoutInfo(appUser);
+        userRepository.updateLogoutInfo(appUser);
     }
 
     public int resetUserPassword(Integer empNo, String password) {
@@ -159,8 +159,8 @@ public class UserService {
         return userRepository.resetPassword(empNo, encPassword, now);
     }
 
-    public int plusPasswordErrorCount(String username) {
-        return userRepository.plusPasswordErrorCount(username);
+    public void plusPasswordErrorCount(String username) {
+        userRepository.plusPasswordErrorCount(username);
     }
 
     public void sendActiveSignal(String userKey, String uuid) {

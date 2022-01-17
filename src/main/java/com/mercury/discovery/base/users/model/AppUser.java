@@ -46,7 +46,7 @@ public class AppUser extends TokenUser implements UserDetails, OidcUser {
     private String nickname;
     private String phone;
     private String email;
-    private String avatarUrl;
+    private String avatar;
 
     private String identification;
     private String extensionNo;
