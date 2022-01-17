@@ -1,8 +1,6 @@
 package com.mercury.discovery.config.web.security.oauth.service;
 
-import com.mercury.discovery.base.users.model.AppUser;
 import com.mercury.discovery.base.users.model.UserLogin;
-import com.mercury.discovery.base.users.model.UserStatus;
 import com.mercury.discovery.base.users.service.UserAuthService;
 import com.mercury.discovery.config.web.security.oauth.entity.ProviderType;
 import com.mercury.discovery.config.web.security.oauth.exception.OAuthProviderMissMatchException;
@@ -11,16 +9,12 @@ import com.mercury.discovery.config.web.security.oauth.info.OAuth2UserInfoFactor
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -50,7 +44,7 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
             if (providerType != ProviderType.valueOf(savedUser.getProviderType())) {
                 throw new OAuthProviderMissMatchException(
                         "Looks like you're signed up with " + providerType +
-                        " account. Please use your " + savedUser.getProviderType() + " account to login."
+                                " account. Please use your " + savedUser.getProviderType() + " account to login."
                 );
             }
 
@@ -69,14 +63,4 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
         attributes.put("provider", providerType.name());
         userAuthService.insertWithOAuth(attributes);
     }
-
-    /*private void updateUser(UserLogin user, OAuth2UserInfo userInfo) {
-        if (userInfo.getName() != null && !userInfo.getName().equals(user.getName())) {
-            user.setName(userInfo.getName());
-        }
-
-        if (userInfo.getImageUrl() != null && !userInfo.getImageUrl().equals(user.getAvatar())) {
-            user.setAvatar(userInfo.getImageUrl());
-        }
-    }*/
 }

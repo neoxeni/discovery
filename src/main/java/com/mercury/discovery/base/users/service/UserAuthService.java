@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,8 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -75,12 +72,12 @@ public class UserAuthService {
 
         AppUser user = new AppUser();
 
-        user.setUsername((String)attributes.get("id"));
-        user.setNickname((String)attributes.get("name"));
-        user.setName((String)attributes.get("name"));
-        user.setEmail((String)attributes.get("email"));
-        user.setAvatar((String)attributes.get("avatar"));
-        user.setProviderType((String)attributes.get("provider"));
+        user.setUsername((String) attributes.get("id"));
+        user.setNickname((String) attributes.get("name"));
+        user.setName((String) attributes.get("name"));
+        user.setEmail((String) attributes.get("email"));
+        user.setAvatar((String) attributes.get("avatar"));
+        user.setProviderType((String) attributes.get("provider"));
 
         user.setCreatedBy(0);
         user.setCreatedAt(now);
