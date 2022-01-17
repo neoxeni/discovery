@@ -1,7 +1,7 @@
 package com.mercury.discovery.config.web.security.form.handler;
 
 import com.mercury.discovery.base.users.model.AppUser;
-import com.mercury.discovery.config.web.security.form.service.UserDetailsServiceImpl;
+import com.mercury.discovery.base.users.service.UserService;
 import com.mercury.discovery.utils.HttpUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ import java.io.IOException;
 @Slf4j
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
     @Autowired
-    UserDetailsServiceImpl userDetailsService;
+    UserService userService;
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -69,7 +69,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             request.setAttribute("username", appUser.getUsername());
             request.getRequestDispatcher("/changePassword").forward(request, response);
         } else {
-            userDetailsService.afterLoginSuccess(appUser);
+            userService.afterLoginSuccess(appUser);
 
             SavedRequest savedRequest = requestCache.getRequest(request, response);
             if (savedRequest != null) {

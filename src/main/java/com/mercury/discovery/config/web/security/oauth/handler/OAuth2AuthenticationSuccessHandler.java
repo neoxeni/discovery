@@ -1,6 +1,8 @@
 package com.mercury.discovery.config.web.security.oauth.handler;
 
 
+import com.mercury.discovery.base.users.model.AppUser;
+import com.mercury.discovery.base.users.service.UserService;
 import com.mercury.discovery.config.web.security.oauth.entity.ProviderType;
 import com.mercury.discovery.config.web.security.oauth.entity.RoleType;
 import com.mercury.discovery.config.web.security.oauth.info.OAuth2UserInfo;
@@ -9,10 +11,11 @@ import com.mercury.discovery.config.web.security.oauth.service.OAuth2Authorizati
 import com.mercury.discovery.config.web.security.oauth.token.AuthToken;
 import com.mercury.discovery.config.web.security.oauth.token.AuthTokenProvider;
 import com.mercury.discovery.utils.HttpUtils;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -29,7 +32,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-@RequiredArgsConstructor
+
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     @Value("${apps.api.jwt.token:926D96C90030DD58429D2751AC1BDBBC}")   // default defaultSecretKey
     private String tokenSecretKey;
@@ -43,11 +46,16 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     @Value("${apps.api.oauth2.authorizedRedirectUris:}")
     private List<String> authorizedRedirectUris;
 
-    private final AuthTokenProvider tokenProvider;
+    @Autowired
+    AuthTokenProvider tokenProvider;
+
+    @Autowired
+    UserService userService;
 
     //private final UserRefreshTokenRepository userRefreshTokenRepository;
 
-    private final OAuth2AuthorizationRequestBasedOnCookieRepository authorizationRequestRepository;
+    @Autowired
+    OAuth2AuthorizationRequestBasedOnCookieRepository authorizationRequestRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -57,8 +65,12 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             logger.debug("Response has already been committed. Unable to redirect to " + targetUrl);
             return;
         }
-
         clearAuthenticationAttributes(request, response);
+
+        AppUser appUser = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        appUser.setLastIpAddress(HttpUtils.getRemoteAddr(request));
+        userService.afterLoginSuccess(appUser);
+
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
 

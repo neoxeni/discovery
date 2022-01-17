@@ -44,10 +44,7 @@ public class OAuthConfig {
      * */
     @Bean
     public OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler() {
-        return new OAuth2AuthenticationSuccessHandler(
-                tokenProvider(),
-                oAuth2AuthorizationRequestBasedOnCookieRepository()
-        );
+        return new OAuth2AuthenticationSuccessHandler();
     }
 
     /*

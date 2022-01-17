@@ -34,25 +34,5 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return appUser;
     }
 
-    public void afterLoginSuccess(AppUser appUser) {
-        appUser.setPassword("");
-        appUser.setPasswordErrCount(0);
-        appUser.setLastLoginAt(LocalDateTime.now());
 
-        //성공시 사용자 정보업데이트 passwordErrCount, lastLoginAt, lastIpAddress 등등
-        userService.successLoginInfo(appUser);
-
-        //사용자 role 세팅
-        userService.setAppUserRoles(appUser);
-
-        //api 서버 토큰발행
-        String token = userService.getApiToken(appUser);
-        appUser.setJwt(token);
-
-        userService.cacheUser(appUser);
-    }
-
-    public void plusPasswordErrorCount(String username) {
-        userService.plusPasswordErrorCount(username);
-    }
 }

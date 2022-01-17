@@ -1,6 +1,6 @@
 package com.mercury.discovery.config.web.security.form.handler;
 
-import com.mercury.discovery.config.web.security.form.service.UserDetailsServiceImpl;
+import com.mercury.discovery.base.users.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
@@ -24,7 +24,7 @@ import java.io.IOException;
 @Slf4j
 public class CustomAuthenticationFailureHandler implements AuthenticationFailureHandler, ApplicationListener<AuthenticationFailureBadCredentialsEvent> {
     @Autowired
-    UserDetailsServiceImpl userDetailsService;
+    UserService userService;
 
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
@@ -35,7 +35,7 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
         int errorNum;
         if (e instanceof BadCredentialsException) {//자격 증명에 실패하였습니다. (패스워드 틀림, 해당 아이디 없음)
             errorNum = 1;
-            userDetailsService.plusPasswordErrorCount(username);
+            userService.plusPasswordErrorCount(username);
         } else if (e instanceof LockedException) { //사용자 계정이 잠겨 있습니다. (비밀번호 여러번 틀림)
             errorNum = 2;
         } else if (e instanceof CredentialsExpiredException) {//자격 증명 유효 기간이 만료되었습니다. (비밀번호 변경일자 지남)

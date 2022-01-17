@@ -30,17 +30,15 @@ public class DefaultPasswordEncoder implements PasswordEncoder {
     public String encode(CharSequence rawPassword) {
         return sha256(rawPassword.toString());
     }
+
     @Override
     public boolean matches(CharSequence rawPassword, String encodedPassword) {
-        String encodedPassowrd = encode(rawPassword);
-
-        return encodedPassowrd.equals(encodedPassword);
+        return encode(rawPassword).equals(encodedPassword);
     }
 
     public static void main(String[] args) {
         DefaultPasswordEncoder c = new DefaultPasswordEncoder();
         String d = c.encode("1111");
         System.out.println(d);
-
     }
 }

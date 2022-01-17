@@ -27,7 +27,7 @@ public class UserRestController {
 
     @GetMapping("/base/users/me")
     public ResponseEntity<?> getUserMe(AppUser appUser) {
-        AppUser targetAppUser = userService.findByUserId(appUser.getId());
+        AppUser targetAppUser = userService.findById(appUser.getId());
         if (targetAppUser != null) {
             return ResponseEntity.ok(targetAppUser);
         } else {
@@ -37,7 +37,7 @@ public class UserRestController {
 
     @GetMapping("/base/users/{id}")
     public ResponseEntity<?> getUser(AppUser appUser, @PathVariable Integer id) {
-        AppUser targetAppUser = userService.findByUserId(id);
+        AppUser targetAppUser = userService.findById(id);
         if (targetAppUser != null) {
             return ResponseEntity.ok(targetAppUser);
         } else {

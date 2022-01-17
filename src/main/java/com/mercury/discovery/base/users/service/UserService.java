@@ -12,8 +12,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.lang.Nullable;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,37 +45,18 @@ public class UserService {
         return userRepository.findByUsernameForLogin(username, clientId);
     }
 
-    @Nullable
-    public String getApiToken(TokenUser tokenUser) {
-        //TODO jwtToken 연결
-        //return jwtTokenProvider.getJwtFromUser(tokenUser, true);
-        return null;
+    @Transactional(readOnly = true)
+    public AppUser findById(Integer id) {
+        AppUser appUser = userRepository.findById(id);
+        setAppUserRoles(appUser);
+        return appUser;
     }
 
     @Transactional(readOnly = true)
-    public void setAppUserRoles(AppUser appUser) {
-        List<UserGroup> groups = getUserGroups(appUser);
-        appUser.setGroups(groups);
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        if (appUser.getAuthorities() != null) {
-            authorities.addAll(appUser.getAuthorities());
-        }
-        groups.forEach(group -> {
-            authorities.add(new SimpleGrantedAuthority("ROLE_" + group.getCode()));
-        });
-
-        appUser.setAuthorities(authorities);
-    }
-
-    @Transactional(readOnly = true)
-    public List<UserGroup> getUserGroups(AppUser appUser) {
-        List<UserGroup> groups = userRepository.findGroupsByUserId(appUser.getId());
-        if (appUser.getDepartmentId() != null) {
-            List<UserGroup> departmentsGroups = organizationRepository.findDepartmentGroups(appUser.getClientId(), appUser.getDepartmentId());
-            groups.addAll(departmentsGroups);
-        }
-
-        return groups;
+    public AppUser findByUserKey(String userKey) {
+        AppUser appUser = userRepository.findByUserKey(userKey);
+        setAppUserRoles(appUser);
+        return appUser;
     }
 
     public AppUser getUser(String userKey) {
@@ -82,7 +65,9 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public AppUser getUser(int clientId, String userKey) {
-        return userRepository.findByUserKey(userKey);
+        AppUser appUser = userRepository.findByUserKey(userKey);
+        setAppUserRoles(appUser);
+        return appUser;
         /*AppUser appUser = null;
         Cache cache = cacheManager.getCache("users");
         if (cache != null) {
@@ -106,6 +91,26 @@ public class UserService {
         return appUser;*/
     }
 
+    @Transactional(readOnly = true)
+    public void setAppUserRoles(AppUser appUser) {
+        List<UserGroup> groups = userRepository.findGroupsByUserId(appUser.getId());
+        if (appUser.getDepartmentId() != null) {
+            List<UserGroup> departmentsGroups = organizationRepository.findDepartmentGroups(appUser.getClientId(), appUser.getDepartmentId());
+            groups.addAll(departmentsGroups);
+        }
+
+        appUser.setGroups(groups);
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        if (appUser.getAuthorities() != null) {
+            authorities.addAll(appUser.getAuthorities());
+        }
+        groups.forEach(group -> {
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + group.getCode()));
+        });
+
+        appUser.setAuthorities(authorities);
+    }
+
     public void cacheUser(AppUser appUser) {
         Cache cache = cacheManager.getCache("users");
         if (cache != null) {
@@ -120,7 +125,6 @@ public class UserService {
         }
     }
 
-
     public int insert(AppUser appUser) {
         if (appUser.getUserKey() == null) {
             appUser.setUserKey(IDGenerator.getUUID());
@@ -131,9 +135,7 @@ public class UserService {
         }
 
         int affected = userRepository.insert(appUser);
-
-        String password = passwordEncoder.encode(appUser.getPassword());
-        appUser.setPassword(password);
+        appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
         userRepository.insertLogin(appUser);
         return affected;
     }
@@ -144,11 +146,6 @@ public class UserService {
 
     public int delete(AppUser appUser) {
         return userRepository.delete(appUser.getClientId(), appUser.getId());
-    }
-
-    public int successLoginInfo(AppUser appUser) {
-        userRepository.insertLoginHistory(appUser);
-        return userRepository.updateLoginInfo(appUser);
     }
 
     public int updateLogoutInfo(AppUser appUser) {
@@ -166,12 +163,24 @@ public class UserService {
         return userRepository.plusPasswordErrorCount(username);
     }
 
-    @Transactional(readOnly = true)
-    public AppUser findByUserId(Integer id) {
-        return userRepository.findById(id);
-    }
-
     public void sendActiveSignal(String userKey, String uuid) {
         messagePublisher.convertAndSend(BaseTopic.ACTIVE.getBindTopic(userKey), uuid);
+    }
+
+    public void afterLoginSuccess(AppUser appUser) {
+        appUser.setPassword("");
+        appUser.setPasswordErrCount(0);
+        appUser.setLastLoginAt(LocalDateTime.now());
+
+        //성공시 사용자 정보업데이트 passwordErrCount, lastLoginAt, lastIpAddress 등등
+        userRepository.updateLoginInfo(appUser);
+        userRepository.insertLoginHistory(appUser);
+
+        //사용자 role 세팅
+        setAppUserRoles(appUser);
+
+        //cacheUser(appUser);
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(appUser, null, appUser.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
     }
 }
