@@ -50,7 +50,7 @@ create table client_user(
 create table client_user_login(
     id                          INT       auto_increment COMMENT 'ID' PRIMARY KEY,
     provider_type               VARCHAR(20)     NOT NULL DEFAULT 'LOCAL' COMMENT '로그인 프로바이더',
-    username                    VARCHAR(100)    NOT NULL COMMENT '사용자아이디'
+    username                    VARCHAR(100)    NOT NULL COMMENT '사용자아이디',
     password                    VARCHAR(100)    NOT NULL COMMENT '패스워드',
     password_err_count          INT             NOT NULL default 0 COMMENT '패스워드오류횟수',
     password_updated_at         DATETIME        NOT NULL default CURRENT_TIMESTAMP COMMENT '패스워드수정일시',
