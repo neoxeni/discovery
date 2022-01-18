@@ -11,15 +11,15 @@ const MpAppBar = {
                 <a v-if="$vuetify.breakpoint.smOnly || $vuetify.breakpoint.mdOnly" href="/" class="d-flex align-center app-logo">
                     <v-img v-if="logo.src" :src="logo.src" :alt="logo.title" class="shrink" :width="logo.width" :height="logo.height"/>
                 </a>
-                <span class="ml-2 white--text">{{serverMode !== 'PROD' ? serverMode : ''}}</span>
+                <span class="ml-2 white--text">{{profile.env !== 'PROD' ? profile.env : ''}}</span>
                 <v-spacer></v-spacer>
-                <v-menu v-if="getUser && getUser.username" offset-y left>
+                <v-menu v-if="profile && profile.name" offset-y left>
                     <template v-slot:activator="{ on, attrs }">
                         <v-btn text tile v-bind="attrs" v-on="on">
                             <v-icon left>
                                 mdi-account
                             </v-icon>
-                            {{ getUser.username }}
+                            {{ profile.name }}
                             <v-icon right>
                                 mdi-chevron-down
                             </v-icon>
@@ -79,9 +79,6 @@ const MpAppBar = {
         profile: {
             type: Object,
             default: () => ({})
-        },
-        serverMode: {
-            type: String
         }
     },
     data: function(){
