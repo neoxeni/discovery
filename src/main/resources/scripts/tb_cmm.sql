@@ -1,7 +1,7 @@
 /**https://nesoy.github.io/articles/2020-02/mysql-DATETIME-timestamp*/
 CREATE TABLE client(
     id                          INT       AUTO_INCREMENT COMMENT 'ID' PRIMARY KEY,
-    symbol                      VARCHAR(10)         NULL COMMENT '회사상태',
+    symbol                      VARCHAR(20)         NULL COMMENT '회사상태',
     name                        VARCHAR(200)    NOT NULL COMMENT '이름',
     eng_name                    VARCHAR(200)        NULL COMMENT '영문명',
     'desc'                      LONGTEXT        NOT NULL COMMENT '비고',
