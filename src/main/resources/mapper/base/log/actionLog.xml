@@ -12,7 +12,7 @@
 
         <trim prefix="WHERE" prefixOverrides="AND|OR">
             <if test="actionLogRequestDto.startedAt != null and actionLogRequestDto.endedAt != null">
-                AND a.created_at BETWEEN #{actionLogRequestDto.startedAt} and CONCAT(#{actionLogRequestDto.endedAt},'.999')
+                AND a.created_at BETWEEN #{actionLogRequestDto.startedAt} and #{actionLogRequestDto.endedAt}
             </if>
             <if test="actionLogRequestDto.clientId != null">
                 AND a.client_id = #{actionLogRequestDto.clientId}
@@ -37,9 +37,9 @@
     </select>
 
     <insert id="insert">
-        INSERT INTO cmm_action_log(id,
+        INSERT INTO cmm_action_log(
             user_id, ip, created_at, menu, sub_menu, action, action_url, input_val, language , etc1, etc2, etc3, etc4, etc5, div_cd, client_id
-        )VALUES(<include refid="common.sql.seq"><property name="t" value="sq_cmm_admin_log"/></include>,
+        )VALUES(
             #{userId}, #{ip}, #{createdAt}, #{menu}, #{subMenu}, #{action}, #{actionUrl}, #{inputVal}, #{language}, #{etc1}, #{etc2}, #{etc3}, #{etc4}, #{etc5}, #{divCd}, #{clientId}
         )
     </insert>

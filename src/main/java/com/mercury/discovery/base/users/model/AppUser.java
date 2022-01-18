@@ -6,10 +6,12 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.ibatis.type.Alias;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.security.core.GrantedAuthority;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Alias("AppUser")
 @Data
@@ -66,6 +68,7 @@ public class AppUser extends TokenUser {
     private String dutyName;
 
     private List<UserGroup> groups = new ArrayList<>();
+
     public void setGroups(List<UserGroup> groups) {
         this.groups = groups;
 

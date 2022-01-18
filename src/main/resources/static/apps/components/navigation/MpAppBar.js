@@ -103,11 +103,11 @@ const MpAppBar = {
                 this.$vuetify.theme.isDark = isDark;
                 if (isDark) {
                     this.mercury.base.util.setCookie('theme', 'black', 30);
-                    $('body').addClass('ubcs-theme-dark');
+                    document.body.classList.add("ubcs-theme-dark");
                     this.themeLabel = 'Dark';
                 } else {
                     this.mercury.base.util.setCookie('theme', null, 30);
-                    $('body').removeClass('ubcs-theme-dark');
+                    document.body.classList.remove("ubcs-theme-dark");
                     this.themeLabel = 'Light';
                 }
             }
@@ -118,7 +118,7 @@ const MpAppBar = {
             this.$vuetify.theme.isDark = true;
             this.theme = true;
             this.themeLabel = 'Dark';
-            $('body').addClass('ubcs-theme-dark');
+            document.body.classList.add("ubcs-theme-dark");
         }
     },
     methods: {
