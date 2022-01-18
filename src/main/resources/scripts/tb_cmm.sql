@@ -1,4 +1,4 @@
-/**https://nesoy.github.io/articles/2020-02/mysql-DATETIME-timestamp*/
+/**https://nesoy.github.io/articles/2020-02/mysql-datetime-timestamp*/
 CREATE TABLE client(
     id                          INT       AUTO_INCREMENT COMMENT 'ID' PRIMARY KEY,
     symbol                      VARCHAR(20)         NULL COMMENT '회사상태',
@@ -99,7 +99,7 @@ CREATE TABLE cmm_code_div (
 
 CREATE TABLE cmm_code (
     div_cd                      VARCHAR(20)         NOT NULL COMMENT '분류코드',
-    cd                          VARCHAR(36)         NOT NULL COMMENT '코드',
+    code                        VARCHAR(36)         NOT NULL COMMENT '코드',
     parent_code                 VARCHAR(36)         NOT NULL DEFAULT 'ROOT' COMMENT '상위코드',
     name                        VARCHAR(100)        NOT NULL COMMENT '코드명',
     sort                        INT                 NOT NULL DEFAULT 0 COMMENT '정렬번호',
@@ -110,14 +110,14 @@ CREATE TABLE cmm_code (
     etc4                        VARCHAR(100)            NULL COMMENT 'etc4',
     description                 VARCHAR(200)            NULL COMMENT '설명',
     start_apply_at 			    TIMESTAMP           NOT NULL DEFAULT CURRENT_TIMESTAMP  COMMENT '적용시작일',
-    end_apply_at 			    TIMESTAMP           NOT NULL DEFAULT '2099-12-31T23:59:59.999'  COMMENT '적용종료일',
+    end_apply_at 			    TIMESTAMP               NULL COMMENT '적용종료일',
     created_by                  INT                 NOT NULL COMMENT '생성자',
     created_at                  TIMESTAMP           NOT NULL COMMENT '생성일',
     updated_by                  INT                     NULL COMMENT '수정자',
     updated_at                  TIMESTAMP               NULL COMMENT '수정일',
     client_id                   INT                 NOT NULL COMMENT '회사아이디',
 
-    UNIQUE UK1_CMM_CODE (cd,div_cd,client_id),
+    UNIQUE UK1_CMM_CODE (code,div_cd,client_id),
     INDEX IX1_CMM_CODE (div_cd,parent_code,sort),
     INDEX IX2_CMM_CODE (parent_code)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='코드';
