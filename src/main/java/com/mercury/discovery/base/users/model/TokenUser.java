@@ -17,6 +17,7 @@ public class TokenUser implements Serializable {
     private String userKey;
     private String name;
     private Integer clientId;
+
     private Set<String> roles;
     private String token;
 
