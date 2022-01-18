@@ -18,7 +18,7 @@ export default {
                     <v-card-title>
                         <span v-html="paths"></span>
                         <template v-if="mode === 'organization'">
-                            <span class="position-right" v-show="item.dataType === 'D'">
+                            <span class="position-right" v-show="item.dataType === 'D' || type == 'company'">
                                 <v-tooltip bottom><template v-slot:activator="{ on, attrs }">
                                         <v-btn color="success" small v-bind="attrs" v-on="on" @click="newDepartment()">
                                             <v-icon>mdi-microsoft-teams</v-icon>
@@ -39,76 +39,35 @@ export default {
                             <v-card-text>
                                 <v-row>
                                     <v-col cols="12" md="4">
-                                        <v-text-field label="회사번호*" v-model="company.clientId" required readonly></v-text-field>
+                                        <v-text-field label="아이디*" v-model="company.symbol" required readonly></v-text-field>
                                     </v-col>
                                     <v-col cols="12" md="4">
-                                        <v-text-field label="회사아이디*" v-model="company.cmpnyId" required readonly></v-text-field>
+                                        <v-text-field label="국문명*" v-model="company.name" required :rules="[v => (v && v.length > 0) || 'Required field']"></v-text-field>
                                     </v-col>
                                     <v-col cols="12" md="4">
-                                        <v-text-field label="회사이름*" v-model="company.cmpnyNm" required :rules="[v => (v && v.length > 0) || 'Required field']"></v-text-field>
+                                        <v-text-field label="영문명*" v-model="company.engName" required></v-text-field>
                                     </v-col>
-        
+                                    
                                     <v-col cols="12" md="4">
-                                        <v-text-field label="전화번호" v-model="company.telNo"></v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" md="4">
-                                        <v-text-field label="CEO" v-model="company.ceoNm"></v-text-field>
+                                        <v-text-field label="업종" v-model="company.industryCode"></v-text-field>
                                     </v-col>
                                     <v-col cols="12" md="4">
-                                        <v-text-field label="도메인" v-model="company.domain">
-                                            <v-tooltip bottom slot="append-outer">
-                                                <template v-slot:activator="{ on, attrs }">
-                                                    <v-icon :color="company.domainUseYn === 'Y' ? 'green' : 'grey'" @click="toggleDomain" v-bind="attrs" v-on="on">{{company.domainUseYn === 'Y' ? 'mdi-link-variant' : 'mdi-link-variant-off'}}</v-icon>
-                                                </template>
-                                                <span>도메인 사용 여부</span>
-                                            </v-tooltip>
-                                        </v-text-field>
-                                    </v-col>
-        
-                                    <v-col cols="12" md="4">
-                                        <v-text-field label="콜 대표번호" v-model="company.callTelNo"></v-text-field>
+                                        <v-text-field label="생성일" v-model="company.createdAt"></v-text-field>
                                     </v-col>
                                     <v-col cols="12" md="4">
-                                        <v-text-field label="SMS 발신 번호" v-model="company.smsTelNo"></v-text-field>
+                                        <v-text-field label="수정일" v-model="company.updatedAt"></v-text-field>
                                     </v-col>
-                                    <v-col cols="12" md="4">
-                                        <v-text-field label="SMTP 이메일" v-model="company.email"></v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" md="4">
-                                        <v-text-field v-model="company.emailPw" label="SMTP 비밀번호" :readonly="company.emailPw==='PROTECTED'" :type="company.emailPw==='PROTECTED' ? 'text': 'password'" autocomplete="new-password">
-                                            <v-tooltip bottom slot="append">
-                                                <template v-slot:activator="{ on, attrs }">
-                                                    <v-icon :color="company.email === undefined ? 'grey' : 'info'" v-if="control.company && company.emailPw==='PROTECTED'" v-bind="attrs" v-on="on" @click="editEmailPassword(company)">mdi-security</v-icon>
-                                                </template><span>비밀번호 변경</span>
-                                            </v-tooltip>
-                                        </v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" md="4">
-                                        <v-text-field label="SMTP 호스트" v-model="company.smtpHost"></v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" md="4">
-                                        <v-text-field label="SMTP 포트" v-model="company.smtpPort" type="number">
-                                            <v-tooltip bottom slot="append-outer">
-                                                <template v-slot:activator="{ on, attrs }">
-                                                    <v-icon v-if="control.company" :color="company.smtpSslYn === 'Y' ? 'green' : 'grey'" v-bind="attrs" v-on="on" @click="company.smtpSslYn = company.smtpSslYn === 'Y'?'N':'Y'">mdi-security</v-icon>
-                                                </template><span>SMTP 보안연결 여부</span>
-                                            </v-tooltip>
-                                        </v-text-field>
-                                    </v-col>
+                                    
                                     <v-col cols="12" md="12">
-                                        <v-text-field label="주소" v-model="company.addr"></v-text-field>
+                                        <v-textarea label="비고" v-model="company.desc"></v-textarea>
                                     </v-col>
-                                    <v-col cols="12" md="12">
-                                        <v-textarea label="비고" v-model="company.cntnt"></v-textarea>
-                                    </v-col>
-        
                                     <v-col cols="12" md="12" class="text-right" v-if="control.company">
                                         <v-btn class="ml-1" color="warning" @click="saveItem" outlined small text>
                                             <v-icon>mdi-text-box-check mdi-18px</v-icon>{{edit ? '저장':'추가'}}
                                         </v-btn>
                                     </v-col>
                                     
-                                    <template v-if="control.group">
+                                    <!--<template v-if="control.group">
                                         <v-col cols="12" md="12">
                                             <mp-base-group-combo :items="groups" :selected-items.sync="companyRoles" label="그룹"></mp-base-group-combo>
                                         </v-col>
@@ -118,8 +77,7 @@ export default {
                                                 <v-icon>mdi-text-box-check mdi-18px</v-icon>그룹 저장
                                             </v-btn>
                                         </v-col>
-                                    </template>
-        
+                                    </template>-->
                                 </v-row>
         
                                 <mp-view :view.sync="viewEmail">
@@ -703,18 +661,13 @@ export default {
 
             if (node.parent === '#') {
                 this.paths = '<i class="text-primary">' + node.text + '</i>';
+                this.type = 'company';
                 xAjax({
-                    url: '/base/companiesMe'
+                    url: '/base/organizations/clients/me'
                 }).then(resp => {
                     this.company = resp;
                     this.edit = true;
-                    this.type = 'company';
-                    return xAjax({
-                        url: '/base/organizations/departments/' + no
-                    });
-                }).then(resp => {
-                    this.$set(this.company, 'rootDepartment', resp);
-                    this.companyRoles = resp.groups.slice();
+                    this.companyRoles = [];
                 });
             } else {
                 const prePath = instance.get_path(node.parent, ' > ');

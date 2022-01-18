@@ -1,6 +1,7 @@
 package com.mercury.discovery.base.organization.service;
 
 import com.mercury.discovery.base.organization.model.ChangeDepartmentDto;
+import com.mercury.discovery.base.organization.model.Client;
 import com.mercury.discovery.base.organization.model.Department;
 import com.mercury.discovery.base.users.model.UserGroup;
 import com.mercury.discovery.common.model.CamelMap;
@@ -106,6 +107,16 @@ public class OrganizationService {
     }
 
     @Transactional(readOnly = true)
+    public Client findClientByClientKey(Integer clientId, String clientKey) {
+        return organizationRepository.findClientByClientKey(clientId, clientKey);
+    }
+
+    @Transactional(readOnly = true)
+    public Client findClientById(Integer clientId) {
+        return organizationRepository.findClientById(clientId);
+    }
+
+    @Transactional(readOnly = true)
     public Department findDepartment(Integer clientId, Long id) {
         return organizationRepository.findDepartment(clientId, id);
     }
@@ -142,4 +153,6 @@ public class OrganizationService {
         log.debug("clearCache {}", clientId);
         return true;
     }
+
+
 }

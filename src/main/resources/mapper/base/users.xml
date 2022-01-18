@@ -181,7 +181,7 @@
 
     <insert id="insertLoginHistory">
         INSERT INTO client_user_login_hist (
-            user_id, login_at, last_ip_address, client_id
+            user_id, login_at, ip_address, client_id
         )VALUES(
             #{id}, #{lastLoginAt} ,#{lastIpAddress}, #{clientId}
         )

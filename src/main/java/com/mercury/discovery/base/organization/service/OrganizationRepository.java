@@ -1,6 +1,7 @@
 package com.mercury.discovery.base.organization.service;
 
 import com.mercury.discovery.base.organization.model.ChangeDepartmentDto;
+import com.mercury.discovery.base.organization.model.Client;
 import com.mercury.discovery.base.organization.model.Department;
 import com.mercury.discovery.base.users.model.UserGroup;
 import com.mercury.discovery.common.model.CamelMap;
@@ -30,4 +31,8 @@ public interface OrganizationRepository {
     List<UserGroup> findDepartmentGroups(Integer clientId, Long departmentId);
 
     Department findDepartmentByDepartmentKey(Integer clientId, String departmentKey);
+
+    Client findClientByClientKey(Integer clientId, String clientKey);
+
+    Client findClientById(Integer clientId);
 }
