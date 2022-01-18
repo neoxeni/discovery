@@ -45,8 +45,8 @@ ubicus:
             mapping: /base/menu
             index: base/menu/index
         #type: dbms
-        #source: dure
-        #tableName: tb_cmm_sitemenu
+        #source: mercury
+        #tableName: cmm_sitemenu
         type: xml
         source: classpath:sitemenu.xml
         autoReloadIntervalSec: 60
@@ -57,7 +57,6 @@ ubicus:
             - front:프론트:/WEB-INF/templates/sitemenu/front/template.jsp
         roles:
             USER: 사용자
-            EDITOR: 에디터
             ADMIN: 관리자
 
 

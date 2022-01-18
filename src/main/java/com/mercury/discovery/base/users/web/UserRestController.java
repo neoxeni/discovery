@@ -30,6 +30,7 @@ public class UserRestController {
     public ResponseEntity<?> getUserMe(TokenUser appUser) {
         AppUser targetAppUser = userService.findById(appUser.getId());
         if (targetAppUser != null) {
+            targetAppUser.setToken(appUser.getToken());//token 값은 me 일때만 셋팅
             return ResponseEntity.ok(targetAppUser);
         } else {
             throw new BadParameterException("해당 유저를 찾을수 없습니다.");

@@ -140,7 +140,7 @@ public class SecurityContextConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public AuthenticationSuccessHandler customAuthenticationSuccessHandler() {
-        return new FormAuthenticationSuccessHandler("/");
+        return new FormAuthenticationSuccessHandler();
     }
 
     @Bean
