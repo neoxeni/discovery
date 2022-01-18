@@ -17,6 +17,10 @@ public class IDGenerator {
             long []p = s.parse(id);
             System.out.println(id +"\t"+ p[0] +"\t"+p[1]+"\t"+p[2]);
         }
+
+        for (int i = 0; i < 30; i++) {
+            System.out.println(getUUID());
+        }
     }
 
     private static String SERVER_IDENTITY;
