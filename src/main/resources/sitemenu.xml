@@ -7,6 +7,12 @@
             <menu name="메뉴관리" path="/admin/site/menu/MpBaseMenu"/>
             <menu name="코드관리" path="/admin/site/code/MpBaseCode"/>
             <menu name="로그관리" path="/admin/site/log/MpBaseLog"/>
+            <menu name="Contents" path="/admin/site/contents/manual/UbManualCategoryManager">
+                <menu name="Manual" path="/admin/site/contents/manual/UbManualCategoryManager">
+                    <menu name="목차관리" path="/admin/site/contents/manual/UbManualCategoryManager"/>
+                    <menu name="컨텐츠관리" path="/admin/site/contents/manual/UbManualContentsManager"/>
+                </menu>
+            </menu>
         </menu>
     </application>
 </sitemenu>
