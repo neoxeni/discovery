@@ -113,8 +113,8 @@ public class SecurityContextConfig extends WebSecurityConfigurerAdapter {
                 .redirectionEndpoint()
                 .baseUri("/*/oauth2/code/*")
             .and()
-                .userInfoEndpoint()
-                .userService(oAuth2UserService)
+                .userInfoEndpoint()//OAuth 2 로그인 성공 이후 사용자 정보를 가져올 때의 설정들 담당
+                .userService(oAuth2UserService)//리소스 서버(소셜 서비스들)에서 사용자 정보를 가져온 상태에서 추가로 진행하고자 하는 기능 명시 가능
             .and()
                 .successHandler(oAuth2AuthenticationSuccessHandler)
                 .failureHandler(oAuth2AuthenticationFailureHandler)
@@ -140,7 +140,7 @@ public class SecurityContextConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public AuthenticationSuccessHandler customAuthenticationSuccessHandler() {
-        return new FormAuthenticationSuccessHandler("/");
+        return new FormAuthenticationSuccessHandler();
     }
 
     @Bean

@@ -1,6 +1,6 @@
 package com.mercury.discovery.common.log.security;
 
-import com.mercury.discovery.base.users.model.AppUser;
+import com.mercury.discovery.base.users.model.TokenUser;
 import com.mercury.discovery.common.log.security.model.Action;
 import com.mercury.discovery.common.log.security.model.Configuration;
 import lombok.RequiredArgsConstructor;
@@ -176,8 +176,8 @@ public class SecurityLogAop {
             securityLog.setLanguage(loc.getLanguage());
 
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            if ((principal instanceof UserDetails)) {
-                AppUser appUser = (AppUser) principal;
+            if ((principal instanceof TokenUser)) {
+                TokenUser appUser = (TokenUser) principal;
                 securityLog.setUserId(appUser.getId());
                 securityLog.setClientId(appUser.getClientId());
             }

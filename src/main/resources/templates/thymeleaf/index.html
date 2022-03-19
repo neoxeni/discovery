@@ -23,10 +23,10 @@
     <link href="/static/lib/formulize-0.0.13/formulize.css" rel="stylesheet" type="text/css" media="print" onload="this.media='all'"/>
     <link href="/static/lib/jstree/3.3.11/style.css" rel="stylesheet" type="text/css" media="print" onload="this.media='all'"/>
 
-    <link href="/static/scss/mercury.vuetify.css" rel="stylesheet" type="text/css" media="print" onload="this.media='all'"/>
-    <link href="/static/scss/mercury.template.css" rel="stylesheet" type="text/css" media="print" onload="this.media='all'"/>
-    <link href="/static/scss/mercury.common.css" rel="stylesheet" type="text/css" media="print" onload="this.media='all'"/>
-    <link href="/static/scss/funnel.css" rel="stylesheet" type="text/css" media="print" onload="this.media='all'"/>
+    <link th:href="@{/static/scss/mercury.vuetify.css}" rel="stylesheet" type="text/css" media="print" onload="this.media='all'"/>
+    <link th:href="@{/static/scss/mercury.template.css}" rel="stylesheet" type="text/css" media="print" onload="this.media='all'"/>
+    <link th:href="@{/static/scss/mercury.common.css}" rel="stylesheet" type="text/css" media="print" onload="this.media='all'"/>
+    <link th:href="@{/static/scss/funnel.css}" rel="stylesheet" type="text/css" media="print" onload="this.media='all'"/>
     <style>
         .app-logo .v-image__image--cover{
             background-size: 98%;
@@ -53,7 +53,7 @@
 <div id="app-wrapper" v-cloak>
     <div class="ubcs-container">
         <v-app>
-            <mp-app-bar :logo="logo" :profile="profile" @click:nav-icon="drawer = !drawer" :server-mode="serverMode"></mp-app-bar>
+            <mp-app-bar :logo="logo" :profile="profile" @click:nav-icon="drawer = !drawer"></mp-app-bar>
             <mp-navigation-drawer :logo="logo" :service-menu="templateMenus" :width="190" v-model="drawer"></mp-navigation-drawer>
             <v-main>
                 <v-container fluid>
@@ -107,25 +107,21 @@
     import baseStore from "/static/apps/store/baseStore.js";
 
     const projectName = "Discovery";
-    const serverMode = "";
     const initialData = {}
-    const menus = await xAjax({
-        url: '/base/menu/getMenuList',
-        usePrefixUrl: false,
-        data: {
-            menuId: projectName
-        }
-    });
 
     xAjax({
         url:'/base/users/me'
     }).then(resp=>{
         initialData['user'] = resp;
+        return xAjax({url: '/base/menu/getMenuList', usePrefixUrl: false,data: {menuId: projectName}})
+    }).then(resp=>{
+        const menus = resp;
+
         const routes = [{
             name: projectName,
             label: projectName,
             path: '/',
-            component: () => import(`/static/apps/views/MpSkylabMain.js`),
+            component: () => import(`/static/apps/views/MpMain.js`),
             meta: {
                 title: projectName
             }
@@ -153,7 +149,6 @@
             data:function() {
                 return {
                     drawer: null,
-                    serverMode: serverMode,
                     logo: {
                         src: '/static/image/logo.png',
                         title: ' Discovery',
@@ -162,6 +157,8 @@
                     },
                     templateMenus: menus,
                     profile:{
+                        env: 'DEV',
+                        name: initialData['user'].nickname,
                         menuList: []
                     }
                 }

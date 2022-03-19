@@ -39,6 +39,11 @@ public class OrganizationRestController {
         return ResponseEntity.ok(codes);
     }
 
+    @GetMapping("/base/organizations/clients/me")
+    public ResponseEntity<?> getClient(AppUser appUser) {
+        return ResponseEntity.ok(organizationService.findClientById(appUser.getClientId()));
+    }
+
     @GetMapping("/base/organizations/employees/{userKey}")
     public ResponseEntity<?> getEmployee(AppUser appUser, @PathVariable String userKey) {
         return ResponseEntity.ok(userService.getUser(appUser.getClientId(), userKey));

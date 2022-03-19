@@ -52,5 +52,4 @@ spring:
 apps:
     api:
         oauth2:
-            authorizedRedirectUris:
-                - http://localhost:3000/oauth/redirect
+            authorizedRedirectUris: http://localhost:3000/oauth/redirect

@@ -1,11 +1,10 @@
 package com.mercury.discovery.base.users.service;
 
-
 import com.mercury.discovery.base.users.model.AppUser;
 import com.mercury.discovery.base.users.model.UserLogin;
 import com.mercury.discovery.base.users.model.UserStatus;
+import com.mercury.discovery.common.web.token.AuthToken;
 import com.mercury.discovery.common.web.token.AuthTokenProvider;
-import com.mercury.discovery.common.web.token.TokenProperties;
 import com.mercury.discovery.utils.HttpUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +23,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -72,29 +70,13 @@ public class UserAuthService {
     }
 
     private void processToken(AppUser appUser, HttpServletRequest request, HttpServletResponse response) {
-        Date now = new Date();
-        TokenProperties tokenProperties = authTokenProvider.getTokenProperties();
-        String accessToken = authTokenProvider.getBuilder()
-                .setId(appUser.getUserKey())
-                .setSubject(appUser.getClientId() + ":" + appUser.getId())
-                .setAudience(appUser.getName())
-                .setIssuedAt(now)
-                .claim("authorities", appUser.getRoles())
-                .setExpiration(new Date(now.getTime() + tokenProperties.getExpire()))
-                .compact();
-
-        appUser.setToken(accessToken);
-
-        String refreshToken = authTokenProvider.getBuilder()
-                .setId(appUser.getUserKey())
-                .setExpiration(new Date(now.getTime() + tokenProperties.getRefresh()))
-                .compact();
-
+        AuthToken authToken = authTokenProvider.getAuthToken(appUser);
+        appUser.setToken("bearer " + authToken.getAccessToken());
         //refreshToken DB 저장 로직 추가
 
-        int cookieMaxAge = (int) (tokenProperties.getRefresh() / 60);
+        int cookieMaxAge = (int) (authTokenProvider.getTokenProperties().getRefresh() / 60);
         HttpUtils.deleteCookie(request, response, "refresh_token");
-        HttpUtils.addCookie(response, "refresh_token", refreshToken, cookieMaxAge);
+        HttpUtils.addCookie(response, "refresh_token", authToken.getRefreshToken(), cookieMaxAge);
     }
 
     public void logout(HttpServletRequest request, HttpServletResponse response) {
@@ -130,6 +112,4 @@ public class UserAuthService {
 
         return user.getId();
     }
-
-
 }

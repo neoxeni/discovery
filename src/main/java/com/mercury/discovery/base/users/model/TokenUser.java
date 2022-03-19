@@ -17,11 +17,16 @@ public class TokenUser implements Serializable {
     private String userKey;
     private String name;
     private Integer clientId;
+
     private Set<String> roles;
     private String token;
 
     public boolean hasAnyRole(String... rolesStr) {
-        if (roles == null) {
+        if (roles == null || roles.size() == 0) {
+            return false;
+        }
+
+        if (rolesStr == null || rolesStr.length == 0) {
             return false;
         }
 

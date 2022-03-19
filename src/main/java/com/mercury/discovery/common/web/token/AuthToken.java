@@ -1,52 +1,38 @@
 package com.mercury.discovery.common.web.token;
 
 import io.jsonwebtoken.*;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.security.Key;
-import java.util.Date;
 
 @Slf4j
-@RequiredArgsConstructor
 public class AuthToken {
+    private final String accessToken;
 
-    @Getter
-    private final String token;
     private final Key key;
 
-    private static final String AUTHORITIES_KEY = "role";
+    private final String refreshToken;
 
-    AuthToken(String id, Date expiry, Key key) {
+    public AuthToken(String token, Key key) {
+        this(token, key, null);
+    }
+
+    public AuthToken(String accessToken, Key key, String refreshToken) {
+        this.accessToken = accessToken;
         this.key = key;
-        this.token = createAuthToken(id, expiry);
-    }
-
-    AuthToken(String id, String role, Date expiry, Key key) {
-        this.key = key;
-        this.token = createAuthToken(id, role, expiry);
-    }
-
-    private String createAuthToken(String id, Date expiry) {
-        return Jwts.builder()
-                .setSubject(id)
-                .signWith(key, SignatureAlgorithm.HS256)
-                .setExpiration(expiry)
-                .compact();
-    }
-
-    private String createAuthToken(String id, String role, Date expiry) {
-        return Jwts.builder()
-                .setSubject(id)
-                .claim(AUTHORITIES_KEY, role)
-                .signWith(key, SignatureAlgorithm.HS256)
-                .setExpiration(expiry)
-                .compact();
+        this.refreshToken = refreshToken;
     }
 
     public boolean validate() {
         return this.getTokenClaims() != null;
+    }
+
+    public String getAccessToken() {
+        return this.accessToken;
+    }
+
+    public String getRefreshToken() {
+        return this.refreshToken;
     }
 
     public Claims getTokenClaims() {
@@ -54,7 +40,7 @@ public class AuthToken {
             return Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
-                    .parseClaimsJws(token)
+                    .parseClaimsJws(accessToken)
                     .getBody();
         } catch (SecurityException e) {
             log.info("Invalid JWT signature.");
@@ -75,7 +61,7 @@ public class AuthToken {
             Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
-                    .parseClaimsJws(token)
+                    .parseClaimsJws(accessToken)
                     .getBody();
         } catch (ExpiredJwtException e) {
             log.info("Expired JWT token.");

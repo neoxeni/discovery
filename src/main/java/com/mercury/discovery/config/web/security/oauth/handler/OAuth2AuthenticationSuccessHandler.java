@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -23,7 +22,7 @@ import java.util.Optional;
 
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    @Value("${apps.api.oauth2.authorizedRedirectUris:}")
+    @Value("#{'${apps.api.oauth2.authorizedRedirectUris}'.split(',')}")
     private List<String> authorizedRedirectUris;
 
     @Autowired

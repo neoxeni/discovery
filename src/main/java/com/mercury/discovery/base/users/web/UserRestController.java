@@ -1,10 +1,11 @@
 package com.mercury.discovery.base.users.web;
 
 import com.mercury.discovery.base.users.model.AppUser;
+import com.mercury.discovery.base.users.model.TokenUser;
 import com.mercury.discovery.base.users.service.UserService;
-import com.mercury.discovery.common.web.SimpleResponseModel;
 import com.mercury.discovery.common.error.exception.BadParameterException;
 import com.mercury.discovery.common.log.security.SecurityLogging;
+import com.mercury.discovery.common.web.SimpleResponseModel;
 import com.mercury.discovery.utils.IDGenerator;
 import com.mercury.discovery.utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
@@ -26,9 +27,10 @@ public class UserRestController {
     private final UserService userService;
 
     @GetMapping("/base/users/me")
-    public ResponseEntity<?> getUserMe(AppUser appUser) {
+    public ResponseEntity<?> getUserMe(TokenUser appUser) {
         AppUser targetAppUser = userService.findById(appUser.getId());
         if (targetAppUser != null) {
+            targetAppUser.setToken(appUser.getToken());//token 값은 me 일때만 셋팅
             return ResponseEntity.ok(targetAppUser);
         } else {
             throw new BadParameterException("해당 유저를 찾을수 없습니다.");

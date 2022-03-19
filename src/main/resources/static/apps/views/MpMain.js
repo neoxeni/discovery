@@ -1,9 +1,9 @@
-const MpSkylabMain = {
-    name: 'mp-skylab-main',
+export default {
+    name: 'mp-main',
     mixins: [],
     components: {},
     template: `
-      <div>skylab</div>
+      <div>Discovery</div>
     `,
     props: {},
     data: function () {
@@ -16,5 +16,3 @@ const MpSkylabMain = {
     },
     methods: {}
 };
-
-export default MpSkylabMain;

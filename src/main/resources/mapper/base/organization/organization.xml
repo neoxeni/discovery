@@ -17,6 +17,19 @@
         ORDER BY e.sort
     </select>
 
+    <select id="findClientById" resultType="Client">
+        SELECT *
+        FROM client
+        WHERE id = #{clientId}
+    </select>
+
+    <select id="findClientByClientKey" resultType="Client">
+        SELECT *
+        FROM client
+        WHERE client_key = #{clientKey}
+          AND id = #{clientId}
+    </select>
+
     <select id="findDepartmentByDepartmentKey" resultType="Department">
         SELECT *
         FROM client_department

@@ -1,7 +1,5 @@
 package com.mercury.discovery.common.web.token;
 
-
-import com.mercury.discovery.utils.HttpUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -25,12 +23,17 @@ public class AuthTokenAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        String tokenStr = HttpUtils.getAccessToken(request);
-        if (StringUtils.hasLength(tokenStr)) {
-            AuthToken token = authTokenProvider.convertAuthToken(tokenStr);
-            if (token.validate()) {
-                Authentication authentication = authTokenProvider.getAuthentication(token);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+        String authorization = request.getHeader("Authorization");
+        if (StringUtils.hasLength(authorization)) {
+            String[] sp = authorization.split(" ");
+            if ("bearer".equalsIgnoreCase(sp[0])) {
+                AuthToken token = authTokenProvider.convertAuthToken(sp[1]);
+                if (token.validate()) {
+                    Authentication authentication = authTokenProvider.getAuthentication(token);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+            } else {
+                log.info("UNKNOWN authorization {}", authorization);
             }
         }
 
