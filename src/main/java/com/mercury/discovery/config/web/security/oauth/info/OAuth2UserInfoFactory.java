@@ -1,10 +1,7 @@
 package com.mercury.discovery.config.web.security.oauth.info;
 
 import com.mercury.discovery.config.web.security.oauth.entity.ProviderType;
-import com.mercury.discovery.config.web.security.oauth.info.impl.FacebookOAuth2UserInfo;
-import com.mercury.discovery.config.web.security.oauth.info.impl.GoogleOAuth2UserInfo;
-import com.mercury.discovery.config.web.security.oauth.info.impl.KakaoOAuth2UserInfo;
-import com.mercury.discovery.config.web.security.oauth.info.impl.NaverOAuth2UserInfo;
+import com.mercury.discovery.config.web.security.oauth.info.impl.*;
 
 import java.util.Map;
 
@@ -15,6 +12,7 @@ public class OAuth2UserInfoFactory {
             case FACEBOOK: return new FacebookOAuth2UserInfo(attributes);
             case NAVER: return new NaverOAuth2UserInfo(attributes);
             case KAKAO: return new KakaoOAuth2UserInfo(attributes);
+            case OKTA: return new OktaOAuth2UserInfo(attributes);
             default: throw new IllegalArgumentException("Invalid Provider Type.");
         }
     }

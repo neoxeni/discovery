@@ -7,6 +7,7 @@ import com.mercury.discovery.config.web.security.oauth.handler.OAuth2Authenticat
 import com.mercury.discovery.config.web.security.oauth.handler.OAuth2AuthenticationSuccessHandler;
 import com.mercury.discovery.config.web.security.oauth.service.OAuth2AuthorizationRequestBasedOnCookieRepository;
 import com.mercury.discovery.config.web.security.oauth.service.OAuth2UserServiceImpl;
+import com.mercury.discovery.config.web.security.oauth.service.OidcUserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -46,6 +47,7 @@ public class SecurityContextConfig extends WebSecurityConfigurerAdapter {
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
     private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
     private final OAuth2UserServiceImpl oAuth2UserService;
+    private final OidcUserServiceImpl oidcUserService;
 
     // favicon 요청등 정적인 요청 처리 시 필터 등록 제외
     @Override
@@ -114,6 +116,7 @@ public class SecurityContextConfig extends WebSecurityConfigurerAdapter {
                 .baseUri("/*/oauth2/code/*")
             .and()
                 .userInfoEndpoint()//OAuth 2 로그인 성공 이후 사용자 정보를 가져올 때의 설정들 담당
+                .oidcUserService(oidcUserService)
                 .userService(oAuth2UserService)//리소스 서버(소셜 서비스들)에서 사용자 정보를 가져온 상태에서 추가로 진행하고자 하는 기능 명시 가능
             .and()
                 .successHandler(oAuth2AuthenticationSuccessHandler)

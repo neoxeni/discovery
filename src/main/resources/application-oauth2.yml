@@ -2,6 +2,14 @@ spring:
     security:
         oauth2.client:
             registration:
+                okta:
+                    clientId: 0oa931vhl8W1VHQAn5d7
+                    clientSecret: ZwyYJ2drQqs-HaNxcTTRUj28oeWuGUFkOtHP8zhb
+                    scope:
+                        - email
+                        - groups
+                        - openid
+                        - profile
                 google:
                     clientId: 808022776988-pu7gml66ncd1ho20e0te608htip026m5.apps.googleusercontent.com
                     clientSecret: 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
@@ -38,6 +46,8 @@ spring:
                     clientName: Kakao
             # Provider 설정
             provider:
+                okta:
+                    issuer-uri: https://dev-12878308.okta.com
                 naver:
                     authorizationUri: https://nid.naver.com/oauth2.0/authorize
                     tokenUri: https://nid.naver.com/oauth2.0/token
