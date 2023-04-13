@@ -1,8 +1,10 @@
 package com.mercury.discovery.config.web.security;
 
+import com.mercury.discovery.base.users.service.ClientRegistrationRepositoryImpl;
 import com.mercury.discovery.common.web.token.AuthTokenAuthenticationFilter;
 import com.mercury.discovery.config.web.security.form.handler.FormAuthenticationFailureHandler;
 import com.mercury.discovery.config.web.security.form.handler.FormAuthenticationSuccessHandler;
+import com.mercury.discovery.config.web.security.oauth.JdbcClientRegistrationRepository;
 import com.mercury.discovery.config.web.security.oauth.handler.OAuth2AuthenticationFailureHandler;
 import com.mercury.discovery.config.web.security.oauth.handler.OAuth2AuthenticationSuccessHandler;
 import com.mercury.discovery.config.web.security.oauth.service.OAuth2AuthorizationRequestBasedOnCookieRepository;
@@ -17,6 +19,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -131,6 +134,14 @@ public class SecurityContextConfig extends WebSecurityConfigurerAdapter {
 
         //@Async를 처리하는 쓰레드에서도 SecurityContext를 공유받을 수 있다.
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
+    }
+    
+    /**
+     * Database를 통해 Oauth 설정 정보를 저장하는 경우 Bean 주석을 제거
+     * */
+    //@Bean
+    public ClientRegistrationRepository clientRegistrationRepository(ClientRegistrationRepositoryImpl clientRegistrationRepository){
+        return new JdbcClientRegistrationRepository(clientRegistrationRepository);
     }
 
     /*

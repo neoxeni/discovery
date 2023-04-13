@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mercury.discovery.base.users.service.ClientRegistrationRepositoryImpl">
+    <sql id="get_item">
+        SELECT
+            id
+            ,registration_id
+            ,client_name
+            ,client_id
+            ,client_secret
+            ,issuer_uri
+            ,client_authentication_method
+            ,authorization_grant_type
+            ,redirect_uri
+            ,scope
+            ,authorization_uri
+            ,token_uri
+            ,jwk_set_uri
+            ,authentication_method
+            ,user_name_attribute_name
+            ,user_info_uri
+        FROM sso_provider_configuration
+    </sql>
+
+
+    <select id="findById" resultType="DatabaseClientRegistration">
+        <include refid="get_item"/>
+        WHERE id = #{id}
+    </select>
+
+    <select id="findByRegistrationId" resultType="DatabaseClientRegistration">
+        <include refid="get_item"/>
+        WHERE registration_id = #{registrationId}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sso_provider_configuration(
+              registration_id, client_name, client_id, client_secret, issuer_uri, scope
+            , client_authentication_method, authorization_grant_type, redirect_uri, authorization_uri, token_uri
+            , jwk_set_uri, authentication_method, user_name_attribute_name, user_info_uri
+        ) VALUES (
+            #{registrationId}, #{clientName}, #{clientId}, #{clientSecret}, #{issuerUri}, #{scope}
+            , #{clientAuthenticationMethod}, #{authorizationGrantType}, #{redirectUri}, #{authorizationUri}, #{tokenUri}
+            , #{jwkSetUri}, #{authenticationMethod}, #{userNameAttributeName}, #{userInfoUri}
+         )
+    </insert>
+
+    <update id="update">
+        UPDATE sso_provider_configuration SET
+             client_id = #{client_id}
+            , client_secret = #{client_secret}
+            , issuer_uri = #{issuer_uri}
+            , scope = #{scope}
+            , client_authentication_method = #{client_authentication_method}
+            , authorization_grant_type = #{authorization_grant_type}
+            , redirect_uri = #{redirect_uri}
+            , authorization_uri  = #{authorization_uri}
+            , token_uri = #{token_uri}
+            , jwk_set_uri = #{jwk_set_uri}
+            , authentication_method = #{authentication_method}
+            , user_name_attribute_name = #{user_name_attribute_name}
+            , user_info_uri = #{user_info_uri}
+        WHERE id = #{id}
+          AND client_id= #{clientId}
+    </update>
+
+    <delete id="delete">
+        DELETE
+        FROM sso_provider_configuration
+        WHERE id = #{id}
+    </delete>
+
+
+</mapper>
