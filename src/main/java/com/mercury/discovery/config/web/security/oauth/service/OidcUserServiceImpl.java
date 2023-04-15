@@ -14,6 +14,7 @@ import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -25,9 +26,9 @@ public class OidcUserServiceImpl extends OidcUserService {
 
     @Override
     public OidcUser loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {
-        OidcUser user = super.loadUser(userRequest);
+        OAuth2User user = super.loadUser(userRequest);
         try {
-            return this.process(userRequest, user);
+            return (OidcUser) this.process(userRequest, user);
         } catch (AuthenticationException ex) {
             throw ex;
         } catch (Exception ex) {
@@ -35,7 +36,7 @@ public class OidcUserServiceImpl extends OidcUserService {
         }
     }
 
-    private OidcUser process(OAuth2UserRequest userRequest, OidcUser user) {
+    private OAuth2User process(OAuth2UserRequest userRequest, OAuth2User user) {
         ProviderType providerType = ProviderType.valueOf(userRequest.getClientRegistration().getRegistrationId().toUpperCase());
 
         OAuth2UserInfo userInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(providerType, user.getAttributes());
