@@ -1,6 +1,6 @@
 FROM openjdk:17-jdk
 
-EXPOSE 8080
+EXPOSE 8081
 
 COPY ./target/*.war app.war
 
